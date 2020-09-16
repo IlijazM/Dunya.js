@@ -1,0 +1,86 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Style -->
+    <link href="/styles/main.css" rel="stylesheet">
+
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    <!-- Inline script -->
+    <script src="/scripts/inline-script-compiler.js"></script>
+
+    <!-- Scripts -->
+    <script src="/scripts/fade.js" defer=""></script>
+    <script src="/scripts/app.js" defer=""></script>
+
+    <!-- Burning brackets -->
+    <script src="https://ilijazm.github.io/burning-brackets-js/burning-brackets.min.js"></script>
+
+    </head><body style="display: initial;"><div load="/head.html"><div>
+    <title>Inline Script - Home</title>
+</div></div>
+
+
+
+    <div id="fade" style="opacity: 1; transition: opacity 200ms linear;"></div>
+
+    <h1 id="display" class="inline-script-uid-0 has-inline-script">10</h1>
+
+    <button onclick="counter++;display.render()">++</button>
+
+    <h1 dynamic="" class="inline-script-uid-1 has-inline-script">47</h1>
+
+    <h1 static="" class="inline-script-uid-2 has-inline-script">70</h1>
+
+    <script>
+        const globalPath = ''
+        const localPath = ''
+
+        let counter = 10
+    </script>
+
+
+<script>let el
+el = document.querySelector('.inline-script-uid-0')
+el.inlineScript = `{{
+        counter
+    }}`
+el.render = function() {
+    try {
+        handleRenderResults(this, eval(this.inlineScript))
+    } catch (err) {
+        handleExceptionResult(this, err)
+    }
+    renderAttributes(this)
+    return this
+}
+
+el = document.querySelector('.inline-script-uid-1')
+el.inlineScript = `{{
+        100..random
+    }}`
+el.render = function() {
+    try {
+        handleRenderResults(this, eval(this.inlineScript))
+    } catch (err) {
+        handleExceptionResult(this, err)
+    }
+    renderAttributes(this)
+    return this
+}
+
+el = document.querySelector('.inline-script-uid-2')
+el.inlineScript = `{{ 50 + 20 }}`
+el.render = function() {
+    try {
+        handleRenderResults(this, eval(this.inlineScript))
+    } catch (err) {
+        handleExceptionResult(this, err)
+    }
+    renderAttributes(this)
+    return this
+}
+
+</script></body>

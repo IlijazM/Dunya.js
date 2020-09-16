@@ -9,9 +9,10 @@ app.use(express.static('docs'))
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
 //#endregion
 
-
 const jsdom = require("jsdom")
 const { JSDOM } = jsdom
+
+const fs = require('fs')
 
 JSDOM.fromURL('http://localhost:8080/', {
     resources: 'usable',
@@ -20,7 +21,10 @@ JSDOM.fromURL('http://localhost:8080/', {
 }).then((dom) => {
     setTimeout(() => {
         const document = dom.window.document
+        const content = document.documentElement.innerHTML
 
-        console.log(document.body.outerHTML)
+        fs.writeFile('docs/output.html', content, (err) => {
+            if (err) throw err
+        })
     }, 1000)
 })

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
     <!-- Inline script -->
-    <script src="/scripts/inline-script.js"></script>
+    <script src="/scripts/inline-script-compiler.js"></script>
 
     <!-- Scripts -->
     <script src="/scripts/fade.js" defer></script>
@@ -19,23 +20,31 @@
 
     <!-- Burning brackets -->
     <script src="https://ilijazm.github.io/burning-brackets-js/burning-brackets.min.js"></script>
-    
+
     <div load="/head.html"></div>
 </head>
 
-<body style="display:none;opacity:0;">
-    <div id="fade">
-        <link load="/components/app.html" />
-        <div load="/components/header.html"></div>
-        <div load="/body.html"></div>
-        <div load="/components/footer.html"></div>
-    </div>
+<body style="display:none;">
+    <div id="fade"></div>
 
-    <h1>{'test'}</h1>
+    <h1 id="display">{{
+        counter
+    }}</h1>
+
+    <button onclick="counter++;display.render()">++</button>
+
+    <h1 dynamic>{{
+        100..random
+    }}</h1>
+
+    <h1 static>{{ 50 + 20 }}</h2>
 
     <script>
         const globalPath = ''
         const localPath = ''
+
+        let counter = 10
     </script>
 </body>
+
 </html>
