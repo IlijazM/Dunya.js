@@ -1,0 +1,24 @@
+{
+  "name": "inline-script-custom-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node .",
+    "generate": "node generate.js",
+    "build": "node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IlijazM/Inline-Script-Boilerplate.git"
+  },
+  "author": "IlijazM",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IlijazM/Inline-Script-Boilerplate/issues"
+  },
+  "homepage": "https://github.com/IlijazM/Inline-Script-Boilerplate#readme",
+  "dependencies": {
+    "live-server": "^1.2.1"
+  }
+}
