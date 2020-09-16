@@ -141,7 +141,7 @@ function compileInlineScript(inlineScript) {
             '&lt;': '<',
         }
         Object.keys(replaceList).forEach((i) => {
-            html = html.replaceAll(i, replaceList[i])
+            html = html.split(i).join(replaceList[i])
         })
 
         return html
