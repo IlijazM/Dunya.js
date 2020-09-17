@@ -1,31 +1,31 @@
 const fs = require('fs')
 
-async function generate(pathName) {
+async function generate(root, pathName, template) {
     const routes = JSON.parse(fs.readFileSync('routes.json', 'utf-8'))
-    const template = fs.readFileSync('template.html', 'utf-8')
 
-    fs.mkdir('docs', { recursive: true }, (err) => {
+    fs.mkdir(root, { recursive: true }, (err) => {
         if (err) throw err
     })
 
-    routes.forEach(route => generateFiles(route, template, pathName))
+    routes.forEach(route => generateFiles(root, route, template, pathName))
 }
 
-function generateFiles(route, template, pathName) {
+function generateFiles(root, route, template, pathName) {
     let html = template
         .replace(/\$globalPath/gm, pathName)
         .replace(/\$localPath/gm, pathName + route.url)
         .replace(/\$body/gm, pathName + '/' + route.name + '.html')
+        .replace(/\$compile/gm, '"$compiler$"')
 
-    fs.mkdirSync('docs' + route.url, { recursive: true }, (err) => {
+    fs.mkdirSync(root + route.url, { recursive: true }, (err) => {
         if (err) throw err
     })
 
-    fs.writeFile('docs' + route.url + '/index.html', html, (err) => { })
-    fs.writeFile('docs' + route.url + '/' + route.name + '.html', '<div>\n    <title>Inline Script - ' + route.name + '</title>\n</div>', { flag: 'wx' }, (err) => { })
+    fs.writeFile(root + route.url + '/index.html', html, (err) => { })
+    fs.writeFile(root + route.url + '/' + route.name + '.html', '<div>\n    <title>Inline Script - ' + route.name + '</title>\n</div>', { flag: 'wx' }, (err) => { })
 
     if (route.subPaths !== undefined) {
-        route.subPaths.forEach(route => generateFiles(route, template, pathName))
+        route.subPaths.forEach(route => generateFiles(root, route, template, pathName))
     }
 }
 

@@ -1,8 +1,5 @@
-const template = require('./template')
+const compiler = require('./compiler')
 
-/*
- * If you want to publish your website to github pages
- * you must change the repository name.
- */
-
-template.generate('/Inline-Script-Boilerplate')
+compiler('src', 'docs', () => {
+    console.log('compiled successfully')
+})

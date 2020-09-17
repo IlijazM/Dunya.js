@@ -8,7 +8,6 @@
     <link href="$globalPath/styles/main.css" rel="stylesheet">
 
     <!-- Inline script -->
-    <script>var inlineScriptCompile = true;</script>
     <script src="$globalPath/scripts/inline-script.js"></script>
 
     <!-- Scripts -->
@@ -19,13 +18,15 @@
 </head>
 
 <body>
-    <h1 id="display" dynamic>{{ 100..random }}</h1>
-
-    <button onclick="display.render()">PRESS ME</button>
+    <div load="$body" dynamic></div>
 
     <script>
+        let counter = 0
+
         const globalPath = '$globalPath'
         const localPath = '$localPath'
+
+        inlineScript()
     </script>
 </body>
 </html>

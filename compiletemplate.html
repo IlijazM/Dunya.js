@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Style -->
+    <link href="$globalPath/styles/main.css" rel="stylesheet">
+
+    <!-- Inline script -->
+    <script src="$globalPath/scripts/inline-script.js"></script>
+
+    <!-- Scripts -->
+    <script src="$globalPath/scripts/app.js" defer></script>
+
+    <!-- Burning brackets -->
+    <script src="https://ilijazm.github.io/burning-brackets-js/burning-brackets.min.js"></script>
+</head>
+
+<body>
+    <div load="$body" dynamic></div>
+
+    <script>
+        let counter = 0
+
+        const globalPath = '$globalPath'
+        const localPath = '$localPath'
+
+        if ($compile !== false) {
+            compileInlineScript()
+        }
+    </script>
+</body>
+</html>

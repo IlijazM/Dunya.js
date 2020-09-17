@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +6,45 @@
     <link href="/styles/main.css" rel="stylesheet">
 
     <!-- Inline script -->
-    <script>var inlineScriptCompile = true;</script>
     <script src="/scripts/inline-script.js"></script>
 
     <!-- Scripts -->
-    <script src="/scripts/app.js" defer></script>
+    <script src="/scripts/app.js" defer=""></script>
 
     <!-- Burning brackets -->
     <script src="https://ilijazm.github.io/burning-brackets-js/burning-brackets.min.js"></script>
 </head>
 
-<body>
-    <h1 id="display" dynamic>{{ 100..random }}</h1>
-
-    <button onclick="display.render()">PRESS ME</button>
+<body finished-compiling="true">
+    <div load="/Home.html" dynamic=""><div>
+    <title>Inline Script - Home</title>
+    <div class="inline-script-uid-0 has-inline-script"><div>
+            <h1 class="inline-script-uid-1 has-inline-script">100</h1>
+            <button value="press me" class="inline-script-uid-2 has-inline-script">press me</button>
+        </div></div>
+</div></div>
 
     <script>
+        let counter = 0
+
         const globalPath = ''
         const localPath = ''
+
+        if (false !== false) {
+            compileInlineScript()
+        }
     </script>
-</body>
-</html>
+
+<script>if (inlineScriptCompile === false) {
+let el;
+render=(el, callback)=>{
+    el.render = function() {
+        try {
+            handleRenderResults(this, callback(this.inlineScript))
+        } catch (err) {
+            handleExceptionResult(this, err)
+        }
+        return this
+    }
+}
+}</script></body>
