@@ -1,10 +1,18 @@
-var liveServer = require("live-server")
+const template = require('./template')
 
-var params = {
-    port: 8080,
-    host: "0.0.0.0",
-    root: "docs",
-    open: false,
-}
+template.generate('')
 
-liveServer.start(params)
+const compiler = require('./compile')
+
+compiler(() => {
+    const liveServer = require('live-server')
+
+    const params = {
+        port: 8080,
+        host: "0.0.0.0",
+        root: "docs",
+        open: false,
+    }
+
+    liveServer.start(params)
+})

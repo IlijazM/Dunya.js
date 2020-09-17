@@ -53,11 +53,12 @@ function scopeStyles(element) {
 function scopeAllStyles() { scopeStyles(document) }
 //#endregion
 
-//#region Const vars
+//#region Vars
 const hasInlineScriptClassName = 'has-inline-script'
 const UIDPrefix = "inline-script-uid-"
 let InlineScriptUID = 0
 //#endregion
+
 
 //#region Functions
 function getRequest(url, res) {
@@ -179,7 +180,7 @@ function compileInlineScript(inlineScript) {
         }
 
         if (inQuotes === "") {
-            if (c === "(" && find("<").replaceAll(" ", "").replaceAll("\n", "") === "(<") {
+            if (c === "(" && find("<").split(" ").join("").split("\n").join("") === "(<") {
                 htmlExpressionDepth++
 
                 if (htmlExpressionDepth === 1) {
@@ -192,7 +193,7 @@ function compileInlineScript(inlineScript) {
         }
 
         if (inQuotes === "") {
-            if (c === ">" && find(")").replaceAll(" ", "").replaceAll("\n", "") === ">)") {
+            if (c === ">" && find(")").split(" ").join("").split("\n").join("") === ">)") {
                 htmlExpressionDepth--
 
                 if (htmlExpressionDepth === 0) {
@@ -363,6 +364,11 @@ function updateMacros(element) {
 function inlineScript(args) {
     //#region Rendering
     function setRenderFunction(element) {
+        if (element.attributes.static !== undefined) {
+            staticallyRender(element)
+            return
+        }
+
         if (element.tagName !== 'BUTTON') {
             element.render = function () {
                 try {
@@ -387,6 +393,16 @@ function inlineScript(args) {
         element.onclick = function () {
             eval(this.inlineScript)
         }
+    }
+
+    function staticallyRender(element) {
+        try {
+            handleRenderResults(element, eval(element.inlineScript))
+        } catch (err) {
+            handleExceptionResult(element, err)
+        }
+
+        renderAttributes(element)
     }
     //#endregion
 
@@ -468,6 +484,7 @@ function inlineScript(args) {
             compileAttributes(element)
             setRenderFunction(element)
             element.render()
+            compiler.addElement(element)
         } else {
             compileAttributes(element)
             renderAttributes(element)
@@ -521,6 +538,9 @@ function inlineScript(args) {
     if (args === undefined) {
         scan(document.body)
         scopeAllStyles(document.body)
+
+        compiler.appendScript()
+
         return document.body
     }
 
@@ -539,3 +559,51 @@ function inlineScript(args) {
     }
     //#endregion
 }
+
+//#region Compiler
+let compiler = {
+    addElement: () => { },
+    appendScript: () => { }
+}
+
+if (inlineScriptCompile !== undefined) {
+    compiler = {
+        script: `if (inlineScriptCompile === undefined) {
+let el;
+render=(el, callback)=>{
+    el.render = function() {
+        try {
+            handleRenderResults(this, callback(this.inlineScript))
+        } catch (err) {
+            handleExceptionResult(this, err)
+        }
+        return this
+    }
+}
+`,
+
+        addElement: function (element) {
+            this.script += 'el = document.querySelector(\'.' + UIDPrefix + element.uid + '\')\n'
+            this.script += 'el.inlineScript = `' + element.inlineScript + '`\n'
+            this.script += `render(el, (s) => eval(s))\n`
+
+            if (element.getAttribute('dynamic') !== null) {
+                element.innerHTML = ''
+                this.script += 'el.render()\n'
+            }
+        },
+
+        appendScript: function () {
+            setTimeout(() => {
+                this.script += '}'
+
+                console.log('appended!')
+                const scriptElement = document.createElement('script')
+                scriptElement.innerHTML = this.script
+                document.body.appendChild(scriptElement)
+                document.body.setAttribute('finished-compiling', 'true')
+            }, 100)
+        }
+    }
+}
+//#endregion

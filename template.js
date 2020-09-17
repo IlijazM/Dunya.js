@@ -15,14 +15,14 @@ function generateFiles(route, template, pathName) {
     let html = template
         .replace(/\$globalPath/gm, pathName)
         .replace(/\$localPath/gm, pathName + route.url)
+        .replace(/\$body/gm, pathName + '/' + route.name + '.html')
 
     fs.mkdirSync('docs' + route.url, { recursive: true }, (err) => {
         if (err) throw err
     })
 
     fs.writeFile('docs' + route.url + '/index.html', html, (err) => { })
-    fs.writeFile('docs' + route.url + '/body.html', '<div></div>', { flag: 'wx' }, (err) => { })
-    fs.writeFile('docs' + route.url + '/head.html', '<div>\n    <title>Inline Script - ' + route.name + '</title>\n</div>', { flag: 'wx' }, (err) => { })
+    fs.writeFile('docs' + route.url + '/' + route.name + '.html', '<div>\n    <title>Inline Script - ' + route.name + '</title>\n</div>', { flag: 'wx' }, (err) => { })
 
     if (route.subPaths !== undefined) {
         route.subPaths.forEach(route => generateFiles(route, template, pathName))
