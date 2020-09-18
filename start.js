@@ -9,7 +9,6 @@ const params = {
     open: false,
 }
 
-
 compiler('src', 'docs', () => {
     liveServer.start(params)
 })

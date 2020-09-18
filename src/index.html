@@ -18,7 +18,7 @@
 </head>
 
 <body>
-    <div load="/Home.html" dynamic></div>
+    <div load="/Home.html"></div>
 
     <script>
         let counter = 0
@@ -26,9 +26,7 @@
         const globalPath = ''
         const localPath = ''
 
-        if ("$compiler$" !== false) {
-            compileInlineScript()
-        }
+        inlineScript()
     </script>
 </body>
 </html>
