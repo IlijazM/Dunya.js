@@ -15,17 +15,24 @@
     <script src="https://ilijazm.github.io/burning-brackets-js/burning-brackets.min.js"></script>
 </head>
 
-<body class="inline-script-uid-0">
+<body class="inline-script-uid-0" finished-compiling="true">
     <div load="/Home.html" class="inline-script-uid-1"><div class="inline-script-uid-3">
     <title class="inline-script-uid-4">Inline Script - Home</title>
+
+    <define h=""></define>
+
     <div class="inline-script-uid-5 has-inline-script"><div class="inline-script-uid-6">
-            <h1 class="inline-script-uid-7 has-inline-script">100</h1>
+            <h1 reacts-to="counter" id="display" class="inline-script-uid-7 has-inline-script">100</h1>
             <button value="press me" class="inline-script-uid-8 has-inline-script">press me</button>
         </div></div>
 
-    <div load="test.html" class="inline-script-uid-9"><div class="inline-script-uid-10">
-    <h1 class="inline-script-uid-11 has-inline-script">Hello, world!</h1>
-    <h2 class="inline-script-uid-12">Test</h2>
+    <h1 id="display" style="color:red" class="inline-script-uid-9">
+        Hello, world
+    </h1>
+
+    <div id="display" static="" class="inline-script-uid-10 has-inline-script"><div static="" class="inline-script-uid-11">
+    <h1 static="" class="inline-script-uid-12 has-inline-script">27</h1>
+    <h2 static="" class="inline-script-uid-13">Test</h2>
 </div></div>
 </div></div>
 
@@ -38,9 +45,33 @@
         inlineScript()
     </script>
 
-<script>document.body.innerHTML = `
-    <div load="/Home.html"></div>
+<script>var compiledInlineScript = true
+if (calledInlineScript === false) {
+compiledInlineScript = true
+let el
+el = document.querySelector('.inline-script-uid-7')
+el.inlineScript = `{counter}`
 
-    
+el = document.querySelector('.inline-script-uid-8')
+el.inlineScript = `{
+                counter ++
+            }`
 
-`</script></body>
+el = document.querySelector('.inline-script-uid-5')
+el.inlineScript = `{{
+        let counter = 100
+
+        eval(\`eval(eval(inlineScript).toString());inlineScript(\\\`<div>
+            <h1 reacts-to="counter" id="display">{counter}</h1>
+            <button value="press me">{
+                counter ++
+            }</button>
+        </div>\\\`)\`)
+    }}`
+
+el = document.querySelector('.inline-script-uid-9')
+el.inlineScriptAttributes = [
+{ name: 'style', value: 'color:{{[\'red\', \'green\', \'blue\'].random}}' },
+]
+
+}</script></body>

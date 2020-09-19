@@ -1,5 +1,3 @@
-const compiler = require('./compiler')
-
 const liveServer = require('live-server')
 
 const params = {
@@ -9,6 +7,4 @@ const params = {
     open: false,
 }
 
-compiler('src', 'docs', () => {
-    liveServer.start(params)
-})
+liveServer.start(params)

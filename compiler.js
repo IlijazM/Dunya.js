@@ -5,7 +5,7 @@ const { JSDOM } = jsdom
 
 const template_ = require('./template')
 
-module.exports = function compile(root, target, callback) {
+module.exports = async function compile(root, target, callback) {
     const port = 8080
 
     //#region Server
@@ -17,7 +17,7 @@ module.exports = function compile(root, target, callback) {
     const server = app.listen(port, () => console.log('Started server'))
     //#endregion
 
-    fs.copy(root, target, (err) => { })
+    await fs.copy(root, target)
 
     const template = fs.readFileSync('template.html', 'utf-8')
     template_.generate(root, '', template)
@@ -27,25 +27,11 @@ module.exports = function compile(root, target, callback) {
     routes.forEach(route => compileRoute(target, route))
 
     setTimeout(() => {
-        server.close()
-        console.log('Stopped server')
-
-        console.log('compiled!')
         callback()
     }, 1000)
 }
 
 async function compileRoute(target, route) {
-    const domFile = await JSDOM.fromFile('src' + route.url + '/index.html', {})
-    const documentFile = domFile.window.document
-
-    Array.from(documentFile.body.querySelectorAll('script')).forEach(script => {
-        documentFile.body.removeChild(script)
-    })
-
-    const initialBodyScript = documentFile.createElement('script')
-    initialBodyScript.innerHTML = 'document.body.innerHTML = `' + documentFile.body.innerHTML + '`'
-
     const dom = await JSDOM.fromURL('http://localhost:8080' + route.url, {
         resources: 'usable',
         runScripts: 'dangerously',
@@ -55,8 +41,6 @@ async function compileRoute(target, route) {
     const document = dom.window.document
 
     setTimeout(() => {
-        document.body.innerHTML += initialBodyScript.outerHTML
-
         const content = document.documentElement.innerHTML
 
         fs.writeFile(target + '/' + route.url + '/index.html', content, (err) => {

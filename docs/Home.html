@@ -1,16 +1,26 @@
 <div>
     <title>Inline Script - Home</title>
+
+    <define h>
+        <h1>{html}</h1>
+    </define>
+
     <div>{{
         let counter = 100
 
         (<div>
-            <h1>{counter}</h1>
+            <h1 reacts-to="counter" id="display">{counter}</h1>
             <button value="press me">{
                 counter ++
-                this.parentElement.children[0].render()
             }</button>
         </div>)
     }}</div>
 
-    <div load="test.html">Hello, world!</div>
+    <h1 id="display" style="color:{{['red', 'green', 'blue'].random}}">
+        Hello, world
+    </h1>
+
+    <div id="display" load="test.html" static>{{
+        100..random
+    }}</div>
 </div>
