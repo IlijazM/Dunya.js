@@ -5,28 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Style -->
-    <link href="$globalPath/styles/main.css" rel="stylesheet">
+    <link href="~/styles/main.css" rel="stylesheet">
+    <link href="~/styles/codepretify.css" rel="stylesheet">
+
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    <!-- Code prettifier -->
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
 
     <!-- Inline script -->
-    <script src="$globalPath/scripts/inline-script.js"></script>
+    <script src="~/scripts/inline-script.js"></script>
 
-    <!-- Scripts -->
-    <script src="$globalPath/scripts/app.js" defer></script>
+    <!-- Script -->
+    <script>
+        const globalPath = '*{{globalPath}}'
+        const props = JSON.parse(`*{{props}}`)
+    </script>
+    <script src="~/active/app.js"></script>
+    <script src="~/scripts/app.js" defer></script>
+    <script src="~/active/fade.js" defer></script>
 
     <!-- Burning brackets -->
     <script src="https://ilijazm.github.io/burning-brackets-js/burning-brackets.min.js"></script>
 </head>
 
 <body>
-    <div load="$body"></div>
-
-    <script>
-        let counter = 0
-
-        const globalPath = '$globalPath'
-        const localPath = '$localPath'
-
-        inlineScript()
-    </script>
+    <link load="~/components/app.html">
+    <div id="fade">
+        <div load="~/components/header.html" title={{productName}} buttonhref="./Install"></div>
+        <div load="*{{route.name}}.html"></div>
+        <div load="~/components/footer.html"></div>
+    </div>
 </body>
 </html>
