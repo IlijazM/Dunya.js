@@ -87,6 +87,32 @@ validArguments.push({
 })
 //#endregion
 
+//#region generate
+validArguments.push({
+    name: 'generate',
+    call(args) {
+        if (helpArgument.includes(args[0])) {
+            console.log('Usage iscript generate:')
+            console.log('   Will generate files in the \'src\' directory')
+            console.log('')
+            console.log('   -srcDir <dir>       sets the directory of your code.')
+            console.log('                       default: \'src\'')
+            console.log('   -template <file>    sets the file for the template html.')
+            console.log('                       default: \'template.html\'')
+            console.log('   -routesPath <file>  set the path to the routes.json.')
+            console.log('                       default: \'routes.html\'')
+            return
+        }
+
+        require('./generate')({
+            srcDir: getArgValue(args, 'srcDir'),
+            template: getArgValue(args, 'template'),
+            routesPath: getArgValue(args, 'routesPath'),
+        })
+    }
+})
+//#endregion
+
 //#region *
 validArguments.push({
     name: '*',

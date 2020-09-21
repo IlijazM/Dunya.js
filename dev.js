@@ -1,3 +1,14 @@
+const ts = require('typescript')
+async function compileTypescript(tsCode) {
+    return await ts.transpileModule(tsCode, {}).outputText
+}
+
+const sass = require('node-sass')
+async function compileSass(sassCode) {
+    return await sass.render({
+        data: sassCode
+    })
+}
 
 module.exports = function (args) {
     if (args.ip === undefined) args.ip = '0.0.0.0'
@@ -13,6 +24,7 @@ module.exports = function (args) {
     if (typeof args.template !== 'string') throw new Error('The argument \'template\' must be a string.')
 
     const fs = require('fs-extra')
+    const glob = require("glob")
 
     //#region template
     const template_ = require('./template')
@@ -36,19 +48,49 @@ module.exports = function (args) {
         try {
             await fs.emptyDir(args.devDir)
             await fs.copy(args.srcDir, args.devDir)
+
+            try {
+                await fs.copy(args.devDir + '/dev', args.devDir + '/active')
+            } catch (err) { }
+
+            glob(args.devDir + '/**/*.ts', (err, files) => {
+                files.forEach(async (file) => {
+                    const code = await fs.readFile(file, 'utf-8')
+                    const compiledCode = await compileTypescript(code)
+                    await fs.writeFile(file, compiledCode)
+                    await fs.rename(file, file.substr(0, file.length - 2) + 'js')
+                })
+            })
+
+            glob(args.devDir + '/**/*.scss', (err, files) => {
+                files.forEach(async (file) => {
+                    const code = await fs.readFile(file, 'utf-8')
+                    const compiledCode = await compileSass(code)
+                    // console.log(compiledCode)
+                    // await fs.writeFile(file, compiledCode)
+                    // await fs.rename(file, file.substr(0, file.length - 4) + 'css')
+                })
+            })
         } catch {
 
         }
-
     }
 
     reServe()
 
+    //#region watcher
     fs.mkdirSync(args.srcDir, { recursive: true }, (err) => { })
 
-    fs.watch(args.srcDir, (event, filename) => {
-        reServe(event, filename).then().catch()
-    })
+    const chokidar = require('chokidar')
+
+    const watcher = chokidar.watch(args.srcDir, { ignored: /^\./, persistent: true })
+
+    watcher
+        .on('add', function (path) { reServe(path) })
+        .on('change', function (path) { reServe(path) })
+        .on('unlink', function (path) { reServe(path) })
+        .on('error', function (error) { reServe(path) })
+    //#endregion
 }
 
 // ['template.html', 'routes.json', 'props.json'].forEach(filename => fs.watch(filename, (event, filename) => {
