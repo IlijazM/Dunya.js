@@ -3,14 +3,14 @@ async function compileTypescript(tsCode) {
     return await ts.transpileModule(tsCode, {}).outputText
 }
 
-const sass = require('node-sass')
+const sass = require('sass')
 async function compileSass(sassCode) {
-    return await sass.render({
+    return sass.renderSync({
         data: sassCode
-    })
+    }).css.toString()
 }
 
-module.exports = function (args) {
+module.exports = async function (args) {
     if (args.ip === undefined) args.ip = '0.0.0.0'
     if (args.port === undefined) args.port = 8080
     if (args.srcDir === undefined) args.srcDir = 'src'
@@ -31,6 +31,81 @@ module.exports = function (args) {
     const template = fs.readFileSync(args.template, 'utf-8')
     //#endregion
 
+    //#region compile
+    async function compileTypescriptFile(file) {
+        const code = await fs.readFile(file, 'utf-8')
+        const compiledCode = await compileTypescript(code)
+        await fs.writeFile(file, compiledCode)
+        await fs.rename(file, file.substr(0, file.length - 2) + 'js')
+    }
+
+    async function compileAllTypescriptFiles() {
+        glob(args.devDir + '/**/*.ts', (err, files) => {
+            files.forEach(compileTypescriptFile)
+        })
+    }
+
+    async function compileScssFile(file) {
+        const code = await fs.readFile(file, 'utf-8')
+        const compiledCode = await compileSass(code)
+        await fs.writeFile(file, compiledCode)
+        await fs.rename(file, file.substr(0, file.length - 4) + 'css')
+    }
+
+    async function compileAllScssFiles() {
+        glob(args.devDir + '/**/*.scss', (err, files) => {
+            files.forEach(compileTypescriptFile)
+        })
+    }
+    //#endregion
+
+    //#region update
+    async function updateAll() {
+        try {
+            await fs.emptyDir(args.devDir)
+            await fs.copy(args.srcDir, args.devDir)
+
+            compileAllTypescriptFiles()
+            compileAllScssFiles()
+        } catch {
+
+        }
+    }
+
+    async function update(event, path) {
+        switch (event) {
+            case 'add':
+                const counterPath = args.devDir + path.substr(args.srcDir.length)
+                await fs.copy(path, counterPath)
+                break
+        }
+    }
+
+    await updateAll()
+    //#endregion
+
+    //#region watcher
+    fs.mkdirSync(args.srcDir, { recursive: true }, (err) => { })
+
+    const chokidar = require('chokidar')
+
+    const watcher = chokidar.watch(args.srcDir, { ignored: /^\./, persistent: true })
+
+    watcher
+        .on('add', function (path) {
+            update('add', path)
+        })
+        .on('change', function (path) {
+            update('change', path)
+        })
+        .on('unlink', function (path) {
+            update('unlink', path)
+        })
+        .on('error', function (error) {
+            console.error(error)
+        })
+    //#endregion
+
     //#region live-server
     const liveServer = require('live-server')
 
@@ -43,78 +118,4 @@ module.exports = function (args) {
 
     liveServer.start(params)
     //#endregion
-
-    async function reServe(event, filename) {
-        try {
-            await fs.emptyDir(args.devDir)
-            await fs.copy(args.srcDir, args.devDir)
-
-            try {
-                await fs.copy(args.devDir + '/dev', args.devDir + '/active')
-            } catch (err) { }
-
-            glob(args.devDir + '/**/*.ts', (err, files) => {
-                files.forEach(async (file) => {
-                    const code = await fs.readFile(file, 'utf-8')
-                    const compiledCode = await compileTypescript(code)
-                    await fs.writeFile(file, compiledCode)
-                    await fs.rename(file, file.substr(0, file.length - 2) + 'js')
-                })
-            })
-
-            glob(args.devDir + '/**/*.scss', (err, files) => {
-                files.forEach(async (file) => {
-                    const code = await fs.readFile(file, 'utf-8')
-                    const compiledCode = await compileSass(code)
-                    // console.log(compiledCode)
-                    // await fs.writeFile(file, compiledCode)
-                    // await fs.rename(file, file.substr(0, file.length - 4) + 'css')
-                })
-            })
-        } catch {
-
-        }
-    }
-
-    reServe()
-
-    //#region watcher
-    fs.mkdirSync(args.srcDir, { recursive: true }, (err) => { })
-
-    const chokidar = require('chokidar')
-
-    const watcher = chokidar.watch(args.srcDir, { ignored: /^\./, persistent: true })
-
-    watcher
-        .on('add', function (path) { reServe(path) })
-        .on('change', function (path) { reServe(path) })
-        .on('unlink', function (path) { reServe(path) })
-        .on('error', function (error) { reServe(path) })
-    //#endregion
 }
-
-// ['template.html', 'routes.json', 'props.json'].forEach(filename => fs.watch(filename, (event, filename) => {
-//     reServe(event, filename)
-// }))
-
-// const fs = require('fs-extra')
-
-// try {
-//     fs.copy('src/dev', 'src/active')
-// } catch (err) { }
-
-// const template = fs.readFileSync('template.html', 'utf-8')
-
-// const template_ = require('./template')
-// template_.generate('src', template)
-
-// const liveServer = require('live-server')
-
-// const params = {
-//     port: 8080,
-//     host: "0.0.0.0",
-//     root: "src",
-//     open: false,
-// }
-
-// liveServer.start(params)
