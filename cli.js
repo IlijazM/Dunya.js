@@ -1,3 +1,5 @@
+const commandName = 'dunya'
+
 let validArguments = []
 const helpArgument = [
     '--help',
@@ -41,14 +43,14 @@ export function cli(_args) {
 validArguments.push({
     name: 'help',
     call(args) {
-        console.log('Usage: iscript <command> <arguments>:')
-        console.log('   iscript help            print help message')
-        console.log('   iscript dev             ')
-        console.log('   iscript generate        ')
-        console.log('   iscript build           ')
-        console.log('   iscript start           ')
+        console.log('Usage: ' + commandName + ' <command> <arguments>:')
+        console.log('   ' + commandName + ' help            print help message')
+        console.log('   ' + commandName + ' dev             ')
+        console.log('   ' + commandName + ' generate        ')
+        console.log('   ' + commandName + ' build           ')
+        console.log('   ' + commandName + ' start           ')
         console.log('')
-        console.log('   use iscript <command> ' + helpArgument.join(', ') + ' to get further information.')
+        console.log('   use ' + commandName + ' <command> ' + helpArgument.join(', ') + ' to get further information.')
     }
 })
 //#endregion help
@@ -58,7 +60,7 @@ validArguments.push({
     name: 'dev',
     call(args) {
         if (helpArgument.includes(args[0])) {
-            console.log('Usage iscript dev:')
+            console.log('Usage ' + commandName + ' dev:')
             console.log('   Will serve the project with hot reload')
             console.log('')
             console.log('   -ip <ipaddress>     sets the ip address of the server.')
@@ -68,7 +70,7 @@ validArguments.push({
             console.log('   -srcDir <dir>       sets the directory of your code.')
             console.log('                       default: \'src\'')
             console.log('   -srcDev <dir>       sets the dev output directory.')
-            console.log('                       default: \'dev\'')
+            console.log('                       default: \'__dirname/dev\'')
             console.log('                       default: \'src\'')
             console.log('   -template <file>    sets the file for the template html.')
             console.log('                       default: \'template.html\'')
@@ -92,7 +94,7 @@ validArguments.push({
     name: 'generate',
     call(args) {
         if (helpArgument.includes(args[0])) {
-            console.log('Usage iscript generate:')
+            console.log('Usage ' + commandName + ' generate:')
             console.log('   Will generate files in the \'src\' directory')
             console.log('')
             console.log('   -srcDir <dir>       sets the directory of your code.')
@@ -117,8 +119,8 @@ validArguments.push({
 validArguments.push({
     name: '*',
     call(cname) {
-        console.log(`iscript '${cname}' could not be found.`)
-        console.log('Use \'iscript help\' for more information.')
+        console.log(`${commandName} '${cname}' could not be found.`)
+        console.log('Use \'${commandName} help\' for more information.')
     }
 })
 //#endregion

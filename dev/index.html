@@ -5,23 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Style -->
-    <link href="~/styles/main.css" rel="stylesheet">
+    <link href="/styles/main.css" rel="stylesheet">
 
     <!-- Inline script -->
-    <script src="~/scripts/inline-script.js"></script>
+    <script src="/scripts/inline-script.js"></script>
 
     <!-- Script -->
     <script>
-        const globalPath = '*{{pathName}}'
-        const props = JSON.parse(`*{{props}}`)
+        const globalPath = ''
+        const props = JSON.parse(`{
+    "preUrl": "Inline-Script-Website"
+}`)
     </script>
-    <script src="~/scripts/app.js" defer></script>
+    <script src="/scripts/app.js" defer></script>
 
     <!-- Burning brackets -->
     <script src="https://ilijazm.github.io/burning-brackets-js/burning-brackets.min.js"></script>
 </head>
 
 <body>
-    <div load="*{{fileName}}"></div>
+    <div load="index.html.html"></div>
 </body>
 </html>
