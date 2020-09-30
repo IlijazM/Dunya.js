@@ -9,20 +9,18 @@ module.exports = async function (args) {
     if (args.port === undefined) args.port = 8080
     if (args.srcDir === undefined) args.srcDir = 'src'
     if (args.devDir === undefined) args.devDir = __dirname + '/dev'
-    if (args.template === undefined) args.template = 'template.html'
     if (args.props === undefined) args.props = 'props.json'
 
     if (typeof args.port !== 'number') throw new Error('The argument \'port\' must be a number.')
     if (typeof args.ip !== 'string') throw new Error('The argument \'ip\' must be a string.')
     if (typeof args.srcDir !== 'string') throw new Error('The argument \'srcDir\' must be a string.')
     if (typeof args.devDir !== 'string') throw new Error('The argument \'devDir\' must be a string.')
-    if (typeof args.template !== 'string') throw new Error('The argument \'template\' must be a string.')
     if (typeof args.props !== 'string') throw new Error('The argument \'props\' must be a string.')
     //#endregion
 
     //#region load template
     const template_ = require('./template')
-    const template = fs.readFileSync(args.template, 'utf-8')
+    let template = fs.readFileSync(args.srcDir + '/template.html', 'utf-8')
     //#endregion
 
     //#region compile
@@ -32,7 +30,8 @@ module.exports = async function (args) {
     }
 
     async function compilePage(file) {
-        if (file.endsWith('.html')) await compileDunyaHTML(file)
+        if (file.endsWith('.html')) await compileHTMLFile(file)
+        if (file.endsWith('.inline-script')) await compileInlineScriptFile(file)
     }
 
     //#region typescript
@@ -69,8 +68,8 @@ module.exports = async function (args) {
     }
     //#endregion
 
-    //#region dunyaHTML
-    function compileTemplate(html) {
+    //#region html
+    function compileHTML(html) {
         html = html.replace(/\"\~\//gm, "\"" + pathName + "/")
 
         const regex = /\*\{\{(.*?)\}\}/gm
@@ -95,29 +94,52 @@ module.exports = async function (args) {
         return html
     }
 
-    async function compileDunyaHTML(file) {
+    async function compileHTMLFile(file) {
         const dirs = file.split(/[\\\/]/gm)
         const fileName = dirs[dirs.length - 1]
-        const dirName = fileName.substr(0, fileName.length - '.html'.length)
-        const pathName = args.devDir
+        let dirName = fileName.substr(0, fileName.length - '.html'.length)
+        let pathName = '.' + new Array(dirs.length).fill('/..').join('')
+
+        if (dirName === 'Home') {
+            pathName = '.'
+            dirName = ''
+        }
 
         const props = await fs.readFile(args.props)
 
         // generate template
         let templateHTML = ''
         try {
-            templateHTML = eval(compileTemplate + 'compileTemplate(template)')
+            templateHTML = eval(compileHTML + 'compileHTML(template)')
         } catch (err) {
             console.error(`There was an error while compiling '${args.template}':`)
             console.error(err)
             return
         }
 
-        await fs.mkdir(appendDev(dirName))
-        await fs.move(appendDev(file), appendDev(dirName + '/' + fileName))
+        try {
+            // mkdir could already exist
+            await fs.mkdir(appendDev(dirName))
+        } catch (err) { }
+
+        try {
+            // src and destination could be the same
+            await fs.move(appendDev(file), appendDev(dirName + '/' + fileName), { overwrite: true })
+        } catch (err) { }
+
         await fs.writeFile(appendDev(dirName + '/index.html'), templateHTML)
     }
     //#endregion
+    //#endregion
+
+    //#region inline script
+    function compileInlineScript(html, css, js) {
+
+    }
+
+    function compileInlineScriptFile(file) {
+
+    }
     //#endregion
 
     //#region functions
@@ -137,6 +159,16 @@ module.exports = async function (args) {
 
     async function update(event, path) {
         path = path.substr(args.srcDir.length + 1)
+
+        if (path === 'template.html') {
+            glob(args.srcDir + '/pages/*', (err, files) => {
+                files.forEach((file) => {
+                    template = fs.readFileSync(args.srcDir + '/template.html', 'utf-8')
+                    update('change', file)
+                })
+            })
+        }
+
         switch (event) {
             case 'add':
                 await addFile(path)
@@ -182,11 +214,14 @@ module.exports = async function (args) {
     }
 
     async function unlinkFile(file) {
-        const destination = getDestinationPath(file)
+        let destination = getDestinationPath(file)
 
         if (destination === '') return
 
-        await fs.remove(destination)
+        if (destination.endsWith('.ts')) destination = destination.substr(0, destination.length - 'ts'.length) + 'js'
+        if (destination.endsWith('.scss')) destination = destination.substr(0, destination.length - 'scss'.length) + 'css'
+
+        await fs.remove(appendDev(destination))
     }
 
     async function changeFile(file) {
@@ -195,11 +230,16 @@ module.exports = async function (args) {
         if (destination === '') return
 
         try {
-            await fs.copy(file, destination)
+            const from = appendSrc(file)
+            const to = appendDev(destination)
+
+            await fs.copy(from, to)
+
             await compileFile(destination)
 
             if (file.startsWith('pages')) await compilePage(destination)
         } catch (err) {
+
         }
     }
     //#endregion

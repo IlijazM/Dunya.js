@@ -72,8 +72,6 @@ validArguments.push({
             console.log('   -srcDev <dir>       sets the dev output directory.')
             console.log('                       default: \'__dirname/dev\'')
             console.log('                       default: \'src\'')
-            console.log('   -template <file>    sets the file for the template html.')
-            console.log('                       default: \'template.html\'')
             return
         }
 
@@ -83,7 +81,6 @@ validArguments.push({
             port: getArgValue(args, 'port'),
             srcDir: getArgValue(args, 'srcDir'),
             devDir: getArgValue(args, 'devDir'),
-            template: getArgValue(args, 'template'),
         })
     }
 })
@@ -99,8 +96,6 @@ validArguments.push({
             console.log('')
             console.log('   -srcDir <dir>       sets the directory of your code.')
             console.log('                       default: \'src\'')
-            console.log('   -template <file>    sets the file for the template html.')
-            console.log('                       default: \'template.html\'')
             console.log('   -routesPath <file>  set the path to the routes.json.')
             console.log('                       default: \'routes.html\'')
             return
@@ -108,7 +103,6 @@ validArguments.push({
 
         require('./generate')({
             srcDir: getArgValue(args, 'srcDir'),
-            template: getArgValue(args, 'template'),
             routesPath: getArgValue(args, 'routesPath'),
         })
     }
