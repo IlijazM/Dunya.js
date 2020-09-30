@@ -27,11 +27,8 @@ module.exports = async function (args) {
 
     //#region compile
     async function compileFile(file) {
-        const relativeFile = file.substr(args.devDir.length)
-
         if (file.endsWith('.ts')) await compileTypescriptFile(file)
         if (file.endsWith('.scss')) await compileScssFile(file)
-
     }
 
     async function compilePage(file) {
@@ -45,6 +42,8 @@ module.exports = async function (args) {
     }
 
     async function compileTypescriptFile(file) {
+        file = appendDev(file)
+
         const code = await fs.readFile(file, 'utf-8')
         const compiledCode = await compileTypescript(code)
         await fs.writeFile(file, compiledCode)
@@ -61,6 +60,8 @@ module.exports = async function (args) {
     }
 
     async function compileScssFile(file) {
+        file = appendDev(file)
+
         const code = await fs.readFile(file, 'utf-8')
         const compiledCode = await compileSass(code)
         await fs.writeFile(file, compiledCode)
@@ -95,13 +96,14 @@ module.exports = async function (args) {
     }
 
     async function compileDunyaHTML(file) {
-        const relativeFile = file.substr(args.devDir.length)
-        const dirs = relativeFile.split(/[\\\/]/gm)
-        const pathName = dirs.splice(0, dirs.length - 1).join('/')
+        const dirs = file.split(/[\\\/]/gm)
         const fileName = dirs[dirs.length - 1]
-        const routeName = fileName.substring(0, fileName.length - '.html'.length)
+        const dirName = fileName.substr(0, fileName.length - '.html'.length)
+        const pathName = args.devDir
+
         const props = await fs.readFile(args.props)
 
+        // generate template
         let templateHTML = ''
         try {
             templateHTML = eval(compileTemplate + 'compileTemplate(template)')
@@ -111,19 +113,20 @@ module.exports = async function (args) {
             return
         }
 
-        await fs.remove(file)
-        await fs.mkdir(args.devDir + '/' + pathName + routeName)
+        await fs.mkdir(appendDev(dirName))
+        await fs.move(appendDev(file), appendDev(dirName + '/' + fileName))
+        await fs.writeFile(appendDev(dirName + '/index.html'), templateHTML)
     }
     //#endregion
     //#endregion
 
     //#region functions
-    function appendSrc() {
-
+    function appendSrc(file) {
+        return args.srcDir + '/' + file
     }
 
-    function appendDev() {
-
+    function appendDev(file) {
+        return args.devDir + '/' + file
     }
     //#endregion
 
@@ -165,11 +168,15 @@ module.exports = async function (args) {
         if (destination === '') return
 
         try {
-            await fs.copy(appendSrc(file), appendDev(destination))
+            const from = appendSrc(file)
+            const to = appendDev(destination)
+
+            await fs.copy(from, to)
             await compileFile(destination)
 
-            if (file.substr(args.srcDir.length + 1).startWith('pages')) await compilePage(file)
+            if (file.startsWith('pages')) await compilePage(destination)
         } catch (err) {
+            console.error(err)
         }
 
     }
@@ -191,7 +198,7 @@ module.exports = async function (args) {
             await fs.copy(file, destination)
             await compileFile(destination)
 
-            if (file.substr(args.srcDir.length + 1).startWith('pages')) await compilePage(file)
+            if (file.startsWith('pages')) await compilePage(destination)
         } catch (err) {
         }
     }
