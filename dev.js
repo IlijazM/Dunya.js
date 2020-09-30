@@ -97,7 +97,7 @@ module.exports = async function (args) {
     async function compileHTMLFile(file) {
         const dirs = file.split(/[\\\/]/gm)
         const fileName = dirs[dirs.length - 1]
-        let dirName = fileName.substr(0, fileName.length - '.html'.length)
+        let dirName = file.substr(0, file.length - '.html'.length)
         let pathName = '.' + new Array(dirs.length).fill('/..').join('')
 
         if (dirName === 'Home') {
@@ -130,16 +130,49 @@ module.exports = async function (args) {
         await fs.writeFile(appendDev(dirName + '/index.html'), templateHTML)
     }
     //#endregion
-    //#endregion
 
     //#region inline script
-    function compileInlineScript(html, css, js) {
+    async function compileInlineScript(html, css, js) {
 
     }
 
-    function compileInlineScriptFile(file) {
+    async function compileInlineScriptFile(file) {
+        const dirs = file.split(/[\\\/]/gm)
+        const fileName = dirs[dirs.length - 1]
+        const dirName = fileName.substr(0, fileName.length - '.inline-script'.length)
+        const path = dirs.filter((v, i) => i !== dirs.length - 1)
+        let pathName = '.' + new Array(dirs.length).fill('/..').join('')
 
+        if (dirName === 'Home') {
+            pathName = '.'
+            dirName = ''
+        }
+
+        let css = ''
+        try {
+            css = await fs.readFile(appendDev(path) + '/' + dirName + '.css')
+        } catch (err) { }
+
+        let js = ''
+        try {
+            js = await fs.readFile(appendDev(path) + dirName + '.js')
+        } catch (err) { }
+
+        const props = await fs.readFile(args.props)
+
+        // generate template
+        let templateHTML = ''
+        try {
+            templateHTML = eval(compileHTML + 'compileHTML(template)')
+        } catch (err) {
+            console.error(`There was an error while compiling '${args.template}':`)
+            console.error(err)
+            return
+        }
+
+        await fs.writeFile(appendDev(dirName + '/index.html'), templateHTML)
     }
+    //#endregion
     //#endregion
 
     //#region functions
@@ -221,7 +254,9 @@ module.exports = async function (args) {
         if (destination.endsWith('.ts')) destination = destination.substr(0, destination.length - 'ts'.length) + 'js'
         if (destination.endsWith('.scss')) destination = destination.substr(0, destination.length - 'scss'.length) + 'css'
 
-        await fs.remove(appendDev(destination))
+        const dir = appendDev(destination)
+
+        await fs.remove(dir)
     }
 
     async function changeFile(file) {
@@ -267,6 +302,18 @@ module.exports = async function (args) {
         .on('error', function (error) {
             console.error(error)
         })
+
+    glob(args.srcDir + '/**', (err, files) => {
+        files = files.sort((a, b) => {
+            if (a.endsWith('.inline-script')) return 1
+            return -1
+        })
+
+        files.forEach(file => {
+            update('change', file)
+        })
+    })
+
     //#endregion
 
     //#region live-server
