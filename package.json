@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node dev",
-    "start": "node start",
-    "generate": "node generate",
-    "build": "node build"
+    "dev": "dunya dev",
+    "start": "dunya start",
+    "build": "dunya build"
   },
   "repository": {
     "type": "git",
