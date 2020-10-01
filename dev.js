@@ -24,14 +24,32 @@ module.exports = async function (args) {
     //#endregion
 
     //#region compile
+    async function updateInlineScriptFile(file) {
+        const dirs = file
+            .split(/[\\\/]/gm)
+            .filter((v, i) => i !== file.split(/[\\\/]/gm).length - 1)
+            .join('/')
+
+        glob(appendDev(dirs) + '/*.inline-script', (err, files) => {
+            files.forEach(async file => {
+                const splitted = file.split(/[\\\/]/gm)
+                const fileName = splitted[splitted.length - 1]
+                file = dirs + '/' + fileName
+                await compileInlineScriptFile(file)
+            })
+        })
+    }
+
     async function compileFile(file) {
+        if (file.endsWith('.inline-script')) return await compileInlineScriptFile(file)
         if (file.endsWith('.ts')) await compileTypescriptFile(file)
         if (file.endsWith('.scss')) await compileScssFile(file)
+
+        await updateInlineScriptFile(file)
     }
 
     async function compilePage(file) {
         if (file.endsWith('.html')) await compileHTMLFile(file)
-        if (file.endsWith('.inline-script')) await compileInlineScriptFile(file)
     }
 
     //#region typescript
@@ -112,7 +130,7 @@ module.exports = async function (args) {
         try {
             templateHTML = eval(compileHTML + 'compileHTML(template)')
         } catch (err) {
-            console.error(`There was an error while compiling '${args.template}':`)
+            console.error(`There was an error while compiling 'template.html':`)
             console.error(err)
             return
         }
@@ -138,8 +156,9 @@ module.exports = async function (args) {
 
     async function compileInlineScriptFile(file) {
         const dirs = file.split(/[\\\/]/gm)
-        const fileName = dirs[dirs.length - 1]
-        const dirName = fileName.substr(0, fileName.length - '.inline-script'.length)
+        const fileNameInlineScript = dirs[dirs.length - 1]
+        const dirName = fileNameInlineScript.substr(0, fileNameInlineScript.length - '.inline-script'.length)
+        const fileName = dirName + '.html'
         const path = dirs.filter((v, i) => i !== dirs.length - 1)
         let pathName = '.' + new Array(dirs.length).fill('/..').join('')
 
@@ -150,13 +169,17 @@ module.exports = async function (args) {
 
         let css = ''
         try {
-            css = await fs.readFile(appendDev(path) + '/' + dirName + '.css')
+            css = (await fs.readFile(appendDev(path) + '/' + dirName + '.css')).toString()
         } catch (err) { }
 
         let js = ''
         try {
-            js = await fs.readFile(appendDev(path) + dirName + '.js')
+            js = (await fs.readFile(appendDev(path) + '/' + dirName + '.js')).toString()
         } catch (err) { }
+
+        let inlineScriptHTML = (await fs.readFile(appendDev(file))).toString()
+        if (css !== '') inlineScriptHTML += '<style scoped>' + css + '</style>'
+        if (js !== '') inlineScriptHTML += '<script>' + js + '</script>'
 
         const props = await fs.readFile(args.props)
 
@@ -165,11 +188,12 @@ module.exports = async function (args) {
         try {
             templateHTML = eval(compileHTML + 'compileHTML(template)')
         } catch (err) {
-            console.error(`There was an error while compiling '${args.template}':`)
+            console.error(`There was an error while compiling 'template.html':`)
             console.error(err)
             return
         }
 
+        await fs.writeFile(appendDev(dirName + '/' + fileName), inlineScriptHTML)
         await fs.writeFile(appendDev(dirName + '/index.html'), templateHTML)
     }
     //#endregion
