@@ -1,4 +1,5 @@
 const fs = require('fs-extra')
+const glob = require('glob')
 
 const jsdom = require("jsdom")
 const { JSDOM } = jsdom
@@ -19,12 +20,43 @@ module.exports = async function compile(root, target, callback) {
     const server = app.listen(port, () => console.log('Started server'))
     //#endregion
 
-    const template = fs.readFileSync('template.html', 'utf-8')
-    template_.generate(root, template)
+    // const template = fs.readFileSync('template.html', 'utf-8')
+    // template_.generate(root, template)
 
-    const routes = JSON.parse(fs.readFileSync('routes.json', 'utf-8'))
+    // const routes = JSON.parse(fs.readFileSync('routes.json', 'utf-8'))
+
+    const routes = []
+
+    await (new Promise((resolve, reject) => {
+        glob('build/**/index.html', (err, files) => {
+            if (err) return console.error(err)
+            files.forEach(file => routes.push(file))
+            resolve()
+        })
+    }))
 
     for (let route of routes) {
+        const splitted = route.split(/[\\\/]/gm)
+        let url
+        let name
+
+        if (splitted.length === 2) {
+            url = ''
+            name = 'Home'
+        } else {
+            url = splitted
+                .filter((v, i) => i !== splitted.length - 1)
+                .join('/')
+                .substr(target.length)
+
+            name = splitted[splitted.length - 2]
+        }
+
+        route = {
+            name: name,
+            url: url
+        }
+
         await compileRoute(target, route)
         console.log("finished " + route.name)
     }

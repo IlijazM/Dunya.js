@@ -46,7 +46,6 @@ validArguments.push({
         console.log('Usage: ' + commandName + ' <command> <arguments>:')
         console.log('   ' + commandName + ' help            print help message')
         console.log('   ' + commandName + ' dev             ')
-        console.log('   ' + commandName + ' generate        ')
         console.log('   ' + commandName + ' build           ')
         console.log('   ' + commandName + ' start           ')
         console.log('')
@@ -71,7 +70,6 @@ validArguments.push({
             console.log('                       default: \'src\'')
             console.log('   -srcDev <dir>       sets the dev output directory.')
             console.log('                       default: \'__dirname/dev\'')
-            console.log('                       default: \'src\'')
             return
         }
 
@@ -86,24 +84,52 @@ validArguments.push({
 })
 //#endregion
 
-//#region generate
+//#region build
 validArguments.push({
-    name: 'generate',
+    name: 'build',
     call(args) {
         if (helpArgument.includes(args[0])) {
-            console.log('Usage ' + commandName + ' generate:')
-            console.log('   Will generate files in the \'src\' directory')
+            console.log('Usage ' + commandName + ' build:')
+            console.log('   Will build the project.')
             console.log('')
-            console.log('   -srcDir <dir>       sets the directory of your code.')
+            console.log('   -srcDir <dir>       sets the input directory.')
             console.log('                       default: \'src\'')
-            console.log('   -routesPath <file>  set the path to the routes.json.')
-            console.log('                       default: \'routes.html\'')
+            console.log('   -out <dir>          sets the output directory.')
+            console.log('                       default: \'build\'')
             return
         }
 
-        require('./generate')({
+        console.log('Executing \'build\'')
+        require('./build')({
             srcDir: getArgValue(args, 'srcDir'),
-            routesPath: getArgValue(args, 'routesPath'),
+            out: getArgValue(args, 'out'),
+        })
+    }
+})
+//#endregion
+
+//#region start
+validArguments.push({
+    name: 'start',
+    call(args) {
+        if (helpArgument.includes(args[0])) {
+            console.log('Usage ' + commandName + ' start:')
+            console.log('   Will serve a server hosting the outputted app.')
+            console.log('')
+            console.log('   -ip <ipaddress>     sets the ip address of the server.')
+            console.log('                       default: \'0.0.0.0\'')
+            console.log('   -port <port>        sets the port of the server.')
+            console.log('                       default: \'8080\'')
+            console.log('   -src <dir>          sets the directory of the app.')
+            console.log('                       default: \'build\'')
+            return
+        }
+
+        console.log('Executing \'start\'')
+        require('./start')({
+            ip: getArgValue(args, 'ip'),
+            port: getArgValue(args, 'port'),
+            src: getArgValue(args, 'src'),
         })
     }
 })

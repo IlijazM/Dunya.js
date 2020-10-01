@@ -10,6 +10,7 @@ module.exports = async function (args) {
     if (args.srcDir === undefined) args.srcDir = 'src'
     if (args.devDir === undefined) args.devDir = __dirname + '/dev'
     if (args.props === undefined) args.props = 'props.json'
+    if (args.liveServer === undefined) args.liveServer = true
 
     if (typeof args.port !== 'number') throw new Error('The argument \'port\' must be a number.')
     if (typeof args.ip !== 'string') throw new Error('The argument \'ip\' must be a string.')
@@ -19,8 +20,18 @@ module.exports = async function (args) {
     //#endregion
 
     //#region load template
-    const template_ = require('./template')
-    let template = fs.readFileSync(args.srcDir + '/template.html', 'utf-8')
+    if (!fs.pathExistsSync(args.srcDir)) {
+        console.error(`ERROR: Missing '${args.srcDir}'.`)
+        return
+    }
+
+    try {
+        const template_ = require('./template')
+        let template = fs.readFileSync(args.srcDir + '/template.html', 'utf-8')
+    } catch (err) {
+        console.error(`ERROR: Missing '${args.srcDir + '/template.html'}'.`)
+        return
+    }
     //#endregion
 
     //#region compile
@@ -30,12 +41,16 @@ module.exports = async function (args) {
             .filter((v, i) => i !== file.split(/[\\\/]/gm).length - 1)
             .join('/')
 
-        glob(appendDev(dirs) + '/*.inline-script', (err, files) => {
-            files.forEach(async file => {
-                const splitted = file.split(/[\\\/]/gm)
-                const fileName = splitted[splitted.length - 1]
-                file = dirs + '/' + fileName
-                await compileInlineScriptFile(file)
+        await new Promise((resolve, reject) => {
+            glob(appendDev(dirs) + '/*.inline-script', (err, files) => {
+                files.forEach(async file => {
+                    const splitted = file.split(/[\\\/]/gm)
+                    const fileName = splitted[splitted.length - 1]
+                    file = dirs + '/' + fileName
+                    await compileInlineScriptFile(file)
+                })
+
+                resolve()
             })
         })
     }
@@ -150,10 +165,6 @@ module.exports = async function (args) {
     //#endregion
 
     //#region inline script
-    async function compileInlineScript(html, css, js) {
-
-    }
-
     async function compileInlineScriptFile(file) {
         const dirs = file.split(/[\\\/]/gm)
         const fileNameInlineScript = dirs[dirs.length - 1]
@@ -218,10 +229,14 @@ module.exports = async function (args) {
         path = path.substr(args.srcDir.length + 1)
 
         if (path === 'template.html') {
-            glob(args.srcDir + '/pages/*', (err, files) => {
-                files.forEach((file) => {
-                    template = fs.readFileSync(args.srcDir + '/template.html', 'utf-8')
-                    update('change', file)
+            await new Promise((resolve, reject) => {
+                glob(args.srcDir + '/pages/*', async (err, files) => {
+                    for (let file of files) {
+                        template = fs.readFileSync(args.srcDir + '/template.html', 'utf-8')
+                        await update('change', file)
+                    }
+
+                    resolve()
                 })
             })
         }
@@ -327,29 +342,46 @@ module.exports = async function (args) {
             console.error(error)
         })
 
-    glob(args.srcDir + '/**', (err, files) => {
+    let finished = false
+    glob(args.srcDir + '/**', async (err, files) => {
         files = files.sort((a, b) => {
             if (a.endsWith('.inline-script')) return 1
             return -1
         })
 
-        files.forEach(file => {
-            update('change', file)
-        })
+        for (let file of files) {
+            await update('change', file)
+        }
+
+        if (args.liveServer !== true) {
+            setTimeout(() => {
+                finished = true
+            }, 100)
+        }
     })
 
     //#endregion
 
-    //#region live-server
-    const liveServer = require('live-server')
+    if (args.liveServer === true) {
+        //#region live-server
+        const liveServer = require('live-server')
 
-    const params = {
-        port: args.port,
-        host: args.ip,
-        root: args.devDir,
-        open: false,
+        const params = {
+            port: args.port,
+            host: args.ip,
+            root: args.devDir,
+            open: false,
+        }
+
+        liveServer.start(params)
+        //#endregion
     }
 
-    liveServer.start(params)
-    //#endregion
+    while (!finished && !args.liveServer) {
+        await new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve()
+            }, 10)
+        })
+    }
 }

@@ -1,16 +1,19 @@
-const fs = require('fs-extra')
-
-try {
-    fs.copy('src/building', 'src/active')
-} catch (err) { }
-
 const compiler = require('./compiler')
-compiler('src', 'docs', () => {
-    const fs = require('fs-extra')
 
-    try {
-        fs.copy('docs/build', 'docs/active')
-    } catch (err) { }
+module.exports = async function (args) {
+    //#region args
+    if (args.srcDir === undefined) args.srcDir = 'src'
+    if (args.out === undefined) args.out = 'build'
 
-    console.log('compiled successfully')
-})
+    if (typeof args.srcDir !== 'string') throw new Error('The argument \'srcDir\' must be a string.')
+    if (typeof args.out !== 'string') throw new Error('The argument \'out\' must be a string.')
+    //#endregion
+
+    await require('./dev')({ liveServer: false, srcDir: args.srcDir })
+
+    compiler(__dirname + '/dev', args.out, (err) => {
+        if (err) return console.error(err)
+        console.log('compiled successfully')
+        process.exit(0)
+    })
+}
