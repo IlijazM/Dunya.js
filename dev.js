@@ -4,47 +4,7 @@ const glob = require("glob")
 //#endregion
 
 module.exports = async function (args) {
-    //#region Variable initiation
-
-    //#region Args
-    args = args || {}
-
-
-    if (args.ip === undefined) args.ip = '0.0.0.0'
-    if (args.port === undefined) args.port = 8080
-
-    if (args.srcDir === undefined) args.srcDir = 'src'
-    if (args.devDir === undefined) args.devDir = __dirname + '/dev'
-
-
-    if (args.configPath === undefined) args.configPath = 'dunya.config.json'
-    if (args.templatePath === undefined) args.templatePath = args.srcDir + '/template.html'
-    if (args.propsPath === undefined) args.propsPath = 'props.json'
-
-    if (args.liveServer === undefined) args.liveServer = true
-
-    argumentValidation(args)
-    //#endregion
-
-    //#region Variables
-    let config
-    try {
-        config = JSON.parse(await fs.readFile(args.configPath))
-    } catch (err) {
-        throw new Error(`An error occurred while parsing '${args.configPath}':\n${err}`)
-    }
-
-    const template = await fs.readFile(args.templatePath)
-
-    let props
-    try {
-        props = JSON.parse(await fs.readFile(args.propsPath))
-    } catch (err) {
-        throw new Error(`An error occurred while parsing '${args.propsPath}':\n${err}`)
-    }
-
-
-    //#endregion
+    const { args, config, template, props } = variableInitiation(args)
 
     //#region Plugins
     if (config.plugins !== undefined && config.plugins instanceof Array) {
@@ -58,8 +18,6 @@ module.exports = async function (args) {
             }
         }
     }
-    //#endregion
-
     //#endregion
 
     //#region Compiler
@@ -97,9 +55,21 @@ module.exports = async function (args) {
 
 }
 
-//#region Validation
+//#region Variable initiation
+async function variableInitiation(args) {
+    const config = await loadConfig(args.config)
+    overwriteConfigArguments(args, config)
+    defaultArguments(args)
+    argumentValidation(args)
+}
+
+function argumentConfigSetup() {
+
+}
+
 function argumentValidation(args) {
-    //#region Validate types
+    args = args ?? {}
+    if (args.config === undefined) args.config = 'dunya.config.json'
 
     if (typeof args.port !== 'number') throw new Error('The argument \'port\' must be a number.')
     if (typeof args.ip !== 'string') throw new Error('The argument \'ip\' must be a string.')
@@ -107,15 +77,47 @@ function argumentValidation(args) {
     if (typeof args.srcDir !== 'string') throw new Error('The argument \'srcDir\' must be a string.')
     if (typeof args.devDir !== 'string') throw new Error('The argument \'devDir\' must be a string.')
 
-    if (typeof args.configPath !== 'string') throw new Error('The argument \'configPath\' must be a string.')
     if (typeof args.templatePath !== 'string') throw new Error('The argument \'templatePath\' must be a string.')
-    if (typeof args.propsPath !== 'string') throw new Error('The argument \'props\' must be a string.');
-    //#endregion
+    if (typeof args.props !== 'string') throw new Error('The argument \'props\' must be a string.');
 
-    //#region Validate files
-    [args.configPath, args.srcDir, args.templatePath, args.propsPath].forEach(path => {
+    [args.srcDir, args.templatePath].forEach(path => {
         if (!fs.pathExistsSync(path)) throw new Error(`Missing '${path}'.`)
     })
-    //#endregion
+}
+
+function defaultArguments(args) {
+    if (args.ip === undefined) args.ip = '0.0.0.0'
+    if (args.port === undefined) args.port = 8080
+
+    if (args.srcDir === undefined) args.srcDir = 'src'
+    if (args.devDir === undefined) args.devDir = __dirname + '/dev'
+
+    if (args.templatePath === undefined) args.templatePath = args.srcDir + '/template.html'
+    if (args.propsPath === undefined) args.propsPath = 'props.json'
+
+    if (args.liveServer === undefined) args.liveServer = true
+}
+
+async function loadConfig(path) {
+    try {
+        return JSON.parse(await fs.readFile(path))
+    } catch (err) {
+        throw new Error(`An error occurred while parsing '${args.configPath}':\n${err}`)
+    }
+}
+
+function overwriteConfigArguments(args, config) {
+    ['ip', 'port', 'srcDir', 'devDir', 'templatePath', 'props', 'liveServer']
+    if (config.ip === undefined) args.ip = config.ip
+    if (config.port === undefined) args.port = config.port
+    if (config.srcDir === undefined) args.srcDir = config.srcDir
+    if (config.devDir === undefined) args.devDir = config.devDir
+    if (config.templatePath === undefined) args.templatePath = config.templatePath
+    if (config.props === undefined) args.props = config.props
+}
+
+async function loadTemplate(path) {
+    return await fs.readFile(path)
 }
 //#endregion
+

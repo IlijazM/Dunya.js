@@ -1,11 +1,9 @@
 {
     "compilerOptions": {
-        "target": "ES5",
+        "target": "esnext",
+        "watch": true
     },
     "exclude": [
         "node_modules"
-    ],
-    "include": [
-        "src"
     ]
 }

@@ -1,1 +1,1 @@
-require('./dev')({})
+require('./scripts/dev')({})
