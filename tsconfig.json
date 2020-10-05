@@ -1,9 +1,10 @@
 {
-    "compilerOptions": {
-        "target": "esnext",
-        "watch": true
-    },
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "target": "esnext",
+    "watch": true,
+    "outDir": "scripts",
+    "moduleResolution": "node",
+    "module": "CommonJS"
+  },
+  "exclude": ["node_modules", "**/interfaces/*"]
 }

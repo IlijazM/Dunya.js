@@ -1,1 +1,2 @@
-require('./scripts/dev')({})
+const dev = require('./scripts/dev');
+dev({});
