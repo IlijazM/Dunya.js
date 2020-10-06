@@ -6,7 +6,7 @@ const chokidar = require('chokidar');
 const DunyaWrapper_js_1 = require("./DunyaWrapper.js");
 class Dev extends DunyaWrapper_js_1.default {
     //#endregion
-    constructor(dirName_, userArgs, autoInit = true) {
+    constructor(dirName_, userArgs = {}, autoInit = true) {
         super(dirName_);
         this.userArgs = userArgs;
         this.autoInit = autoInit;
@@ -31,32 +31,26 @@ class Dev extends DunyaWrapper_js_1.default {
     }
     async argumentProvider() {
         await this.configProvider();
-        argumentHandler(this.args, this.configArgs, this.userArgs);
-    }
-    async pluginLoader() {
-        this.plugins = [];
-        for (let plugin of this.args.plugins) {
-            const dunyaPlugin = require(plugin);
-            this.plugins.push(dunyaPlugin);
-        }
-    }
-    async pluginCaller(cFun, ...args) {
-        for (let plugin of this.plugins) {
-            if (plugin[cFun] === undefined)
-                continue;
-            await plugin[cFun](...args);
-        }
-        return;
+        this.handleArgs(this.args, this.configArgs, this.userArgs);
     }
     //#region Setup
+    async allSetup() {
+        await this.validate();
+        await this.preSetup();
+        await this.setup();
+        await this.afterSetup();
+    }
+    async validate() {
+        await this.pluginCaller('validate');
+    }
     async preSetup() {
-        this.pluginCaller('preSetup');
+        await this.pluginCaller('preSetup');
     }
     async setup() {
-        this.pluginCaller('setup');
+        await this.pluginCaller('setup');
     }
     async afterSetup() {
-        this.pluginCaller('afterSetup');
+        await this.pluginCaller('afterSetup');
     }
     //#endregion
     //#region Watcher
@@ -75,8 +69,8 @@ class Dev extends DunyaWrapper_js_1.default {
     //#endregion
     async init() {
         await this.argumentProvider();
-        await this.pluginLoader();
-        await this.setup();
+        await this.pluginLoader(this.args.plugins);
+        await this.allSetup();
         this.watcher();
     }
 }

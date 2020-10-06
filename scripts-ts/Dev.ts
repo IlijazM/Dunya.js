@@ -38,35 +38,13 @@ export default class Dev extends DunyaWrapper {
 
   async argumentProvider(): Promise<void> {
     await this.configProvider();
-    argumentHandler(this.args, this.configArgs, this.userArgs);
-  }
-  //#endregion
-
-  //#region Plugins
-  private plugins: Array<DunyaPlugin>;
-
-  async pluginLoader(): Promise<void> {
-    this.plugins = [];
-
-    for (let plugin of this.args.plugins) {
-      const dunyaPlugin: DunyaPlugin = require(plugin);
-      this.plugins.push(dunyaPlugin);
-    }
-  }
-
-  async pluginCaller(cFun: string, ...args: Array<any>): Promise<unknown> {
-    for (let plugin of this.plugins) {
-      if (plugin[cFun] === undefined) continue;
-      await plugin[cFun](...args);
-    }
-
-    return;
+    this.handleArgs(this.args, this.configArgs, this.userArgs);
   }
   //#endregion
 
   constructor(
     dirName_: string,
-    private userArgs: IArgs,
+    private userArgs: IArgs = {},
     private autoInit = true
   ) {
     super(dirName_);
@@ -74,15 +52,26 @@ export default class Dev extends DunyaWrapper {
   }
 
   //#region Setup
+  async allSetup(): Promise<void> {
+    await this.validate();
+    await this.preSetup();
+    await this.setup();
+    await this.afterSetup();
+  }
+
+  async validate(): Promise<void> {
+    await this.pluginCaller('validate');
+  }
+
   async preSetup(): Promise<void> {
-    this.pluginCaller('preSetup');
+    await this.pluginCaller('preSetup');
   }
   async setup(): Promise<void> {
-    this.pluginCaller('setup');
+    await this.pluginCaller('setup');
   }
 
   async afterSetup(): Promise<void> {
-    this.pluginCaller('afterSetup');
+    await this.pluginCaller('afterSetup');
   }
   //#endregion
 
@@ -104,8 +93,8 @@ export default class Dev extends DunyaWrapper {
 
   async init() {
     await this.argumentProvider();
-    await this.pluginLoader();
-    await this.setup();
+    await this.pluginLoader(this.args.plugins);
+    await this.allSetup();
     this.watcher();
   }
 }

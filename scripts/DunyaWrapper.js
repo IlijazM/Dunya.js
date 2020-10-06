@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require('path');
 const fs = require('fs-extra');
 class DunyaWrapper {
+    //#endregion
     constructor(dirName) {
         this.dirName = dirName;
     }
@@ -26,6 +27,7 @@ class DunyaWrapper {
         return this.parseJSONSafe(content, name);
     }
     //#endregion
+    //#region Handle arguments
     handleArgs(args, ...overwriteArguments) {
         overwriteArguments.forEach((other) => {
             this.overwriteArgs(args, other);
@@ -47,6 +49,8 @@ class DunyaWrapper {
             args[index] = other[index];
         }
     }
+    //#endregion
+    //#region Types
     validateTypes(main, other, name = '') {
         const mainType = this.typeOf(main);
         const otherType = this.typeOf(other);
@@ -64,6 +68,55 @@ class DunyaWrapper {
                 return 'regex';
         }
         return typeof object;
+    }
+    async pluginLoader(plugins) {
+        this.plugins = {};
+        for (let plugin of plugins) {
+            try {
+                const { dunyaPlugin, name, } = this.loadPlugin(plugin);
+                this.pluginLoaded(dunyaPlugin, name);
+            }
+            catch (err) {
+                throw new Error(`An error occurred while loading the plugin ${plugin}:\n${err}`);
+            }
+        }
+    }
+    loadPlugin(pluginName) {
+        const plugin = require(pluginName);
+        this.validatePlugin(plugin, pluginName);
+        return {
+            dunyaPlugin: plugin,
+            name: plugin.plugin().name,
+        };
+    }
+    validatePlugin(plugin, pluginName) {
+        if (plugin.plugin === undefined || typeof plugin.plugin !== 'function')
+            throw new Error(`Failed to load the plugin '${pluginName}':
+Missing function 'plugin'`);
+        if (this.typeOf(plugin.plugin()) !== 'object')
+            throw new Error(`Failed to load the plugin '${pluginName}':
+The function 'plugin' must return an object.`);
+        if (plugin.plugin().name === undefined)
+            throw new Error(`Failed to load the plugin '${pluginName}':
+The object in the function 'plugin' must contain a property 'name'.`);
+        if (typeof plugin.plugin().name !== 'string')
+            throw new Error(`Failed to load the plugin '${pluginName}':
+The property 'name' in the function 'plugin' must be of type 'string'`);
+        if (plugin.plugin().name.trim().length === 0)
+            throw new Error(`Failed to load the plugin '${pluginName}':
+The property 'name' in the function 'plugin' must not by empty`);
+    }
+    pluginLoaded(plugin, name) {
+        this.plugins[name] = plugin;
+        const config = plugin.plugin();
+    }
+    async pluginCaller(cFun, ...args) {
+        for (let [index, plugin] of Object.entries(this.plugins)) {
+            if (plugin[cFun] === undefined)
+                continue;
+            await plugin[cFun](...args);
+        }
+        return;
     }
 }
 exports.default = DunyaWrapper;
