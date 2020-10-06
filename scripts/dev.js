@@ -4,10 +4,10 @@ const fs = require('fs-extra');
 const glob = require('glob');
 const chokidar = require('chokidar');
 const argumentHandler_js_1 = require("./argumentHandler.js");
-const common = require("./common.js");
-class dev {
-    constructor(dirName, userArgs) {
-        this.dirName = dirName;
+const DunyaWrapper_js_1 = require("./DunyaWrapper.js");
+class Dev extends DunyaWrapper_js_1.default {
+    constructor(dirName_, userArgs) {
+        super(dirName_);
         this.userArgs = userArgs;
         this.args = {
             config: 'dunya.config.json',
@@ -24,10 +24,10 @@ class dev {
     }
     configProvider() {
         const configPath = this.getConfigPath();
-        this.configArgs = common.loadAndParseJSONSafe(configPath);
+        this.configArgs = this.loadAndParseJSONSafe(configPath);
     }
     argumentProvider() {
         argumentHandler_js_1.default(this.args, this.configArgs, this.userArgs);
     }
 }
-exports.default = dev;
+exports.default = Dev;
