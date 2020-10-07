@@ -14,15 +14,22 @@ let plugin = {
     name: '',
 };
 plugin.name = 'dunya-sass-support';
-plugin.pipeFile = async function (args, { filePath, fileContent }, onDelete) {
+plugin.pipeFile = async function ({ filePath, fileContent }, args, onDelete) {
+    const originalFilePath = filePath;
     const ext = path.extname(filePath);
-    if (ext !== 'scss')
+    if (ext !== '.scss')
         return undefined;
     const endIndex = filePath.length - path.extname(filePath).length;
     filePath = filePath.substr(0, endIndex) + '.css';
     if (onDelete)
         return { filePath };
-    fileContent = await compileScss(fileContent);
+    try {
+        fileContent = await compileScss(fileContent);
+    }
+    catch (err) {
+        console.error(`An error occurred while compiling ${originalFilePath}:\n${err}`);
+        return undefined;
+    }
     return { filePath, fileContent };
 };
 exports.default = plugin;

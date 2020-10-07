@@ -159,13 +159,17 @@ The property 'name' must not by empty`);
     return;
   }
 
-  async pluginPipe(cFun: string, ...args: Array<any>): Promise<unknown> {
+  async pluginPipe(
+    cFun: string,
+    pipe: Record<string, any>,
+    ...args: Array<any>
+  ): Promise<Record<string, any>> {
     for (let [index, plugin] of Object.entries(this.plugins)) {
       if (plugin[cFun] === undefined) continue;
-      args = (await plugin[cFun](...args)) ?? args;
+      pipe = (await plugin[cFun](pipe, ...args)) ?? pipe;
     }
 
-    return args;
+    return pipe;
   }
   //#endregion
 

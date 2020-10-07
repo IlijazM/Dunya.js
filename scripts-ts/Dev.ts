@@ -114,15 +114,17 @@ export default class Dev extends DunyaWrapper {
     }
   }
 
+  //#region Raw events
   async eventAdd(filePath: string): Promise<void> {
     let fileContent = await fs.readFile(path.join(this.args.in, filePath));
+    fileContent = fileContent.toString();
 
     const res = await this.pluginPipe(
       'pipeFile',
-      this.args,
       { filePath, fileContent },
+      this.args,
       false
-    )[1];
+    );
 
     filePath = res.filePath ?? filePath;
     fileContent = res.fileContent ?? fileContent;
@@ -135,10 +137,10 @@ export default class Dev extends DunyaWrapper {
 
     const res = await this.pluginPipe(
       'pipeFile',
-      this.args,
       { filePath, fileContent },
-      false
-    )[1];
+      this.args,
+      true
+    );
 
     filePath = res.filePath ?? filePath;
 
@@ -147,32 +149,54 @@ export default class Dev extends DunyaWrapper {
 
   async eventChange(filePath: string): Promise<void> {
     let fileContent = await fs.readFile(path.join(this.args.in, filePath));
+    fileContent = fileContent.toString();
 
     const res = await this.pluginPipe(
       'pipeFile',
-      this.args,
       { filePath, fileContent },
+      this.args,
       false
-    )[1];
+    );
 
     filePath = res.filePath ?? filePath;
     fileContent = res.fileContent ?? fileContent;
 
     await this.eventChangeFile(filePath, fileContent);
   }
+  //#endregion
 
+  //#region File events
   async eventAddFile(filePath: string, fileContent: string): Promise<void> {
+    filePath = path.join(this.args.out, filePath);
+    console.log(`Adding file '${filePath}'`);
     await fs.mkdir(path.dirname(filePath), (err) => {});
     await fs.writeFile(filePath, fileContent);
   }
 
   async eventUnlinkFile(filePath: string): Promise<void> {
+    filePath = path.join(this.args.out, filePath);
+    console.log(`Unlinking file '${filePath}'`);
     await fs.unlink(filePath);
   }
 
   async eventChangeFile(filePath: string, fileContent: string): Promise<void> {
+    filePath = path.join(this.args.out, filePath);
+    console.log(`Changing file '${filePath}'`);
     await fs.mkdir(path.dirname(filePath), (err) => {});
     await fs.writeFile(filePath, fileContent);
+  }
+  //#endregion
+
+  //#endregion
+
+  //#region After watcher
+  async afterWatcher() {
+    const pathName = path.join(this.args.in, '**/*');
+    glob(pathName, (err, files) => {
+      files.forEach((file) => {
+        this.eventHandler('add', file);
+      });
+    });
   }
   //#endregion
 
@@ -181,5 +205,6 @@ export default class Dev extends DunyaWrapper {
     await this.pluginLoader(this.args.plugins);
     await this.allSetup();
     this.watcher();
+    await this.afterWatcher();
   }
 }

@@ -10,8 +10,8 @@ export default interface DunyaPlugin {
   watcherEvent?(args: IDevArgs, event: string, fileName: string): Promise<void>;
 
   pipeFile?(
+    pipe: { filePath: string; fileContent: string },
     args: IDevArgs,
-    props: { filePath: string; fileContent: string },
     onDelete: boolean
   ): Promise<{
     filePath: string;
