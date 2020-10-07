@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1601983980435" clover="3.2.0">
-  <project timestamp="1601983980435" name="All files">
-    <metrics statements="66" coveredstatements="31" conditionals="33" coveredconditionals="17" methods="14" coveredmethods="6" elements="113" coveredelements="54" complexity="0" loc="66" ncloc="66" packages="1" files="1" classes="1"/>
+<coverage generated="1602069352932" clover="3.2.0">
+  <project timestamp="1602069352932" name="All files">
+    <metrics statements="69" coveredstatements="31" conditionals="35" coveredconditionals="17" methods="15" coveredmethods="6" elements="119" coveredelements="54" complexity="0" loc="69" ncloc="69" packages="1" files="1" classes="1"/>
     <file name="DunyaWrapper.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/DunyaWrapper.js">
-      <metrics statements="66" coveredstatements="31" conditionals="33" coveredconditionals="17" methods="14" coveredmethods="6"/>
+      <metrics statements="69" coveredstatements="31" conditionals="35" coveredconditionals="17" methods="15" coveredmethods="6"/>
       <line num="2" count="1" type="stmt"/>
       <line num="3" count="1" type="stmt"/>
       <line num="4" count="1" type="stmt"/>
@@ -49,27 +49,30 @@
       <line num="76" count="0" type="stmt"/>
       <line num="77" count="0" type="stmt"/>
       <line num="80" count="0" type="stmt"/>
-      <line num="85" count="0" type="stmt"/>
+      <line num="85" count="0" type="cond" truecount="0" falsecount="2"/>
       <line num="86" count="0" type="stmt"/>
-      <line num="87" count="0" type="stmt"/>
-      <line num="93" count="0" type="cond" truecount="0" falsecount="4"/>
+      <line num="88" count="0" type="stmt"/>
+      <line num="91" count="0" type="stmt"/>
+      <line num="92" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="93" count="0" type="stmt"/>
       <line num="94" count="0" type="stmt"/>
-      <line num="96" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="97" count="0" type="stmt"/>
-      <line num="99" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="100" count="0" type="stmt"/>
-      <line num="102" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="103" count="0" type="stmt"/>
-      <line num="105" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="106" count="0" type="stmt"/>
+      <line num="100" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="101" count="0" type="stmt"/>
+      <line num="103" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="104" count="0" type="stmt"/>
+      <line num="106" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="107" count="0" type="stmt"/>
+      <line num="109" count="0" type="cond" truecount="0" falsecount="2"/>
       <line num="110" count="0" type="stmt"/>
-      <line num="111" count="0" type="stmt"/>
-      <line num="114" count="0" type="stmt"/>
-      <line num="115" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="116" count="0" type="stmt"/>
+      <line num="112" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="113" count="0" type="stmt"/>
       <line num="117" count="0" type="stmt"/>
-      <line num="119" count="0" type="stmt"/>
-      <line num="122" count="1" type="stmt"/>
+      <line num="120" count="0" type="stmt"/>
+      <line num="121" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="122" count="0" type="stmt"/>
+      <line num="123" count="0" type="stmt"/>
+      <line num="125" count="0" type="stmt"/>
+      <line num="128" count="1" type="stmt"/>
     </file>
   </project>
 </coverage>

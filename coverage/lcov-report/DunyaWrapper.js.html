@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">46.97% </span>
+                <span class="strong">44.93% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>31/66</span>
+                <span class='fraction'>31/69</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">51.52% </span>
+                <span class="strong">48.57% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>17/33</span>
+                <span class='fraction'>17/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.86% </span>
+                <span class="strong">40% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>6/14</span>
+                <span class='fraction'>6/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">46.97% </span>
+                <span class="strong">44.93% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>31/66</span>
+                <span class='fraction'>31/69</span>
             </div>
         
             
@@ -179,7 +179,13 @@
 <a name='L120'></a><a href='#L120'>120</a>
 <a name='L121'></a><a href='#L121'>121</a>
 <a name='L122'></a><a href='#L122'>122</a>
-<a name='L123'></a><a href='#L123'>123</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -265,6 +271,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -288,7 +301,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -306,9 +318,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require('path');
 const fs = require('fs-extra');
 class DunyaWrapper {
-    //#endregion
-    constructor(dirName) {
-        this.dirName = dirName;
+    constructor() {
+        //#endregion
+        this.dirName = path.dirname(require.main.filename);
     }
     //#region Loading &amp; Parsing
 <span class="fstat-no" title="function not covered" >    as</span>ync loadFileSafe(pathName) {
@@ -384,34 +396,40 @@ class DunyaWrapper {
             }
         }
     }
+<span class="fstat-no" title="function not covered" >    re</span>solvePathName(pathName) {
+<span class="cstat-no" title="statement not covered" >        if (pathName.startsWith('~')) {</span>
+<span class="cstat-no" title="statement not covered" >            return path.resolve();</span>
+        }
+<span class="cstat-no" title="statement not covered" >        return path.resolve(pathName);</span>
+    }
 <span class="fstat-no" title="function not covered" >    lo</span>adPlugin(pluginName) {
-        const plugin = <span class="cstat-no" title="statement not covered" >require(pluginName);</span>
+        let plugin = <span class="cstat-no" title="statement not covered" >require(this.resolvePathName(pluginName));</span>
+<span class="cstat-no" title="statement not covered" >        plugin = plugin.default ?? plugin;</span>
 <span class="cstat-no" title="statement not covered" >        this.validatePlugin(plugin, pluginName);</span>
 <span class="cstat-no" title="statement not covered" >        return {</span>
             dunyaPlugin: plugin,
-            name: plugin.plugin().name,
+            name: plugin.name,
         };
     }
 <span class="fstat-no" title="function not covered" >    va</span>lidatePlugin(plugin, pluginName) {
-<span class="cstat-no" title="statement not covered" >        if (plugin.plugin === undefined || typeof plugin.plugin !== 'function')</span>
+<span class="cstat-no" title="statement not covered" >        if (plugin === undefined)</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error(`Failed to load the plugin '${pluginName}':</span>
-Missing function 'plugin'`);
-<span class="cstat-no" title="statement not covered" >        if (this.typeOf(plugin.plugin()) !== 'object')</span>
+The plugin is undefined.`);
+<span class="cstat-no" title="statement not covered" >        if (this.typeOf(plugin) !== 'object')</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error(`Failed to load the plugin '${pluginName}':</span>
-The function 'plugin' must return an object.`);
-<span class="cstat-no" title="statement not covered" >        if (plugin.plugin().name === undefined)</span>
+The plugin must be a type of 'object'.`);
+<span class="cstat-no" title="statement not covered" >        if (plugin.name === undefined)</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error(`Failed to load the plugin '${pluginName}':</span>
-The object in the function 'plugin' must contain a property 'name'.`);
-<span class="cstat-no" title="statement not covered" >        if (typeof plugin.plugin().name !== 'string')</span>
+The plugin must contain a property 'name'.`);
+<span class="cstat-no" title="statement not covered" >        if (typeof plugin.name !== 'string')</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error(`Failed to load the plugin '${pluginName}':</span>
-The property 'name' in the function 'plugin' must be of type 'string'`);
-<span class="cstat-no" title="statement not covered" >        if (plugin.plugin().name.trim().length === 0)</span>
+The property 'name' must be of type 'string'`);
+<span class="cstat-no" title="statement not covered" >        if (plugin.name.trim().length === 0)</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error(`Failed to load the plugin '${pluginName}':</span>
-The property 'name' in the function 'plugin' must not by empty`);
+The property 'name' must not by empty`);
     }
 <span class="fstat-no" title="function not covered" >    pl</span>uginLoaded(plugin, name) {
 <span class="cstat-no" title="statement not covered" >        this.plugins[name] = plugin;</span>
-        const config = <span class="cstat-no" title="statement not covered" >plugin.plugin();</span>
     }
 <span class="fstat-no" title="function not covered" >    as</span>ync pluginCaller(cFun, ...args) {
 <span class="cstat-no" title="statement not covered" >        for (let [index, plugin] of Object.entries(this.plugins)) {</span>
@@ -430,7 +448,7 @@ exports.default = DunyaWrapper;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Oct 06 2020 13:33:00 GMT+0200 (Mitteleuropäische Sommerzeit)
+                at Wed Oct 07 2020 13:15:52 GMT+0200 (Mitteleuropäische Sommerzeit)
             </div>
         </div>
         <script src="prettify.js"></script>

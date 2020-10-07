@@ -1,13 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const path = require('path');
 const fs = require('fs-extra');
 const glob = require('glob');
 const chokidar = require('chokidar');
 const DunyaWrapper_js_1 = require("./DunyaWrapper.js");
 class Dev extends DunyaWrapper_js_1.default {
     //#endregion
-    constructor(dirName_, userArgs = {}, autoInit = true) {
-        super(dirName_);
+    constructor(userArgs = {}, autoInit = true) {
+        super();
         this.userArgs = userArgs;
         this.autoInit = autoInit;
         this.args = {
@@ -41,16 +42,16 @@ class Dev extends DunyaWrapper_js_1.default {
         await this.afterSetup();
     }
     async validate() {
-        await this.pluginCaller('validate');
+        await this.pluginCaller('validate', this.args);
     }
     async preSetup() {
-        await this.pluginCaller('preSetup');
+        await this.pluginCaller('preSetup', this.args);
     }
     async setup() {
-        await this.pluginCaller('setup');
+        await this.pluginCaller('setup', this.args);
     }
     async afterSetup() {
-        await this.pluginCaller('afterSetup');
+        await this.pluginCaller('afterSetup', this.args);
     }
     //#endregion
     //#region Watcher
@@ -64,7 +65,7 @@ class Dev extends DunyaWrapper_js_1.default {
     //#endregion
     //#region Event Handler
     eventHandler(event, path) {
-        this.pluginCaller('watcherEvent', event, path);
+        this.pluginCaller('watcherEvent', this.args, event, path);
     }
     //#endregion
     async init() {

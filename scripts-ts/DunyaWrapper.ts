@@ -1,3 +1,4 @@
+import { dirname } from 'path';
 import DunyaPlugin from './DunyaPlugin';
 
 const path = require('path');
@@ -104,41 +105,48 @@ export default class DunyaWrapper {
     }
   }
 
+  resolvePathName(pathName: string): string {
+    if (pathName.startsWith('~')) {
+      return path.resolve();
+    }
+
+    return path.resolve(pathName);
+  }
+
   loadPlugin(pluginName: string): { dunyaPlugin: DunyaPlugin; name: string } {
-    const plugin: DunyaPlugin = require(pluginName);
+    let plugin: any = require(this.resolvePathName(pluginName));
+    plugin = plugin.default ?? plugin;
     this.validatePlugin(plugin, pluginName);
     return {
       dunyaPlugin: plugin,
-      name: plugin.plugin().name,
+      name: plugin.name,
     };
   }
 
   validatePlugin(plugin: DunyaPlugin, pluginName: string): void {
-    if (plugin.plugin === undefined || typeof plugin.plugin !== 'function')
+    if (plugin === undefined)
       throw new Error(`Failed to load the plugin '${pluginName}':
-Missing function 'plugin'`);
+The plugin is undefined.`);
 
-    if (this.typeOf(plugin.plugin()) !== 'object')
+    if (this.typeOf(plugin) !== 'object')
       throw new Error(`Failed to load the plugin '${pluginName}':
-The function 'plugin' must return an object.`);
+The plugin must be a type of 'object'.`);
 
-    if (plugin.plugin().name === undefined)
+    if (plugin.name === undefined)
       throw new Error(`Failed to load the plugin '${pluginName}':
-The object in the function 'plugin' must contain a property 'name'.`);
+The plugin must contain a property 'name'.`);
 
-    if (typeof plugin.plugin().name !== 'string')
+    if (typeof plugin.name !== 'string')
       throw new Error(`Failed to load the plugin '${pluginName}':
-The property 'name' in the function 'plugin' must be of type 'string'`);
+The property 'name' must be of type 'string'`);
 
-    if (plugin.plugin().name.trim().length === 0)
+    if (plugin.name.trim().length === 0)
       throw new Error(`Failed to load the plugin '${pluginName}':
-The property 'name' in the function 'plugin' must not by empty`);
+The property 'name' must not by empty`);
   }
 
   pluginLoaded(plugin: DunyaPlugin, name: string): void {
     this.plugins[name] = plugin;
-
-    const config = plugin.plugin();
   }
 
   async pluginCaller(cFun: string, ...args: Array<any>): Promise<unknown> {
@@ -151,5 +159,6 @@ The property 'name' in the function 'plugin' must not by empty`);
   }
   //#endregion
 
-  constructor(private dirName: string) {}
+  dirName = path.dirname(require.main.filename);
+  constructor() {}
 }

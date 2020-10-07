@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require('path');
 const fs = require('fs-extra');
 class DunyaWrapper {
-    //#endregion
-    constructor(dirName) {
-        this.dirName = dirName;
+    constructor() {
+        //#endregion
+        this.dirName = path.dirname(require.main.filename);
     }
     //#region Loading & Parsing
     async loadFileSafe(pathName) {
@@ -81,34 +81,40 @@ class DunyaWrapper {
             }
         }
     }
+    resolvePathName(pathName) {
+        if (pathName.startsWith('~')) {
+            return path.resolve();
+        }
+        return path.resolve(pathName);
+    }
     loadPlugin(pluginName) {
-        const plugin = require(pluginName);
+        let plugin = require(this.resolvePathName(pluginName));
+        plugin = plugin.default ?? plugin;
         this.validatePlugin(plugin, pluginName);
         return {
             dunyaPlugin: plugin,
-            name: plugin.plugin().name,
+            name: plugin.name,
         };
     }
     validatePlugin(plugin, pluginName) {
-        if (plugin.plugin === undefined || typeof plugin.plugin !== 'function')
+        if (plugin === undefined)
             throw new Error(`Failed to load the plugin '${pluginName}':
-Missing function 'plugin'`);
-        if (this.typeOf(plugin.plugin()) !== 'object')
+The plugin is undefined.`);
+        if (this.typeOf(plugin) !== 'object')
             throw new Error(`Failed to load the plugin '${pluginName}':
-The function 'plugin' must return an object.`);
-        if (plugin.plugin().name === undefined)
+The plugin must be a type of 'object'.`);
+        if (plugin.name === undefined)
             throw new Error(`Failed to load the plugin '${pluginName}':
-The object in the function 'plugin' must contain a property 'name'.`);
-        if (typeof plugin.plugin().name !== 'string')
+The plugin must contain a property 'name'.`);
+        if (typeof plugin.name !== 'string')
             throw new Error(`Failed to load the plugin '${pluginName}':
-The property 'name' in the function 'plugin' must be of type 'string'`);
-        if (plugin.plugin().name.trim().length === 0)
+The property 'name' must be of type 'string'`);
+        if (plugin.name.trim().length === 0)
             throw new Error(`Failed to load the plugin '${pluginName}':
-The property 'name' in the function 'plugin' must not by empty`);
+The property 'name' must not by empty`);
     }
     pluginLoaded(plugin, name) {
         this.plugins[name] = plugin;
-        const config = plugin.plugin();
     }
     async pluginCaller(cFun, ...args) {
         for (let [index, plugin] of Object.entries(this.plugins)) {

@@ -2,7 +2,7 @@ import DunyaWrapper from './DunyaWrapper.js';
 
 describe('Dunya Wrapper', () => {
   test('overwrite args.', () => {
-    const dw = new DunyaWrapper('');
+    const dw = new DunyaWrapper();
 
     const args = {
       foo: '',
@@ -18,7 +18,7 @@ describe('Dunya Wrapper', () => {
   });
 
   test('overwrite multiple args.', () => {
-    const dw = new DunyaWrapper('');
+    const dw = new DunyaWrapper();
 
     const args = {
       foo: '',
@@ -43,7 +43,7 @@ describe('Dunya Wrapper', () => {
   });
 
   test('typeOf', () => {
-    const dw = new DunyaWrapper('');
+    const dw = new DunyaWrapper();
     expect(dw.typeOf(undefined)).toEqual('undefined');
     expect(dw.typeOf(null)).toEqual('null');
     expect(dw.typeOf(0)).toEqual('number');
@@ -57,7 +57,7 @@ describe('Dunya Wrapper', () => {
   });
 
   test('validateTypes', () => {
-    const dw = new DunyaWrapper('');
+    const dw = new DunyaWrapper();
 
     expect(() => {
       dw.validateTypes('foo', 'bar');
@@ -74,7 +74,7 @@ describe('Dunya Wrapper', () => {
   });
 
   test('overwrite wrong types', () => {
-    const dw = new DunyaWrapper('');
+    const dw = new DunyaWrapper();
 
     const args = {
       foo: [],
@@ -96,7 +96,7 @@ describe('Dunya Wrapper', () => {
   });
 
   test('merge objects', () => {
-    const dw = new DunyaWrapper('');
+    const dw = new DunyaWrapper();
 
     let args, overwrite1, overwrite2;
 
