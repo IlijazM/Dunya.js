@@ -18,7 +18,7 @@ function dirTree(filename: string) {
   if (stats.isDirectory()) {
     info = {
       name: info,
-      children: fs.readdirSync(filename).map(function (child) {
+      children: fs.readdirSync(filename).map(function (child: string) {
         return dirTree(filename + '/' + child);
       }),
     };
