@@ -126,5 +126,13 @@ The property 'name' must not by empty`);
         }
         return;
     }
+    async pluginPipe(cFun, ...args) {
+        for (let [index, plugin] of Object.entries(this.plugins)) {
+            if (plugin[cFun] === undefined)
+                continue;
+            args = (await plugin[cFun](...args)) ?? args;
+        }
+        return args;
+    }
 }
 exports.default = DunyaWrapper;

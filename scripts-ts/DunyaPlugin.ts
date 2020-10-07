@@ -8,5 +8,13 @@ export default interface DunyaPlugin {
   setup?(args: IDevArgs): Promise<void>;
   afterSetup?(args: IDevArgs): Promise<void>;
   watcherEvent?(args: IDevArgs, event: string, fileName: string): Promise<void>;
-  fileConverter?(args: IDevArgs, file: string): Promise<unknown>;
+
+  pipeFile?(
+    args: IDevArgs,
+    props: { filePath: string; fileContent: string },
+    onDelete: boolean
+  ): Promise<{
+    filePath: string;
+    fileContent?: string;
+  }>;
 }

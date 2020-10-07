@@ -150,13 +150,22 @@ The property 'name' must not by empty`);
     this.plugins[name] = { ...this.plugins[name], ...plugin }; // overwrites old plugin.
   }
 
-  async pluginCaller(cFun: string, ...args: Array<any>): Promise<unknown> {
+  async pluginCaller(cFun: string, ...args: Array<any>): Promise<void> {
     for (let [index, plugin] of Object.entries(this.plugins)) {
       if (plugin[cFun] === undefined) continue;
       await plugin[cFun](...args);
     }
 
     return;
+  }
+
+  async pluginPipe(cFun: string, ...args: Array<any>): Promise<unknown> {
+    for (let [index, plugin] of Object.entries(this.plugins)) {
+      if (plugin[cFun] === undefined) continue;
+      args = (await plugin[cFun](...args)) ?? args;
+    }
+
+    return args;
   }
   //#endregion
 

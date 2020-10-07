@@ -28,6 +28,7 @@ export default class Dev extends DunyaWrapper {
         'default-plugins',
         'default-plugin-clear-out-directory'
       ),
+      path.join(__dirname, 'default-plugins', 'dunya-sass-support'),
     ],
 
     watcherConfig: {},
@@ -113,12 +114,66 @@ export default class Dev extends DunyaWrapper {
     }
   }
 
-  eventAdd(path: string): void {
-    console.log(path);
+  async eventAdd(filePath: string): Promise<void> {
+    let fileContent = await fs.readFile(path.join(this.args.in, filePath));
+
+    const res = await this.pluginPipe(
+      'pipeFile',
+      this.args,
+      { filePath, fileContent },
+      false
+    )[1];
+
+    filePath = res.filePath ?? filePath;
+    fileContent = res.fileContent ?? fileContent;
+
+    await this.eventAddFile(filePath, fileContent);
   }
 
-  eventUnlink(path: string): void {}
-  eventChange(path: string): void {}
+  async eventUnlink(filePath: string): Promise<void> {
+    const fileContent = '';
+
+    const res = await this.pluginPipe(
+      'pipeFile',
+      this.args,
+      { filePath, fileContent },
+      false
+    )[1];
+
+    filePath = res.filePath ?? filePath;
+
+    await this.eventUnlinkFile(filePath);
+  }
+
+  async eventChange(filePath: string): Promise<void> {
+    let fileContent = await fs.readFile(path.join(this.args.in, filePath));
+
+    const res = await this.pluginPipe(
+      'pipeFile',
+      this.args,
+      { filePath, fileContent },
+      false
+    )[1];
+
+    filePath = res.filePath ?? filePath;
+    fileContent = res.fileContent ?? fileContent;
+
+    await this.eventChangeFile(filePath, fileContent);
+  }
+
+  async eventAddFile(filePath: string, fileContent: string): Promise<void> {
+    await fs.mkdir(path.dirname(filePath), (err) => {});
+    await fs.writeFile(filePath, fileContent);
+  }
+
+  async eventUnlinkFile(filePath: string): Promise<void> {
+    await fs.unlink(filePath);
+  }
+
+  async eventChangeFile(filePath: string, fileContent: string): Promise<void> {
+    await fs.mkdir(path.dirname(filePath), (err) => {});
+    await fs.writeFile(filePath, fileContent);
+  }
   //#endregion
 
   async init() {
