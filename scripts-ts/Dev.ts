@@ -15,9 +15,20 @@ export default class Dev extends DunyaWrapper {
     port: 8080,
 
     in: 'src',
-    out: 'string',
+    out: 'dev',
 
-    plugins: [],
+    plugins: [
+      path.join(
+        __dirname,
+        'default-plugins',
+        'default-plugin-validate-in-directory'
+      ),
+      path.join(
+        __dirname,
+        'default-plugins',
+        'default-plugin-clear-out-directory'
+      ),
+    ],
 
     watcherConfig: {},
     props: {},
@@ -38,6 +49,8 @@ export default class Dev extends DunyaWrapper {
   async argumentProvider(): Promise<void> {
     await this.configProvider();
     this.handleArgs(this.args, this.configArgs, this.userArgs);
+    this.args.mainPath = this.mainPath;
+    this.args.modulePath = this.modulePath;
   }
   //#endregion
 
@@ -76,14 +89,36 @@ export default class Dev extends DunyaWrapper {
       ignoreInitial: true,
       ...this.args.watcherConfig,
     });
-    watcher.on('all', this.eventHandler);
+    watcher.on('all', (event: string, path: string): void => {
+      this.eventHandler(event, path);
+    });
   }
   //#endregion
 
   //#region Event Handler
-  eventHandler(event, path): void {
+  eventHandler(event: string, path: string): void {
+    path = path.substr(this.args.in.length + 1);
     this.pluginCaller('watcherEvent', this.args, event, path);
+
+    switch (event) {
+      case 'add':
+        this.eventAdd(path);
+        break;
+      case 'unlink':
+        this.eventUnlink(path);
+        break;
+      case 'change':
+        this.eventChange(path);
+        break;
+    }
   }
+
+  eventAdd(path: string): void {
+    console.log(path);
+  }
+
+  eventUnlink(path: string): void {}
+  eventChange(path: string): void {}
   //#endregion
 
   async init() {

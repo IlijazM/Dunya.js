@@ -1,3 +1,3 @@
 const { default: Dev } = require('./scripts/Dev');
 
-const dev = new Dev({}, false);
+const dev = new Dev();

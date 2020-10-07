@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const DunyaWrapper_js_1 = require("./DunyaWrapper.js");
 describe('Dunya Wrapper', () => {
     test('overwrite args.', () => {
-        const dw = new DunyaWrapper_js_1.default('');
+        const dw = new DunyaWrapper_js_1.default();
         const args = {
             foo: '',
         };
@@ -14,7 +14,7 @@ describe('Dunya Wrapper', () => {
         expect(args.foo).toEqual('bar');
     });
     test('overwrite multiple args.', () => {
-        const dw = new DunyaWrapper_js_1.default('');
+        const dw = new DunyaWrapper_js_1.default();
         const args = {
             foo: '',
             bar: 0,
@@ -33,7 +33,7 @@ describe('Dunya Wrapper', () => {
         });
     });
     test('typeOf', () => {
-        const dw = new DunyaWrapper_js_1.default('');
+        const dw = new DunyaWrapper_js_1.default();
         expect(dw.typeOf(undefined)).toEqual('undefined');
         expect(dw.typeOf(null)).toEqual('null');
         expect(dw.typeOf(0)).toEqual('number');
@@ -46,7 +46,7 @@ describe('Dunya Wrapper', () => {
         expect(dw.typeOf([])).toEqual('array');
     });
     test('validateTypes', () => {
-        const dw = new DunyaWrapper_js_1.default('');
+        const dw = new DunyaWrapper_js_1.default();
         expect(() => {
             dw.validateTypes('foo', 'bar');
         }).not.toThrowError();
@@ -61,7 +61,7 @@ describe('Dunya Wrapper', () => {
         }).toThrowError();
     });
     test('overwrite wrong types', () => {
-        const dw = new DunyaWrapper_js_1.default('');
+        const dw = new DunyaWrapper_js_1.default();
         const args = {
             foo: [],
             bar: 'string',
@@ -80,7 +80,7 @@ describe('Dunya Wrapper', () => {
         }).toThrowError();
     });
     test('merge objects', () => {
-        const dw = new DunyaWrapper_js_1.default('');
+        const dw = new DunyaWrapper_js_1.default();
         let args, overwrite1, overwrite2;
         args = {
             foo: { bar: 'bar' },

@@ -5,7 +5,8 @@ const fs = require('fs-extra');
 class DunyaWrapper {
     constructor() {
         //#endregion
-        this.dirName = path.dirname(require.main.filename);
+        this.mainPath = path.dirname(require.main.filename);
+        this.modulePath = path.dirname(__dirname);
     }
     //#region Loading & Parsing
     async loadFileSafe(pathName) {
@@ -114,7 +115,8 @@ The property 'name' must be of type 'string'`);
 The property 'name' must not by empty`);
     }
     pluginLoaded(plugin, name) {
-        this.plugins[name] = plugin;
+        console.log(`Plugin loaded: ${name}`);
+        this.plugins[name] = { ...this.plugins[name], ...plugin }; // overwrites old plugin.
     }
     async pluginCaller(cFun, ...args) {
         for (let [index, plugin] of Object.entries(this.plugins)) {

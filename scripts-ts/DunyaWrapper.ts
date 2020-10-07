@@ -146,7 +146,8 @@ The property 'name' must not by empty`);
   }
 
   pluginLoaded(plugin: DunyaPlugin, name: string): void {
-    this.plugins[name] = plugin;
+    console.log(`Plugin loaded: ${name}`);
+    this.plugins[name] = { ...this.plugins[name], ...plugin }; // overwrites old plugin.
   }
 
   async pluginCaller(cFun: string, ...args: Array<any>): Promise<unknown> {
@@ -159,6 +160,7 @@ The property 'name' must not by empty`);
   }
   //#endregion
 
-  dirName = path.dirname(require.main.filename);
+  mainPath = path.dirname(require.main.filename);
+  modulePath = path.dirname(__dirname);
   constructor() {}
 }

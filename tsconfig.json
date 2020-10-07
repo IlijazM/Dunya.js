@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "watch": true,
     "outDir": "scripts",
     "moduleResolution": "node",
     "module": "CommonJS"

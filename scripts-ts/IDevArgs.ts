@@ -7,6 +7,9 @@ export default interface IDevArgs {
   in?: string;
   out?: string;
 
+  mainPath?: string;
+  modulePath?: string;
+
   plugins?: Array<string>;
 
   watcherConfig?: Record<string, any>;

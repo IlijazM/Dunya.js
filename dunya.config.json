@@ -1,4 +1,4 @@
 {
-  "plugins": ["./test"],
+  "plugins": [],
   "port": 1
 }
