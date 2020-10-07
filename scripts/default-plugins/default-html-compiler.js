@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs-extra');
-const path = require('path');
+const path = require('path-extra');
 let plugin = {
     name: '',
 };
@@ -13,6 +13,10 @@ plugin.beforeWatchEventHalter = async function (dev, event, filePath) {
     if (filePath === 'template.html')
         return false;
     const dirName = filePath.substr(0, filePath.length - ext.length);
+    if (event === 'unlink') {
+        await fs.remove(path.join(dev.args.out, dirName));
+        return;
+    }
     await fs.mkdirs(path.join(dev.args.out, dirName), (err) => { });
     try {
         await fs.writeFile(path.join(dev.args.out, dirName, 'index.html'), await dev['getTemplate']());
@@ -23,7 +27,6 @@ plugin.beforeWatchEventHalter = async function (dev, event, filePath) {
     const from = path.join(dev.args.in, filePath);
     const to = path.join(dev.args.out, dirName, path.basename(dirName)) + '.html';
     console.log(from + ' -> ' + to);
-    await fs.writeFile(to, 'test');
     await fs.copyFile(from, to);
     return true;
 };

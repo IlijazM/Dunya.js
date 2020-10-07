@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const path = require('path');
+const path = require('path-extra');
 
 import { dirname } from 'path';
 import Dev from '../Dev';
@@ -21,6 +21,12 @@ plugin.beforeWatchEventHalter = async function (
   if (filePath === 'template.html') return false;
 
   const dirName = filePath.substr(0, filePath.length - ext.length);
+
+  if (event === 'unlink') {
+    await fs.remove(path.join(dev.args.out, dirName));
+    return;
+  }
+
   await fs.mkdirs(path.join(dev.args.out, dirName), (err) => {});
 
   try {
@@ -35,7 +41,6 @@ plugin.beforeWatchEventHalter = async function (
   const from = path.join(dev.args.in, filePath);
   const to = path.join(dev.args.out, dirName, path.basename(dirName)) + '.html';
   console.log(from + ' -> ' + to);
-  await fs.writeFile(to, 'test');
   await fs.copyFile(from, to);
 
   return true;

@@ -34,6 +34,7 @@
     "jsdom": "^16.4.0",
     "live-server": "^1.2.1",
     "node-sass": "^4.14.1",
+    "path-extra": "^4.3.0",
     "sass": "^1.26.11"
   },
   "bin": {

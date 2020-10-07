@@ -23,6 +23,7 @@ class Dev extends DunyaWrapper_js_1.default {
                 path.join(__dirname, 'default-plugins', 'dunya-sass-support'),
                 path.join(__dirname, 'default-plugins', 'default-link-template-file'),
                 path.join(__dirname, 'default-plugins', 'default-html-compiler'),
+                path.join(__dirname, 'default-plugins', 'default-inline-script-compiler'),
             ],
             watcherConfig: {},
             props: {},
