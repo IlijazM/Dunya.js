@@ -122,9 +122,19 @@ The property 'name' must not by empty`);
         for (let [index, plugin] of Object.entries(this.plugins)) {
             if (plugin[cFun] === undefined)
                 continue;
-            await plugin[cFun](...args);
+            await plugin[cFun](this, ...args);
         }
         return;
+    }
+    async pluginHalter(cFun, ...args) {
+        for (let [index, plugin] of Object.entries(this.plugins)) {
+            if (plugin[cFun] === undefined)
+                continue;
+            const res = await plugin[cFun](this, ...args);
+            if (res)
+                return true;
+        }
+        return false;
     }
     async pluginPipe(cFun, pipe, ...args) {
         for (let [index, plugin] of Object.entries(this.plugins)) {

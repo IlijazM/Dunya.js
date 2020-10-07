@@ -153,10 +153,20 @@ The property 'name' must not by empty`);
   async pluginCaller(cFun: string, ...args: Array<any>): Promise<void> {
     for (let [index, plugin] of Object.entries(this.plugins)) {
       if (plugin[cFun] === undefined) continue;
-      await plugin[cFun](...args);
+      await plugin[cFun](this, ...args);
     }
 
     return;
+  }
+
+  async pluginHalter(cFun: string, ...args: Array<any>): Promise<boolean> {
+    for (let [index, plugin] of Object.entries(this.plugins)) {
+      if (plugin[cFun] === undefined) continue;
+      const res = await plugin[cFun](this, ...args);
+      if (res) return true;
+    }
+
+    return false;
   }
 
   async pluginPipe(

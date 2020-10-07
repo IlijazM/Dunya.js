@@ -18,9 +18,11 @@ class Dev extends DunyaWrapper_js_1.default {
             in: 'src',
             out: 'dev',
             plugins: [
-                path.join(__dirname, 'default-plugins', 'default-plugin-validate-in-directory'),
-                path.join(__dirname, 'default-plugins', 'default-plugin-clear-out-directory'),
+                path.join(__dirname, 'default-plugins', 'default-validate-in-directory'),
+                path.join(__dirname, 'default-plugins', 'default-clear-out-directory'),
                 path.join(__dirname, 'default-plugins', 'dunya-sass-support'),
+                path.join(__dirname, 'default-plugins', 'default-link-template-file'),
+                path.join(__dirname, 'default-plugins', 'default-html-compiler'),
             ],
             watcherConfig: {},
             props: {},
@@ -48,44 +50,49 @@ class Dev extends DunyaWrapper_js_1.default {
         await this.afterSetup();
     }
     async validate() {
-        await this.pluginCaller('validate', this.args);
+        await this.pluginCaller('validate');
     }
     async preSetup() {
-        await this.pluginCaller('preSetup', this.args);
+        await this.pluginCaller('preSetup');
     }
     async setup() {
-        await this.pluginCaller('setup', this.args);
+        await this.pluginCaller('setup');
     }
     async afterSetup() {
-        await this.pluginCaller('afterSetup', this.args);
+        await this.pluginCaller('afterSetup');
     }
     //#endregion
     //#region Watcher
-    watcher() {
+    async watcher() {
         const watcher = chokidar.watch(this.args.in, {
             ignoreInitial: true,
             ...this.args.watcherConfig,
         });
-        watcher.on('all', (event, path) => {
-            this.eventHandler(event, path);
+        await watcher.on('all', async (event, path) => {
+            await this.eventHandler(event, path);
         });
     }
     //#endregion
     //#region Event Handler
-    eventHandler(event, path) {
-        path = path.substr(this.args.in.length + 1);
-        this.pluginCaller('watcherEvent', this.args, event, path);
+    async eventHandler(event, filePath) {
+        if (await (await fs.lstat(filePath)).isDirectory())
+            return; // If it is a dir
+        filePath = filePath.substr(this.args.in.length + 1);
+        if (await this.pluginHalter('beforeWatchEventHalter', event, filePath))
+            return;
+        await this.pluginCaller('watcherEvent', event, filePath);
         switch (event) {
             case 'add':
-                this.eventAdd(path);
+                await this.eventAdd(filePath);
                 break;
             case 'unlink':
-                this.eventUnlink(path);
+                await this.eventUnlink(filePath);
                 break;
             case 'change':
-                this.eventChange(path);
+                await this.eventChange(filePath);
                 break;
         }
+        this.pluginHalter('afterWatchEventHalter', event, filePath);
     }
     //#region Raw events
     async eventAdd(filePath) {
@@ -145,7 +152,7 @@ class Dev extends DunyaWrapper_js_1.default {
         await this.argumentProvider();
         await this.pluginLoader(this.args.plugins);
         await this.allSetup();
-        this.watcher();
+        await this.watcher();
         await this.afterWatcher();
     }
 }

@@ -1,13 +1,25 @@
+import Dev from './Dev';
 import IDevArgs from './IDevArgs';
 
 export default interface DunyaPlugin {
   name: string;
 
-  validate?(args: IDevArgs): Promise<void>;
-  preSetup?(args: IDevArgs): Promise<void>;
-  setup?(args: IDevArgs): Promise<void>;
-  afterSetup?(args: IDevArgs): Promise<void>;
-  watcherEvent?(args: IDevArgs, event: string, fileName: string): Promise<void>;
+  validate?(dev: Dev): Promise<void>;
+  preSetup?(dev: Dev): Promise<void>;
+  setup?(dev: Dev): Promise<void>;
+  afterSetup?(dev: Dev): Promise<void>;
+  watcherEvent?(dev: Dev, event: string, fileName: string): Promise<void>;
+
+  beforeWatchEventHalter?(
+    dev: Dev,
+    event: string,
+    filePath: string
+  ): Promise<boolean>;
+  afterWatchEventHalter?(
+    dev: Dev,
+    event: string,
+    filePath: string
+  ): Promise<boolean>;
 
   pipeFile?(
     pipe: { filePath: string; fileContent: string },

@@ -8,7 +8,7 @@ import IArgs from './IDevArgs';
 import DunyaWrapper from './DunyaWrapper.js';
 
 export default class Dev extends DunyaWrapper {
-  private args: IArgs = {
+  args: IArgs = {
     config: 'dunya.config.json',
 
     ip: '0.0.0.0',
@@ -18,17 +18,11 @@ export default class Dev extends DunyaWrapper {
     out: 'dev',
 
     plugins: [
-      path.join(
-        __dirname,
-        'default-plugins',
-        'default-plugin-validate-in-directory'
-      ),
-      path.join(
-        __dirname,
-        'default-plugins',
-        'default-plugin-clear-out-directory'
-      ),
+      path.join(__dirname, 'default-plugins', 'default-validate-in-directory'),
+      path.join(__dirname, 'default-plugins', 'default-clear-out-directory'),
       path.join(__dirname, 'default-plugins', 'dunya-sass-support'),
+      path.join(__dirname, 'default-plugins', 'default-link-template-file'),
+      path.join(__dirname, 'default-plugins', 'default-html-compiler'),
     ],
 
     watcherConfig: {},
@@ -69,49 +63,57 @@ export default class Dev extends DunyaWrapper {
   }
 
   async validate(): Promise<void> {
-    await this.pluginCaller('validate', this.args);
+    await this.pluginCaller('validate');
   }
 
   async preSetup(): Promise<void> {
-    await this.pluginCaller('preSetup', this.args);
+    await this.pluginCaller('preSetup');
   }
   async setup(): Promise<void> {
-    await this.pluginCaller('setup', this.args);
+    await this.pluginCaller('setup');
   }
 
   async afterSetup(): Promise<void> {
-    await this.pluginCaller('afterSetup', this.args);
+    await this.pluginCaller('afterSetup');
   }
   //#endregion
 
   //#region Watcher
-  watcher(): void {
+  async watcher(): Promise<void> {
     const watcher = chokidar.watch(this.args.in, {
       ignoreInitial: true,
       ...this.args.watcherConfig,
     });
-    watcher.on('all', (event: string, path: string): void => {
-      this.eventHandler(event, path);
-    });
+    await watcher.on(
+      'all',
+      async (event: string, path: string): Promise<void> => {
+        await this.eventHandler(event, path);
+      }
+    );
   }
   //#endregion
 
   //#region Event Handler
-  eventHandler(event: string, path: string): void {
-    path = path.substr(this.args.in.length + 1);
-    this.pluginCaller('watcherEvent', this.args, event, path);
+  async eventHandler(event: string, filePath: string): Promise<void> {
+    if (await (await fs.lstat(filePath)).isDirectory()) return; // If it is a dir
+    filePath = filePath.substr(this.args.in.length + 1);
+    if (await this.pluginHalter('beforeWatchEventHalter', event, filePath))
+      return;
+    await this.pluginCaller('watcherEvent', event, filePath);
 
     switch (event) {
       case 'add':
-        this.eventAdd(path);
+        await this.eventAdd(filePath);
         break;
       case 'unlink':
-        this.eventUnlink(path);
+        await this.eventUnlink(filePath);
         break;
       case 'change':
-        this.eventChange(path);
+        await this.eventChange(filePath);
         break;
     }
+
+    this.pluginHalter('afterWatchEventHalter', event, filePath);
   }
 
   //#region Raw events
@@ -204,7 +206,7 @@ export default class Dev extends DunyaWrapper {
     await this.argumentProvider();
     await this.pluginLoader(this.args.plugins);
     await this.allSetup();
-    this.watcher();
+    await this.watcher();
     await this.afterWatcher();
   }
 }
