@@ -10,6 +10,9 @@ export default interface IDevArgs {
   mainPath?: string;
   modulePath?: string;
 
+  noAutoInit?: boolean;
+  watcher?: boolean;
+
   plugins?: Array<string>;
 
   watcherConfig?: Record<string, any>;

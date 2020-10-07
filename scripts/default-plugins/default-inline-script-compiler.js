@@ -4,6 +4,9 @@ const fs = require('fs-extra');
 const path = require('path-extra');
 const glob = require('glob');
 function generateHTML(html, style, script) {
+    html = html ?? '';
+    style = style ?? '';
+    script = script ?? '';
     return `${html}
 
 <style scoped>
@@ -16,6 +19,7 @@ ${script}
 }
 async function addTemplate(dev, dirName) {
     try {
+        await fs.mkdirs(path.join(dev.args.out, dirName), (err) => { });
         await fs.writeFile(path.join(dev.args.out, dirName, 'index.html'), await dev['getTemplate']());
     }
     catch (err) {
@@ -23,6 +27,7 @@ async function addTemplate(dev, dirName) {
     }
 }
 async function addHtml(dev, dirName, html) {
+    await fs.mkdirs(path.join(dev.args.out, dirName), (err) => { });
     await fs.writeFile(path.join(dev.args.out, dirName, dirName + '.html'), html);
 }
 function findFile(dev, dirName, ext) {
@@ -36,9 +41,12 @@ function findFile(dev, dirName, ext) {
                 filePath = res.filePath ?? filePath;
                 fileContent = res.fileContent ?? fileContent;
                 if (path.basename(filePath) === dirName + ext)
-                    resolve(fileContent);
+                    resolve({ filePath, fileContent });
             }
-            resolve('');
+            resolve({
+                filePath: null,
+                fileContent: null,
+            });
         });
     });
 }
@@ -51,22 +59,34 @@ function getScript(dev, dirName) {
 function getHTML(dev, dirName) {
     return findFile(dev, dirName, '.inline-script');
 }
+async function inlineScriptCompiler(dev, event, filePath, dirName) {
+    const style = (await getStyle(dev, dirName)).fileContent;
+    const script = (await getScript(dev, dirName)).fileContent;
+    const html = (await getHTML(dev, dirName)).fileContent;
+    await addTemplate(dev, dirName);
+    await addHtml(dev, dirName, generateHTML(html, style, script));
+    return true;
+}
+async function updateInlineScriptFile(dev, inlineScriptPath) {
+    dev.eventHandler('change', inlineScriptPath);
+    return true;
+}
 let plugin = {
     name: '',
 };
 plugin.name = 'default-inline-script-compiler';
 plugin.beforeWatchEventHalter = async function (dev, event, filePath) {
     const ext = path.extname(filePath);
-    if (ext !== '.inline-script')
-        return false;
     const dirName = path.dirname(filePath);
     if (dirName !== path.base(filePath))
         return false;
-    const style = await getStyle(dev, dirName);
-    const script = await getScript(dev, dirName);
-    const html = await getHTML(dev, dirName);
-    await addTemplate(dev, dirName);
-    await addHtml(dev, dirName, generateHTML(html, style, script));
-    return true;
+    if (ext === '.inline-script') {
+        return await inlineScriptCompiler(dev, event, filePath, dirName);
+    }
+    const inlineScriptFile = await findFile(dev, dirName, '.inline-script');
+    const inlineScriptPath = inlineScriptFile.filePath;
+    if (inlineScriptPath !== null)
+        return await updateInlineScriptFile(dev, inlineScriptPath);
+    return false;
 };
 exports.default = plugin;

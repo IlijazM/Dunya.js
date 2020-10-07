@@ -17,6 +17,9 @@ export default class Dev extends DunyaWrapper {
     in: 'src',
     out: 'dev',
 
+    noAutoInit: false,
+    watcher: true,
+
     plugins: [
       path.join(__dirname, 'default-plugins', 'default-validate-in-directory'),
       path.join(__dirname, 'default-plugins', 'default-clear-out-directory'),
@@ -50,9 +53,10 @@ export default class Dev extends DunyaWrapper {
   }
   //#endregion
 
-  constructor(private userArgs: IArgs = {}, private autoInit = true) {
+  constructor(private userArgs: IArgs = {}) {
     super();
-    this.init();
+    userArgs = userArgs ?? {};
+    if (userArgs.noAutoInit !== true) this.init();
   }
 
   //#region Setup
@@ -80,12 +84,14 @@ export default class Dev extends DunyaWrapper {
   //#endregion
 
   //#region Watcher
-  async watcher(): Promise<void> {
-    const watcher = chokidar.watch(this.args.in, {
+  watcher: any;
+
+  async watch(): Promise<void> {
+    this.watcher = chokidar.watch(this.args.in, {
       ignoreInitial: true,
       ...this.args.watcherConfig,
     });
-    await watcher.on(
+    await this.watcher.on(
       'all',
       async (event: string, path: string): Promise<void> => {
         await this.eventHandler(event, path);
@@ -96,7 +102,8 @@ export default class Dev extends DunyaWrapper {
 
   //#region Event Handler
   async eventHandler(event: string, filePath: string): Promise<void> {
-    if (await (await fs.lstat(filePath)).isDirectory()) return; // If it is a dir
+    if (event !== 'unlink' && (await (await fs.lstat(filePath)).isDirectory()))
+      return; // If it is a dir
     filePath = filePath.substr(this.args.in.length + 1);
     if (await this.pluginHalter('beforeWatchEventHalter', event, filePath))
       return;
@@ -121,16 +128,6 @@ export default class Dev extends DunyaWrapper {
   async eventAdd(filePath: string): Promise<void> {
     let fileContent = await fs.readFile(path.join(this.args.in, filePath));
     fileContent = fileContent.toString();
-
-    const res = await this.pluginPipe(
-      'pipeFile',
-      { filePath, fileContent },
-      this.args,
-      false
-    );
-
-    filePath = res.filePath ?? filePath;
-    fileContent = res.fileContent ?? fileContent;
 
     await this.eventAddFile(filePath, fileContent);
   }
@@ -207,7 +204,11 @@ export default class Dev extends DunyaWrapper {
     await this.argumentProvider();
     await this.pluginLoader(this.args.plugins);
     await this.allSetup();
-    await this.watcher();
+    if (this.args.watcher) await this.watch();
     await this.afterWatcher();
+  }
+
+  async terminate(): Promise<void> {
+    await this.watcher.stop();
   }
 }

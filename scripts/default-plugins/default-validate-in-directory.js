@@ -7,6 +7,6 @@ let plugin = {
 plugin.name = 'default-validate-in-directory';
 plugin.validate = async function (dev) {
     if (!fs.existsSync(dev.args.in))
-        fs.mkdirSync(dev.args.in);
+        fs.mkdirsSync(dev.args.in);
 };
 exports.default = plugin;

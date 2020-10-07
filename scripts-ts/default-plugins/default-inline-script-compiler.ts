@@ -2,12 +2,14 @@ const fs = require('fs-extra');
 const path = require('path-extra');
 const glob = require('glob');
 
-import { dir } from 'console';
-import { dirname } from 'path';
 import Dev from '../Dev';
 import DunyaPlugin from '../DunyaPlugin';
 
 function generateHTML(html: string, style: string, script: string): string {
+  html = html ?? '';
+  style = style ?? '';
+  script = script ?? '';
+
   return `${html}
 
 <style scoped>
@@ -21,6 +23,7 @@ ${script}
 
 async function addTemplate(dev: Dev, dirName: string): Promise<void> {
   try {
+    await fs.mkdirs(path.join(dev.args.out, dirName), (err) => {});
     await fs.writeFile(
       path.join(dev.args.out, dirName, 'index.html'),
       await dev['getTemplate']()
@@ -31,10 +34,15 @@ async function addTemplate(dev: Dev, dirName: string): Promise<void> {
 }
 
 async function addHtml(dev: Dev, dirName: string, html: string): Promise<void> {
+  await fs.mkdirs(path.join(dev.args.out, dirName), (err) => {});
   await fs.writeFile(path.join(dev.args.out, dirName, dirName + '.html'), html);
 }
 
-function findFile(dev: Dev, dirName: string, ext: string): Promise<string> {
+function findFile(
+  dev: Dev,
+  dirName: string,
+  ext: string
+): Promise<{ filePath: string; fileContent: string }> {
   return new Promise((resolve, reject) => {
     const inDirName = path.join(dev.args.in, dirName);
 
@@ -53,24 +61,62 @@ function findFile(dev: Dev, dirName: string, ext: string): Promise<string> {
         filePath = res.filePath ?? filePath;
         fileContent = res.fileContent ?? fileContent;
 
-        if (path.basename(filePath) === dirName + ext) resolve(fileContent);
+        if (path.basename(filePath) === dirName + ext)
+          resolve({ filePath, fileContent });
       }
 
-      resolve('');
+      resolve({
+        filePath: null,
+        fileContent: null,
+      });
     });
   });
 }
 
-function getStyle(dev: Dev, dirName: string): Promise<string> {
+function getStyle(
+  dev: Dev,
+  dirName: string
+): Promise<{ filePath: string; fileContent: string }> {
   return findFile(dev, dirName, '.css');
 }
 
-function getScript(dev: Dev, dirName: string): Promise<string> {
+function getScript(
+  dev: Dev,
+  dirName: string
+): Promise<{ filePath: string; fileContent: string }> {
   return findFile(dev, dirName, '.js');
 }
 
-function getHTML(dev: Dev, dirName: string): Promise<string> {
+function getHTML(
+  dev: Dev,
+  dirName: string
+): Promise<{ filePath: string; fileContent: string }> {
   return findFile(dev, dirName, '.inline-script');
+}
+
+async function inlineScriptCompiler(
+  dev: Dev,
+  event: string,
+  filePath: string,
+  dirName: string
+): Promise<boolean> {
+  const style = (await getStyle(dev, dirName)).fileContent;
+  const script = (await getScript(dev, dirName)).fileContent;
+  const html = (await getHTML(dev, dirName)).fileContent;
+
+  await addTemplate(dev, dirName);
+  await addHtml(dev, dirName, generateHTML(html, style, script));
+
+  return true;
+}
+
+async function updateInlineScriptFile(
+  dev: Dev,
+  inlineScriptPath: string
+): Promise<boolean> {
+  dev.eventHandler('change', inlineScriptPath);
+
+  return true;
 }
 
 let plugin: DunyaPlugin = {
@@ -84,19 +130,20 @@ plugin.beforeWatchEventHalter = async function (
   filePath: string
 ): Promise<boolean> {
   const ext = path.extname(filePath);
-  if (ext !== '.inline-script') return false;
 
   const dirName = path.dirname(filePath);
   if (dirName !== path.base(filePath)) return false;
 
-  const style = await getStyle(dev, dirName);
-  const script = await getScript(dev, dirName);
-  const html = await getHTML(dev, dirName);
+  if (ext === '.inline-script') {
+    return await inlineScriptCompiler(dev, event, filePath, dirName);
+  }
 
-  await addTemplate(dev, dirName);
-  await addHtml(dev, dirName, generateHTML(html, style, script));
+  const inlineScriptFile = await findFile(dev, dirName, '.inline-script');
+  const inlineScriptPath = inlineScriptFile.filePath;
+  if (inlineScriptPath !== null)
+    return await updateInlineScriptFile(dev, inlineScriptPath);
 
-  return true;
+  return false;
 };
 
 export default plugin;

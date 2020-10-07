@@ -8,7 +8,7 @@
     "build": "dunya build",
     "tsc": "tsc -w",
     "tsc-no-watch": "tsc",
-    "test": "jest --coverage"
+    "test": "jest --coverage --forceExit"
   },
   "repository": {
     "type": "git",

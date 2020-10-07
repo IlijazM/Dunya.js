@@ -8,6 +8,7 @@ let plugin = {
 plugin.name = 'default-clear-out-directory';
 plugin.validate = async function (dev) {
     const pathName = path.join(dev.args.modulePath, dev.args.out);
-    await fs.emptyDir(pathName); // This will also create a new directory if needed.
+    await fs.mkdirs(pathName, (err) => { });
+    await fs.emptyDir(pathName);
 };
 exports.default = plugin;

@@ -10,7 +10,7 @@ let plugin: DunyaPlugin = {
 
 plugin.name = 'default-validate-in-directory';
 plugin.validate = async function (dev: Dev) {
-  if (!fs.existsSync(dev.args.in)) fs.mkdirSync(dev.args.in);
+  if (!fs.existsSync(dev.args.in)) fs.mkdirsSync(dev.args.in);
 };
 
 export default plugin;
