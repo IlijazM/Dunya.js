@@ -6,7 +6,8 @@
     "dev": "dunya dev",
     "start": "dunya start",
     "build": "dunya build",
-    "tsc": "tsc",
+    "tsc": "tsc -w",
+    "tsc-no-watch": "tsc",
     "test": "jest --coverage"
   },
   "repository": {
