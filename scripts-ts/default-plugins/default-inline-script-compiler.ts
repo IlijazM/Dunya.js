@@ -104,6 +104,17 @@ async function inlineScriptCompiler(
   const script = (await getScript(dev, dirName)).fileContent;
   const html = (await getHTML(dev, dirName)).fileContent;
 
+  if (style !== null)
+    await fs.unlink(
+      path.join(dev.args.out, dirName, dirName + '.css'),
+      (err) => {}
+    );
+  if (script !== null)
+    await fs.unlink(
+      path.join(dev.args.out, dirName, dirName + '.js'),
+      (err) => {}
+    );
+
   await addTemplate(dev, dirName);
   await addHtml(dev, dirName, generateHTML(html, style, script));
 

@@ -144,13 +144,13 @@ The property 'name' must not by empty`);
         }
         return pipe;
     }
-    async getFile(args, currentPath, targetPath) {
+    async getFile(args, currentPath) {
         const cFun = 'reversePipeFile';
         for (let [index, plugin] of Object.entries(this.plugins)) {
             if (plugin[cFun] === undefined)
                 continue;
             const res = await plugin[cFun](args, currentPath);
-            if (res === targetPath)
+            if (res !== undefined)
                 return res;
         }
         return undefined;

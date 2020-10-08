@@ -303,4 +303,114 @@ console.log("Hello, world!")
       }).not.toThrowError();
     }
   });
+
+  test('Update inline script file', async () => {
+    const inPath = 'tests/update inline script file.in';
+    const outPath = 'tests/update inline script file.out';
+
+    try {
+      const dev = new Dev({
+        ...defaultConfig,
+        ...{ in: inPath, out: outPath },
+      });
+      await dev.init();
+
+      const html = '<h1>Hello</h1>';
+      const css = 'body { color: black; }';
+      const js = 'console.log("Hello, world!")';
+      await fs.mkdirs(path.join(inPath, 'Test'));
+
+      await fs.writeFile(inPath + '/template.html', 'template');
+
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.inline-script'), '');
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.css'), '');
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.js'), '');
+
+      await sleep(200);
+
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.inline-script'), html);
+      await sleep(200);
+
+      expect(
+        (await fs.readFile(path.join(outPath, 'Test', 'Test.html'))).toString()
+      ).toEqual(`<h1>Hello</h1>
+
+<style scoped>
+
+</style>
+
+<script>
+
+</script>`);
+
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.css'), css);
+      await sleep(200);
+
+      expect(
+        (await fs.readFile(path.join(outPath, 'Test', 'Test.html'))).toString()
+      ).toEqual(`<h1>Hello</h1>
+
+<style scoped>
+body { color: black; }
+</style>
+
+<script>
+
+</script>`);
+
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.js'), js);
+      await sleep(200);
+
+      expect(
+        (await fs.readFile(path.join(outPath, 'Test', 'Test.html'))).toString()
+      ).toEqual(`<h1>Hello</h1>
+
+<style scoped>
+body { color: black; }
+</style>
+
+<script>
+console.log("Hello, world!")
+</script>`);
+    } catch (e) {
+      expect(() => {
+        throw e;
+      }).not.toThrowError();
+    }
+  });
+
+  test('Inline script file wrong order', async () => {
+    const inPath = 'tests/inline script file wrong order.in';
+    const outPath = 'tests/inline script file wrong order.out';
+
+    try {
+      const dev = new Dev({
+        ...defaultConfig,
+        ...{ in: inPath, out: outPath },
+      });
+      await dev.init();
+
+      await fs.mkdirs(path.join(inPath, 'Test'));
+
+      await fs.writeFile(inPath + '/template.html', 'template');
+
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.css'), '');
+      await sleep(200);
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.js'), '');
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.inline-script'), '');
+      await sleep(200);
+
+      expect(dirTree(outPath).children).toEqual([
+        {
+          name: 'Test',
+          children: ['Test.html', 'index.html'],
+        },
+        'template.html',
+      ]);
+    } catch (e) {
+      expect(() => {
+        throw e;
+      }).not.toThrowError();
+    }
+  });
 });
