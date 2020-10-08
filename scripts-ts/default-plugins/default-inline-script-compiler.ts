@@ -10,6 +10,10 @@ function generateHTML(html: string, style: string, script: string): string {
   style = style ?? '';
   script = script ?? '';
 
+  html = html.trim();
+  style = style.trim();
+  script = script.trim();
+
   return `${html}
 
 <style scoped>
@@ -38,39 +42,37 @@ async function addHtml(dev: Dev, dirName: string, html: string): Promise<void> {
   await fs.writeFile(path.join(dev.args.out, dirName, dirName + '.html'), html);
 }
 
-function findFile(
+async function findFile(
   dev: Dev,
   dirName: string,
   ext: string
 ): Promise<{ filePath: string; fileContent: string }> {
-  return new Promise((resolve, reject) => {
-    const inDirName = path.join(dev.args.in, dirName);
+  const inDirName = path.join(dev.args.in, dirName);
 
-    glob(path.join(inDirName, '*'), async (err, files) => {
-      for (let filePath of files) {
-        let fileContent = await fs.readFile(filePath);
-        fileContent = fileContent.toString();
+  let filePath =
+    (await dev.getFile(dev.args, path.join(inDirName, dirName + ext))) ??
+    path.join(inDirName, dirName + ext);
 
-        const res = await dev.pluginPipe(
-          'pipeFile',
-          { filePath, fileContent },
-          dev.args,
-          false
-        );
+  if (!fs.existsSync(filePath))
+    return {
+      filePath: null,
+      fileContent: null,
+    };
 
-        filePath = res.filePath ?? filePath;
-        fileContent = res.fileContent ?? fileContent;
+  let fileContent = await fs.readFile(filePath);
+  fileContent = fileContent.toString();
 
-        if (path.basename(filePath) === dirName + ext)
-          resolve({ filePath, fileContent });
-      }
+  const res = await dev.pluginPipe(
+    'pipeFile',
+    { filePath, fileContent },
+    dev.args,
+    false
+  );
 
-      resolve({
-        filePath: null,
-        fileContent: null,
-      });
-    });
-  });
+  filePath = res.filePath ?? filePath;
+  fileContent = res.fileContent ?? fileContent;
+
+  return { filePath, fileContent };
 }
 
 function getStyle(
