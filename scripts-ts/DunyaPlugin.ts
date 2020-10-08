@@ -29,4 +29,5 @@ export default interface DunyaPlugin {
     filePath: string;
     fileContent?: string;
   }>;
+  reversePipeFile?(args: IDevArgs, filePath: string): Promise<string>;
 }

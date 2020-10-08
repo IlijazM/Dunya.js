@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs-extra');
-const path = require('path');
+const path = require('path-extra');
 const sass = require('sass');
 async function compileScss(code) {
     return sass
@@ -31,5 +31,14 @@ plugin.pipeFile = async function ({ filePath, fileContent }, args, onDelete) {
         return undefined;
     }
     return { filePath, fileContent };
+};
+plugin.reversePipeFile = async function (args, filePath) {
+    const ext = path.extname(filePath);
+    if (ext !== '.css')
+        return undefined;
+    filePath = path.join(path.dirname(filePath), path.base(filePath) + '.scss');
+    if (fs.existsSync(filePath))
+        return filePath;
+    return undefined;
 };
 exports.default = plugin;

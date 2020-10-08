@@ -101,85 +101,72 @@ export default class Dev extends DunyaWrapper {
   //#endregion
 
   //#region Event Handler
-  async eventHandler(event: string, filePath: string): Promise<void> {
-    if (event !== 'unlink' && (await (await fs.lstat(filePath)).isDirectory()))
-      return; // If it is a dir
+  async eventHandlerValidator(
+    event: string,
+    filePath: string
+  ): Promise<{ filePath: string; fileContent: string }> {
     filePath = filePath.substr(this.args.in.length + 1);
+    let fileContent;
+    if (event !== 'unlink') {
+      if (await (await fs.lstat(filePath)).isDirectory()) return; // If it is a dir
+      fileContent = await fs.readFile(path.join(this.args.in, filePath));
+      fileContent = fileContent.toString();
+    }
+
+    // Pipe file
+    const res = await this.pluginPipe(
+      'pipeFile',
+      { filePath, fileContent },
+      this.args,
+      event === 'unlink'
+    );
+
+    filePath = res.filePath ?? filePath;
+    fileContent = res.fileContent ?? fileContent;
+
+    return { filePath, fileContent };
+  }
+
+  async eventHandler(event: string, filePath: string): Promise<void> {
+    const validatorResponse = await this.eventHandlerValidator(event, filePath);
+    if (validatorResponse === undefined) return;
+    filePath = validatorResponse.filePath;
+    const fileContent = validatorResponse.fileContent;
+
     if (await this.pluginHalter('beforeWatchEventHalter', event, filePath))
       return;
     await this.pluginCaller('watcherEvent', event, filePath);
 
     switch (event) {
       case 'add':
-        await this.eventAdd(filePath);
+        await this.eventAdd(filePath, fileContent);
         break;
       case 'unlink':
         await this.eventUnlink(filePath);
         break;
       case 'change':
-        await this.eventChange(filePath);
+        await this.eventChange(filePath, fileContent);
         break;
     }
 
     this.pluginHalter('afterWatchEventHalter', event, filePath);
   }
 
-  //#region Raw events
-  async eventAdd(filePath: string): Promise<void> {
-    let fileContent = await fs.readFile(path.join(this.args.in, filePath));
-    fileContent = fileContent.toString();
-
-    await this.eventAddFile(filePath, fileContent);
-  }
-
-  async eventUnlink(filePath: string): Promise<void> {
-    const fileContent = '';
-
-    const res = await this.pluginPipe(
-      'pipeFile',
-      { filePath, fileContent },
-      this.args,
-      true
-    );
-
-    filePath = res.filePath ?? filePath;
-
-    await this.eventUnlinkFile(filePath);
-  }
-
-  async eventChange(filePath: string): Promise<void> {
-    let fileContent = await fs.readFile(path.join(this.args.in, filePath));
-    fileContent = fileContent.toString();
-
-    const res = await this.pluginPipe(
-      'pipeFile',
-      { filePath, fileContent },
-      this.args,
-      false
-    );
-
-    filePath = res.filePath ?? filePath;
-    fileContent = res.fileContent ?? fileContent;
-
-    await this.eventChangeFile(filePath, fileContent);
-  }
-  //#endregion
-
   //#region File events
-  async eventAddFile(filePath: string, fileContent: string): Promise<void> {
+  async eventAdd(filePath: string, fileContent: string): Promise<void> {
     filePath = path.join(this.args.out, filePath);
     console.log(`Adding file '${filePath}'`);
     await fs.mkdir(path.dirname(filePath), (err) => {});
     await fs.writeFile(filePath, fileContent);
   }
 
-  async eventUnlinkFile(filePath: string): Promise<void> {
+  async eventUnlink(filePath: string): Promise<void> {
     filePath = path.join(this.args.out, filePath);
     console.log(`Unlinking file '${filePath}'`);
     await fs.unlink(filePath);
   }
 
-  async eventChangeFile(filePath: string, fileContent: string): Promise<void> {
+  async eventChange(filePath: string, fileContent: string): Promise<void> {
     filePath = path.join(this.args.out, filePath);
     console.log(`Changing file '${filePath}'`);
     await fs.mkdir(path.dirname(filePath), (err) => {});

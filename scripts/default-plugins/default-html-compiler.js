@@ -2,20 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs-extra');
 const path = require('path-extra');
-let plugin = {
-    name: '',
-};
-plugin.name = 'default-html-compiler';
-plugin.beforeWatchEventHalter = async function (dev, event, filePath) {
-    const ext = path.extname(filePath);
-    if (ext !== '.html')
-        return false;
-    if (filePath === 'template.html')
-        return false;
-    const dirName = filePath.substr(0, filePath.length - ext.length);
+async function compileHtml(dev, event, filePath) {
+    const dirName = filePath.substr(0, filePath.length - path.extname(filePath).length);
     if (event === 'unlink') {
         await fs.remove(path.join(dev.args.out, dirName));
-        return;
+        return false;
     }
     await fs.mkdirs(path.join(dev.args.out, dirName), (err) => { });
     try {
@@ -29,5 +20,20 @@ plugin.beforeWatchEventHalter = async function (dev, event, filePath) {
     console.log(from + ' -> ' + to);
     await fs.copyFile(from, to);
     return true;
+}
+async function compileTemplate(dev, event, filePath) {
+    return false;
+}
+let plugin = {
+    name: '',
+};
+plugin.name = 'default-html-compiler';
+plugin.beforeWatchEventHalter = async function (dev, event, filePath) {
+    const ext = path.extname(filePath);
+    if (ext !== '.html')
+        return false;
+    if (path.basename(filePath) === 'template.html')
+        return compileTemplate(dev, event, filePath);
+    return compileHtml(dev, event, filePath);
 };
 exports.default = plugin;

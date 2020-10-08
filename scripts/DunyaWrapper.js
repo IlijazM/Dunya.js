@@ -144,5 +144,16 @@ The property 'name' must not by empty`);
         }
         return pipe;
     }
+    async getFile(args, currentPath, targetPath) {
+        const cFun = 'reversePipeFile';
+        for (let [index, plugin] of Object.entries(this.plugins)) {
+            if (plugin[cFun] === undefined)
+                continue;
+            const res = await plugin[cFun](args, currentPath);
+            if (res === targetPath)
+                return res;
+        }
+        return undefined;
+    }
 }
 exports.default = DunyaWrapper;

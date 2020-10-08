@@ -1,5 +1,6 @@
 import { dirname } from 'path';
 import DunyaPlugin from './DunyaPlugin';
+import IDevArgs from './IDevArgs';
 
 const path = require('path');
 const fs = require('fs-extra');
@@ -180,6 +181,21 @@ The property 'name' must not by empty`);
     }
 
     return pipe;
+  }
+
+  async getFile(
+    args: IDevArgs,
+    currentPath: string,
+    targetPath: string
+  ): Promise<string> {
+    const cFun = 'reversePipeFile';
+    for (let [index, plugin] of Object.entries(this.plugins)) {
+      if (plugin[cFun] === undefined) continue;
+      const res = await plugin[cFun](args, currentPath);
+      if (res === targetPath) return res;
+    }
+
+    return undefined;
   }
   //#endregion
 

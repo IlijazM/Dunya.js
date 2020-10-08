@@ -1,30 +1,22 @@
 const fs = require('fs-extra');
 const path = require('path-extra');
 
-import { dirname } from 'path';
 import Dev from '../Dev';
 import DunyaPlugin from '../DunyaPlugin';
-import IDevArgs from '../IDevArgs';
 
-let plugin: DunyaPlugin = {
-  name: '',
-};
-
-plugin.name = 'default-html-compiler';
-plugin.beforeWatchEventHalter = async function (
+async function compileHtml(
   dev: Dev,
   event: string,
   filePath: string
 ): Promise<boolean> {
-  const ext = path.extname(filePath);
-  if (ext !== '.html') return false;
-  if (filePath === 'template.html') return false;
-
-  const dirName = filePath.substr(0, filePath.length - ext.length);
+  const dirName = filePath.substr(
+    0,
+    filePath.length - path.extname(filePath).length
+  );
 
   if (event === 'unlink') {
     await fs.remove(path.join(dev.args.out, dirName));
-    return;
+    return false;
   }
 
   await fs.mkdirs(path.join(dev.args.out, dirName), (err) => {});
@@ -44,6 +36,32 @@ plugin.beforeWatchEventHalter = async function (
   await fs.copyFile(from, to);
 
   return true;
+}
+
+async function compileTemplate(
+  dev: Dev,
+  event: string,
+  filePath: string
+): Promise<boolean> {
+  return false;
+}
+
+let plugin: DunyaPlugin = {
+  name: '',
+};
+
+plugin.name = 'default-html-compiler';
+plugin.beforeWatchEventHalter = async function (
+  dev: Dev,
+  event: string,
+  filePath: string
+): Promise<boolean> {
+  const ext = path.extname(filePath);
+  if (ext !== '.html') return false;
+  if (path.basename(filePath) === 'template.html')
+    return compileTemplate(dev, event, filePath);
+
+  return compileHtml(dev, event, filePath);
 };
 
 export default plugin;
