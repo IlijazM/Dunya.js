@@ -88,7 +88,6 @@ export default class Dev extends DunyaWrapper {
 
   async watch(): Promise<void> {
     this.watcher = chokidar.watch(this.args.in, {
-      ignoreInitial: true,
       ...this.args.watcherConfig,
     });
     await this.watcher.on(
@@ -105,11 +104,12 @@ export default class Dev extends DunyaWrapper {
     event: string,
     filePath: string
   ): Promise<{ filePath: string; fileContent: string }> {
+    const absolutePath = filePath;
     filePath = filePath.substr(this.args.in.length + 1);
     let fileContent;
     if (event !== 'unlink') {
-      if (await (await fs.lstat(filePath)).isDirectory()) return; // If it is a dir
-      fileContent = await fs.readFile(path.join(this.args.in, filePath));
+      if ((await fs.lstat(absolutePath)).isDirectory()) return; // If it is a dir
+      fileContent = await fs.readFile(absolutePath);
       fileContent = fileContent.toString();
     }
 

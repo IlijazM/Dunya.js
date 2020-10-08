@@ -44,9 +44,12 @@ const defaultConfig = {
 
 describe('Dev', () => {
   console.log = function () {};
+
+  fs.emptyDirSync('tests');
+
   test('Starting', async () => {
     try {
-      const dev = new Dev({ ...defaultConfig, ...{ watcher: true } });
+      const dev = new Dev({ ...defaultConfig, ...{ watcher: false } });
       await dev.init();
       expect(1).toEqual(1);
     } catch (e) {
@@ -103,13 +106,11 @@ describe('Dev', () => {
       await dev.init();
 
       const content = 'Hello, world!';
-      await fs.mkdirs(outPath, (err) => {});
-      await fs.writeFile(inPath + '/test.txt', content);
+      await fs.writeFile(path.join(inPath, 'test.txt'), content);
       await sleep(10);
-
-      expect(fs.readFileSync(outPath + '/test.txt').toString()).toEqual(
-        content
-      );
+      expect(
+        fs.readFileSync(path.join(outPath, 'test.txt')).toString()
+      ).toEqual(content);
     } catch (e) {
       expect(() => {
         throw e;
@@ -129,12 +130,12 @@ describe('Dev', () => {
       await dev.init();
 
       const content = 'Hello, world!';
-      await fs.writeFile(inPath + '/test.txt', content);
-      await sleep(10);
-      await fs.unlink(inPath + '/test.txt');
-      await sleep(10);
+      await fs.writeFile(path.join(inPath, 'test.txt'), content);
+      await sleep(200);
+      await fs.unlink(path.join(inPath, 'test.txt'));
+      await sleep(200);
 
-      expect(fs.existsSync(outPath + '/test.txt')).toEqual(false);
+      expect(fs.existsSync(path.join(outPath, 'test.txt'))).toEqual(false);
     } catch (e) {
       expect(() => {
         throw e;
@@ -154,6 +155,8 @@ describe('Dev', () => {
       await dev.init();
 
       const content = 'Hello, world!';
+      await fs.mkdirs(inPath, (err) => {});
+      await fs.mkdirs(outPath, (err) => {});
       await fs.writeFile(inPath + '/test.html', content);
       await fs.writeFile(inPath + '/template.html', content);
       await sleep(10);
