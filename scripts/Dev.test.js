@@ -328,14 +328,45 @@ console.log("Hello, world!")
             await fs.mkdirs(path.join(inPath, 'Test'));
             await fs.writeFile(inPath + '/template.html', 'template');
             await fs.writeFile(path.join(inPath, 'Test', 'Test.css'), '');
-            await sleep(200);
             await fs.writeFile(path.join(inPath, 'Test', 'Test.js'), '');
+            await sleep(200);
             await fs.writeFile(path.join(inPath, 'Test', 'Test.inline-script'), '');
             await sleep(200);
             expect(dirTree(outPath).children).toEqual([
                 {
                     name: 'Test',
                     children: ['Test.html', 'index.html'],
+                },
+                'template.html',
+            ]);
+        }
+        catch (e) {
+            expect(() => {
+                throw e;
+            }).not.toThrowError();
+        }
+    });
+    test('Delete inline script file', async () => {
+        const inPath = 'tests/delete inline script file.in';
+        const outPath = 'tests/delete inline script file.out';
+        try {
+            const dev = new Dev_js_1.default({
+                ...defaultConfig,
+                ...{ in: inPath, out: outPath },
+            });
+            await dev.init();
+            await fs.mkdirs(path.join(inPath, 'Test'));
+            await fs.writeFile(inPath + '/template.html', 'template');
+            await fs.writeFile(path.join(inPath, 'Test', 'Test.inline-script'), '');
+            await fs.writeFile(path.join(inPath, 'Test', 'Test.css'), '');
+            await fs.writeFile(path.join(inPath, 'Test', 'Test.js'), '');
+            await sleep(200);
+            await fs.unlink(path.join(inPath, 'Test', 'Test.inline-script'));
+            await sleep(200);
+            expect(dirTree(outPath).children).toEqual([
+                {
+                    name: 'Test',
+                    children: ['Test.css', 'Test.js', 'index.html'],
                 },
                 'template.html',
             ]);

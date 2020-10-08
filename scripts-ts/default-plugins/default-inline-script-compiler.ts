@@ -102,6 +102,20 @@ async function inlineScriptCompiler(
 ): Promise<boolean> {
   const style = (await getStyle(dev, dirName)).fileContent;
   const script = (await getScript(dev, dirName)).fileContent;
+
+  if (event === 'unlink') {
+    await fs.writeFile(
+      path.join(dev.args.out, dirName, dirName + '.css'),
+      style
+    );
+    await fs.writeFile(
+      path.join(dev.args.out, dirName, dirName + '.js'),
+      script
+    );
+    await fs.unlink(path.join(dev.args.out, dirName, dirName + '.html'));
+    return true;
+  }
+
   const html = (await getHTML(dev, dirName)).fileContent;
 
   if (style !== null)

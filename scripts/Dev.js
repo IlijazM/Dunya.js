@@ -117,7 +117,7 @@ class Dev extends DunyaWrapper_js_1.default {
     async eventAdd(filePath, fileContent) {
         filePath = path.join(this.args.out, filePath);
         console.log(`Adding file '${filePath}'`);
-        await fs.mkdir(path.dirname(filePath), (err) => { });
+        fs.mkdirsSync(path.dirname(filePath), (err) => { });
         await fs.writeFile(filePath, fileContent);
     }
     async eventUnlink(filePath) {
@@ -128,7 +128,7 @@ class Dev extends DunyaWrapper_js_1.default {
     async eventChange(filePath, fileContent) {
         filePath = path.join(this.args.out, filePath);
         console.log(`Changing file '${filePath}'`);
-        await fs.mkdir(path.dirname(filePath), (err) => { });
+        fs.mkdirsSync(path.dirname(filePath), (err) => { });
         await fs.writeFile(filePath, fileContent);
     }
     //#endregion
