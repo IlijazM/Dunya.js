@@ -155,8 +155,6 @@ describe('Dev', () => {
       await dev.init();
 
       const content = 'Hello, world!';
-      await fs.mkdirs(inPath, (err) => {});
-      await fs.mkdirs(outPath, (err) => {});
       await fs.writeFile(inPath + '/test.html', content);
       await fs.writeFile(inPath + '/template.html', content);
       await sleep(10);
@@ -168,6 +166,137 @@ describe('Dev', () => {
           children: ['index.html', 'test.html'],
         },
       ]);
+    } catch (e) {
+      expect(() => {
+        throw e;
+      }).not.toThrowError();
+    }
+  });
+
+  test('Remove html file', async () => {
+    const inPath = 'tests/remove html file.in';
+    const outPath = 'tests/remove html file.out';
+
+    try {
+      const dev = new Dev({
+        ...defaultConfig,
+        ...{ in: inPath, out: outPath },
+      });
+      await dev.init();
+
+      const content = 'Hello, world!';
+      await fs.writeFile(path.join(inPath, 'test.html'), content);
+      await fs.writeFile(path.join(inPath, 'template.html'), content);
+      await sleep(200);
+      await fs.unlink(path.join(inPath, 'test.html'));
+
+      await sleep(200);
+      expect(dirTree(outPath).children).toEqual(['template.html']);
+    } catch (e) {
+      expect(() => {
+        throw e;
+      }).not.toThrowError();
+    }
+  });
+
+  test('Template file', async () => {
+    const inPath = 'tests/template file.in';
+    const outPath = 'tests/template file.out';
+
+    try {
+      const dev = new Dev({
+        ...defaultConfig,
+        ...{ in: inPath, out: outPath },
+      });
+      await dev.init();
+
+      const template = '<!DOCTYPE html>';
+      await fs.writeFile(inPath + '/test.html', 'Hello, world');
+      await fs.writeFile(inPath + '/template.html', template);
+      await sleep(10);
+
+      expect(
+        (await fs.readFile(path.join(outPath, 'test', 'index.html'))).toString()
+      ).toEqual(template);
+    } catch (e) {
+      expect(() => {
+        throw e;
+      }).not.toThrowError();
+    }
+  });
+
+  test('Change template', async () => {
+    const inPath = 'tests/change template.in';
+    const outPath = 'tests/change template.out';
+
+    try {
+      const dev = new Dev({
+        ...defaultConfig,
+        ...{ in: inPath, out: outPath },
+      });
+      await dev.init();
+
+      let template = '<!DOCTYPE html>';
+      await fs.writeFile(inPath + '/test.html', 'Hello, world');
+      await fs.writeFile(inPath + '/template.html', template);
+      await sleep(200);
+      template = '<h1>Test</h1>';
+      await fs.writeFile(inPath + '/template.html', template);
+      await sleep(200);
+
+      expect(
+        (await fs.readFile(path.join(outPath, 'test', 'index.html'))).toString()
+      ).toEqual(template);
+    } catch (e) {
+      expect(() => {
+        throw e;
+      }).not.toThrowError();
+    }
+  });
+
+  test('Inline script file', async () => {
+    const inPath = 'tests/inline script file.in';
+    const outPath = 'tests/inline script file.out';
+
+    try {
+      const dev = new Dev({
+        ...defaultConfig,
+        ...{ in: inPath, out: outPath },
+      });
+      await dev.init();
+
+      const html = '<h1>Hello</h1>';
+      const css = 'body { color: black; }';
+      const js = 'console.log("Hello, world!")';
+      await fs.mkdirs(path.join(inPath, 'Test'));
+
+      await fs.writeFile(inPath + '/template.html', 'template');
+
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.inline-script'), html);
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.css'), css);
+      await fs.writeFile(path.join(inPath, 'Test', 'Test.js'), js);
+
+      await sleep(200);
+
+      expect(dirTree(outPath).children).toEqual([
+        {
+          name: 'Test',
+          children: ['Test.html', 'index.html'],
+        },
+        'template.html',
+      ]);
+
+      expect(
+        (await fs.readFile(path.join(outPath, 'Test', 'Test.html'))).toString()
+      ).toEqual(`<h1>Hello</h1>
+
+<style scoped>
+body { color: black; }
+</style>
+
+<script>
+console.log("Hello, world!")
+</script>`);
     } catch (e) {
       expect(() => {
         throw e;

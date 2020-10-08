@@ -1,3 +1,4 @@
+const glob = require('glob');
 const fs = require('fs-extra');
 const path = require('path-extra');
 
@@ -16,7 +17,7 @@ async function compileHtml(
 
   if (event === 'unlink') {
     await fs.remove(path.join(dev.args.out, dirName));
-    return false;
+    return true;
   }
 
   await fs.mkdirs(path.join(dev.args.out, dirName), (err) => {});
@@ -43,6 +44,16 @@ async function compileTemplate(
   event: string,
   filePath: string
 ): Promise<boolean> {
+  glob(path.join(dev.args.out, '**/index.html'), (err, files) => {
+    files.forEach(async (file) => {
+      const dirname = path.dirname(file);
+      const basename = path.basename(dirname);
+      const pathName = path.join(dirname, basename + '.html');
+      if (!fs.existsSync(pathName)) return;
+      await fs.writeFile(file, await dev['getTemplate']());
+    });
+  });
+
   return false;
 }
 
