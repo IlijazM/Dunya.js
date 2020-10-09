@@ -4,13 +4,18 @@ const glob = require('glob');
 const fs = require('fs-extra');
 const path = require('path-extra');
 async function compileHtml(dev, event, filePath) {
-    const dirName = filePath.substr(0, filePath.length - path.extname(filePath).length);
+    let dirName = filePath.substr(0, filePath.length - path.extname(filePath).length);
     if (event === 'unlink') {
         await fs.remove(path.join(dev.args.out, dirName));
         return true;
     }
+    let htmlFile = path.basename(filePath);
+    if (htmlFile === 'index.html') {
+        htmlFile = '_index.html';
+        dirName = dirName.substr(0, dirName.length - '/index'.length);
+        console.log(htmlFile, dirName);
+    }
     await fs.mkdirs(path.join(dev.args.out, dirName), (err) => { });
-    const htmlFile = path.basename(filePath);
     let relativePath = dirName
         .split(/[\\\/]/gm)
         .map((_) => '..')
@@ -22,7 +27,7 @@ async function compileHtml(dev, event, filePath) {
         console.error(err);
     }
     const from = path.join(dev.args.in, filePath);
-    const to = path.join(dev.args.out, dirName, path.basename(dirName)) + '.html';
+    const to = path.join(dev.args.out, dirName, htmlFile);
     console.log(from + ' -> ' + to);
     await fs.copyFile(from, to);
     return true;

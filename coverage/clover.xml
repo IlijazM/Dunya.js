@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1602236213081" clover="3.2.0">
-  <project timestamp="1602236213081" name="All files">
-    <metrics statements="356" coveredstatements="325" conditionals="123" coveredconditionals="94" methods="73" coveredmethods="68" elements="552" coveredelements="487" complexity="0" loc="356" ncloc="356" packages="2" files="8" classes="8"/>
+<coverage generated="1602236515431" clover="3.2.0">
+  <project timestamp="1602236515431" name="All files">
+    <metrics statements="360" coveredstatements="326" conditionals="125" coveredconditionals="95" methods="73" coveredmethods="68" elements="558" coveredelements="489" complexity="0" loc="360" ncloc="360" packages="2" files="8" classes="8"/>
     <package name="scripts">
       <metrics statements="171" coveredstatements="158" conditionals="71" coveredconditionals="58" methods="41" coveredmethods="37"/>
       <file name="Dev.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/Dev.js">
@@ -183,7 +183,7 @@
       </file>
     </package>
     <package name="scripts.default-plugins">
-      <metrics statements="185" coveredstatements="167" conditionals="52" coveredconditionals="36" methods="32" coveredmethods="31"/>
+      <metrics statements="189" coveredstatements="168" conditionals="54" coveredconditionals="37" methods="32" coveredmethods="31"/>
       <file name="default-clear-out-directory.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/default-plugins/default-clear-out-directory.js">
         <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="2" count="1" type="stmt"/>
@@ -198,7 +198,7 @@
         <line num="14" count="1" type="stmt"/>
       </file>
       <file name="default-html-compiler.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/default-plugins/default-html-compiler.js">
-        <metrics statements="43" coveredstatements="41" conditionals="8" coveredconditionals="7" methods="8" coveredmethods="8"/>
+        <metrics statements="47" coveredstatements="42" conditionals="10" coveredconditionals="8" methods="8" coveredmethods="8"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
@@ -208,40 +208,44 @@
         <line num="9" count="1" type="stmt"/>
         <line num="10" count="1" type="stmt"/>
         <line num="12" count="5" type="stmt"/>
-        <line num="13" count="5" type="stmt"/>
-        <line num="14" count="5" type="stmt"/>
-        <line num="16" count="5" type="stmt"/>
+        <line num="13" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
         <line num="18" count="5" type="stmt"/>
         <line num="19" count="5" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
+        <line num="21" count="5" type="stmt"/>
+        <line num="23" count="5" type="stmt"/>
         <line num="24" count="5" type="stmt"/>
-        <line num="25" count="5" type="stmt"/>
-        <line num="26" count="5" type="stmt"/>
-        <line num="27" count="5" type="stmt"/>
-        <line num="28" count="5" type="stmt"/>
-        <line num="31" count="10" type="stmt"/>
-        <line num="32" count="10" type="stmt"/>
-        <line num="33" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
-        <line num="37" count="1" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="29" count="5" type="stmt"/>
+        <line num="30" count="5" type="stmt"/>
+        <line num="31" count="5" type="stmt"/>
+        <line num="32" count="5" type="stmt"/>
+        <line num="33" count="5" type="stmt"/>
+        <line num="36" count="10" type="stmt"/>
+        <line num="37" count="10" type="stmt"/>
         <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
         <line num="40" count="1" type="stmt"/>
-        <line num="42" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="43" count="0" type="stmt"/>
-        <line num="44" count="1" type="stmt"/>
-        <line num="47" count="10" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="47" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="48" count="0" type="stmt"/>
         <line num="49" count="1" type="stmt"/>
-        <line num="52" count="1" type="stmt"/>
-        <line num="53" count="1" type="stmt"/>
-        <line num="54" count="43" type="stmt"/>
-        <line num="55" count="43" type="cond" truecount="2" falsecount="0"/>
-        <line num="56" count="27" type="stmt"/>
-        <line num="57" count="16" type="cond" truecount="2" falsecount="0"/>
-        <line num="58" count="10" type="stmt"/>
-        <line num="59" count="6" type="stmt"/>
-        <line num="61" count="1" type="stmt"/>
+        <line num="52" count="10" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="43" type="stmt"/>
+        <line num="60" count="43" type="cond" truecount="2" falsecount="0"/>
+        <line num="61" count="27" type="stmt"/>
+        <line num="62" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="63" count="10" type="stmt"/>
+        <line num="64" count="6" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
       </file>
       <file name="default-inline-script-compiler.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/default-plugins/default-inline-script-compiler.js">
         <metrics statements="65" coveredstatements="64" conditionals="26" coveredconditionals="19" methods="15" coveredmethods="15"/>
