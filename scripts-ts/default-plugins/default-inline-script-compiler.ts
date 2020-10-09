@@ -27,10 +27,16 @@ ${script}
 
 async function addTemplate(dev: Dev, dirName: string): Promise<void> {
   try {
+    const htmlFile = dirName + '.html';
+    let relativePath = dirName
+      .split(/[\\\/]/gm)
+      .map((_) => '..')
+      .join('/');
+
     await fs.mkdirs(path.join(dev.args.out, dirName), (err) => {});
     await fs.writeFile(
       path.join(dev.args.out, dirName, 'index.html'),
-      await dev['getTemplate']()
+      await dev['getTemplate'](relativePath, htmlFile)
     );
   } catch (err) {
     console.error(err);

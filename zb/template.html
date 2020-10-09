@@ -3,9 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="~/styles/main.css" />
+
+    <!-- Inline script -->
+    <script src="https://ilijazm.github.io/Inline-Script/inline-script.js"></script>
+
+    <!-- Script -->
+    <script>
+      const relativePath = '*{{relativePath}}';
+      const props = JSON.parse(`*{{props}}`);
+    </script>
+
+    <!-- Burning brackets -->
+    <script src="https://ilijazm.github.io/burning-brackets-js/burning-brackets.min.js"></script>
   </head>
+
   <body>
-    <h1>Hello, world!</h1>
+    <h1>Hello</h1>
+
+    <div load="*{{htmlFile}}"></div>
+
+    <script defer>
+      inlineScript();
+    </script>
   </body>
 </html>

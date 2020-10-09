@@ -22,10 +22,16 @@ async function compileHtml(
 
   await fs.mkdirs(path.join(dev.args.out, dirName), (err) => {});
 
+  const htmlFile = path.basename(filePath);
+  let relativePath = dirName
+    .split(/[\\\/]/gm)
+    .map((_) => '..')
+    .join('/');
+
   try {
     await fs.writeFile(
       path.join(dev.args.out, dirName, 'index.html'),
-      await dev['getTemplate']()
+      await dev['getTemplate'](relativePath, htmlFile)
     );
   } catch (err) {
     console.error(err);
@@ -46,11 +52,22 @@ async function compileTemplate(
 ): Promise<boolean> {
   glob(path.join(dev.args.out, '**/index.html'), (err, files) => {
     files.forEach(async (file) => {
-      const dirname = path.dirname(file);
-      const basename = path.basename(dirname);
-      const pathName = path.join(dirname, basename + '.html');
+      file = file.substr(dev.args.out.length + 1);
+      const dirName = path.dirname(file);
+      const basename = path.basename(dirName);
+      const pathName = path.join(dirName, basename + '.html');
+
+      const htmlFile = path.basename(filePath);
+      let relativePath = dirName
+        .split(/[\\\/]/gm)
+        .map((_) => '..')
+        .join('/');
+
       if (!fs.existsSync(pathName)) return;
-      await fs.writeFile(file, await dev['getTemplate']());
+      await fs.writeFile(
+        path.join(dev.args.out, file),
+        await dev['getTemplate'](relativePath, htmlFile)
+      );
     });
   });
 

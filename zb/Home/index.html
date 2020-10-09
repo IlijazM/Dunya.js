@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Styles -->
-    <link rel="stylesheet" href="~/styles/main.css" />
+    <link rel="stylesheet" href="../styles/main.css" />
 
     <!-- Inline script -->
     <script src="https://ilijazm.github.io/Inline-Script/inline-script.js"></script>
 
     <!-- Script -->
     <script>
-      const relativePath = '*{{relativePath}}';
-      const props = JSON.parse(`*{{props}}`);
+      const relativePath = '..';
+      const props = JSON.parse(`{}`);
     </script>
 
     <!-- Burning brackets -->
@@ -23,7 +23,7 @@
   <body>
     <h1>Hello</h1>
 
-    <div load="*{{htmlFile}}"></div>
+    <div load="template.html"></div>
 
     <script defer>
       inlineScript();

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1602187720637" clover="3.2.0">
-  <project timestamp="1602187720637" name="All files">
-    <metrics statements="329" coveredstatements="301" conditionals="117" coveredconditionals="91" methods="69" coveredmethods="64" elements="515" coveredelements="456" complexity="0" loc="329" ncloc="329" packages="2" files="8" classes="8"/>
+<coverage generated="1602234773547" clover="3.2.0">
+  <project timestamp="1602234773548" name="All files">
+    <metrics statements="354" coveredstatements="316" conditionals="123" coveredconditionals="91" methods="73" coveredmethods="68" elements="550" coveredelements="475" complexity="0" loc="354" ncloc="354" packages="2" files="8" classes="8"/>
     <package name="scripts">
       <metrics statements="171" coveredstatements="158" conditionals="71" coveredconditionals="58" methods="41" coveredmethods="37"/>
       <file name="Dev.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/Dev.js">
@@ -183,7 +183,7 @@
       </file>
     </package>
     <package name="scripts.default-plugins">
-      <metrics statements="158" coveredstatements="143" conditionals="46" coveredconditionals="33" methods="28" coveredmethods="27"/>
+      <metrics statements="183" coveredstatements="158" conditionals="52" coveredconditionals="33" methods="32" coveredmethods="31"/>
       <file name="default-clear-out-directory.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/default-plugins/default-clear-out-directory.js">
         <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="2" count="1" type="stmt"/>
@@ -198,46 +198,51 @@
         <line num="14" count="1" type="stmt"/>
       </file>
       <file name="default-html-compiler.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/default-plugins/default-html-compiler.js">
-        <metrics statements="36" coveredstatements="34" conditionals="8" coveredconditionals="7" methods="6" coveredmethods="6"/>
+        <metrics statements="41" coveredstatements="40" conditionals="8" coveredconditionals="7" methods="8" coveredmethods="8"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
         <line num="7" count="5" type="stmt"/>
-        <line num="8" count="5" type="cond" truecount="2" falsecount="0"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="12" count="4" type="stmt"/>
-        <line num="13" count="4" type="stmt"/>
-        <line num="14" count="4" type="stmt"/>
-        <line num="17" count="0" type="stmt"/>
+        <line num="11" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
+        <line num="16" count="4" type="stmt"/>
+        <line num="17" count="4" type="stmt"/>
         <line num="19" count="4" type="stmt"/>
-        <line num="20" count="4" type="stmt"/>
         <line num="21" count="4" type="stmt"/>
         <line num="22" count="4" type="stmt"/>
-        <line num="23" count="4" type="stmt"/>
-        <line num="26" count="9" type="stmt"/>
-        <line num="27" count="9" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="31" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="32" count="0" type="stmt"/>
-        <line num="33" count="1" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="29" count="4" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
+        <line num="31" count="4" type="stmt"/>
+        <line num="32" count="4" type="stmt"/>
+        <line num="33" count="4" type="stmt"/>
         <line num="36" count="9" type="stmt"/>
+        <line num="37" count="9" type="stmt"/>
         <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
         <line num="41" count="1" type="stmt"/>
         <line num="42" count="1" type="stmt"/>
-        <line num="43" count="41" type="stmt"/>
-        <line num="44" count="41" type="cond" truecount="2" falsecount="0"/>
-        <line num="45" count="27" type="stmt"/>
-        <line num="46" count="14" type="cond" truecount="2" falsecount="0"/>
-        <line num="47" count="9" type="stmt"/>
-        <line num="48" count="5" type="stmt"/>
-        <line num="50" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="47" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="54" count="9" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="41" type="stmt"/>
+        <line num="62" count="41" type="cond" truecount="2" falsecount="0"/>
+        <line num="63" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="64" count="9" type="stmt"/>
+        <line num="65" count="5" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
       </file>
       <file name="default-inline-script-compiler.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/default-plugins/default-inline-script-compiler.js">
-        <metrics statements="62" coveredstatements="61" conditionals="26" coveredconditionals="19" methods="14" coveredmethods="14"/>
+        <metrics statements="65" coveredstatements="64" conditionals="26" coveredconditionals="19" methods="15" coveredmethods="15"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
@@ -252,69 +257,89 @@
         <line num="24" count="13" type="stmt"/>
         <line num="25" count="13" type="stmt"/>
         <line num="26" count="13" type="stmt"/>
-        <line num="29" count="0" type="stmt"/>
-        <line num="33" count="13" type="stmt"/>
-        <line num="34" count="13" type="stmt"/>
-        <line num="37" count="51" type="stmt"/>
-        <line num="38" count="51" type="cond" truecount="2" falsecount="0"/>
-        <line num="40" count="51" type="cond" truecount="2" falsecount="0"/>
-        <line num="41" count="2" type="stmt"/>
-        <line num="45" count="49" type="stmt"/>
-        <line num="46" count="49" type="stmt"/>
-        <line num="47" count="49" type="stmt"/>
-        <line num="48" count="49" type="cond" truecount="1" falsecount="1"/>
-        <line num="49" count="49" type="cond" truecount="1" falsecount="1"/>
+        <line num="28" count="13" type="stmt"/>
+        <line num="30" count="13" type="stmt"/>
+        <line num="31" count="13" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="38" count="13" type="stmt"/>
+        <line num="39" count="13" type="stmt"/>
+        <line num="42" count="51" type="stmt"/>
+        <line num="43" count="51" type="cond" truecount="2" falsecount="0"/>
+        <line num="45" count="51" type="cond" truecount="2" falsecount="0"/>
+        <line num="46" count="2" type="stmt"/>
         <line num="50" count="49" type="stmt"/>
-        <line num="53" count="14" type="stmt"/>
-        <line num="56" count="14" type="stmt"/>
-        <line num="59" count="13" type="stmt"/>
-        <line num="62" count="14" type="stmt"/>
-        <line num="63" count="14" type="stmt"/>
-        <line num="64" count="14" type="cond" truecount="2" falsecount="0"/>
-        <line num="65" count="1" type="stmt"/>
-        <line num="66" count="1" type="stmt"/>
-        <line num="67" count="1" type="stmt"/>
-        <line num="68" count="1" type="stmt"/>
-        <line num="70" count="13" type="stmt"/>
-        <line num="71" count="13" type="cond" truecount="1" falsecount="1"/>
-        <line num="72" count="13" type="stmt"/>
-        <line num="73" count="13" type="cond" truecount="1" falsecount="1"/>
-        <line num="74" count="13" type="stmt"/>
+        <line num="51" count="49" type="stmt"/>
+        <line num="52" count="49" type="stmt"/>
+        <line num="53" count="49" type="cond" truecount="1" falsecount="1"/>
+        <line num="54" count="49" type="cond" truecount="1" falsecount="1"/>
+        <line num="55" count="49" type="stmt"/>
+        <line num="58" count="14" type="stmt"/>
+        <line num="61" count="14" type="stmt"/>
+        <line num="64" count="13" type="stmt"/>
+        <line num="67" count="14" type="stmt"/>
+        <line num="68" count="14" type="stmt"/>
+        <line num="69" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
+        <line num="73" count="1" type="stmt"/>
         <line num="75" count="13" type="stmt"/>
-        <line num="76" count="13" type="stmt"/>
+        <line num="76" count="13" type="cond" truecount="1" falsecount="1"/>
         <line num="77" count="13" type="stmt"/>
-        <line num="80" count="8" type="stmt"/>
-        <line num="81" count="8" type="stmt"/>
-        <line num="83" count="1" type="stmt"/>
-        <line num="86" count="1" type="stmt"/>
-        <line num="87" count="1" type="stmt"/>
-        <line num="88" count="36" type="stmt"/>
-        <line num="89" count="36" type="stmt"/>
-        <line num="90" count="36" type="cond" truecount="2" falsecount="0"/>
-        <line num="91" count="12" type="stmt"/>
-        <line num="92" count="24" type="cond" truecount="2" falsecount="0"/>
-        <line num="93" count="14" type="stmt"/>
-        <line num="95" count="10" type="stmt"/>
-        <line num="96" count="10" type="stmt"/>
-        <line num="97" count="10" type="cond" truecount="2" falsecount="0"/>
-        <line num="98" count="8" type="stmt"/>
-        <line num="99" count="2" type="stmt"/>
-        <line num="101" count="1" type="stmt"/>
+        <line num="78" count="13" type="cond" truecount="1" falsecount="1"/>
+        <line num="79" count="13" type="stmt"/>
+        <line num="80" count="13" type="stmt"/>
+        <line num="81" count="13" type="stmt"/>
+        <line num="82" count="13" type="stmt"/>
+        <line num="85" count="8" type="stmt"/>
+        <line num="86" count="8" type="stmt"/>
+        <line num="88" count="1" type="stmt"/>
+        <line num="91" count="1" type="stmt"/>
+        <line num="92" count="1" type="stmt"/>
+        <line num="93" count="36" type="stmt"/>
+        <line num="94" count="36" type="stmt"/>
+        <line num="95" count="36" type="cond" truecount="2" falsecount="0"/>
+        <line num="96" count="12" type="stmt"/>
+        <line num="97" count="24" type="cond" truecount="2" falsecount="0"/>
+        <line num="98" count="14" type="stmt"/>
+        <line num="100" count="10" type="stmt"/>
+        <line num="101" count="10" type="stmt"/>
+        <line num="102" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="103" count="8" type="stmt"/>
+        <line num="104" count="2" type="stmt"/>
+        <line num="106" count="1" type="stmt"/>
       </file>
       <file name="default-link-template-file.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/default-plugins/default-link-template-file.js">
-        <metrics statements="12" coveredstatements="11" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="2"/>
+        <metrics statements="29" coveredstatements="17" conditionals="8" coveredconditionals="1" methods="3" coveredmethods="3"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
-        <line num="5" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="10" count="13" type="stmt"/>
-        <line num="11" count="18" type="stmt"/>
-        <line num="12" count="18" type="cond" truecount="1" falsecount="1"/>
-        <line num="13" count="0" type="stmt"/>
-        <line num="14" count="18" type="stmt"/>
-        <line num="17" count="1" type="stmt"/>
+        <line num="6" count="18" type="stmt"/>
+        <line num="7" count="18" type="stmt"/>
+        <line num="8" count="18" type="stmt"/>
+        <line num="10" count="18" type="stmt"/>
+        <line num="11" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="20" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="18" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="13" type="stmt"/>
+        <line num="36" count="18" type="stmt"/>
+        <line num="37" count="18" type="cond" truecount="1" falsecount="1"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="39" count="18" type="stmt"/>
+        <line num="40" count="18" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
       </file>
       <file name="default-validate-in-directory.js" path="/home/ilijaz/dev/git/Dunya.js/scripts/default-plugins/default-validate-in-directory.js">
         <metrics statements="8" coveredstatements="8" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
