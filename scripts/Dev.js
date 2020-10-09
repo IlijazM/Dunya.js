@@ -19,13 +19,14 @@ class Dev extends DunyaWrapper_js_1.default {
             noAutoInit: false,
             watcher: true,
             plugins: [
-                path.join(__dirname, 'default-plugins', 'default-validate-in-directory'),
-                path.join(__dirname, 'default-plugins', 'default-clear-out-directory'),
-                path.join(__dirname, 'default-plugins', 'dunya-sass-support'),
-                path.join(__dirname, 'default-plugins', 'default-link-template-file'),
-                path.join(__dirname, 'default-plugins', 'default-html-compiler'),
-                path.join(__dirname, 'default-plugins', 'default-inline-script-compiler'),
+                path.join(__dirname, 'default', 'default-validate-in-directory'),
+                path.join(__dirname, 'default', 'default-clear-out-directory'),
+                path.join(__dirname, 'default', 'dunya-sass-support'),
+                path.join(__dirname, 'default', 'default-link-template-file'),
+                path.join(__dirname, 'default', 'default-html-compiler'),
+                path.join(__dirname, 'default', 'default-inline-script-compiler'),
             ],
+            server: path.join(__dirname, 'default', 'default-server'),
             watcherConfig: {},
             props: {},
         };
@@ -142,6 +143,31 @@ class Dev extends DunyaWrapper_js_1.default {
             });
         });
     }
+    startServer() {
+        const serverArgs = {
+            ip: this.args.ip,
+            port: this.args.port,
+            dir: this.args.out,
+        };
+        try {
+            if (this.server === undefined)
+                this.server = require(this.resolvePathName(this.args.server));
+            this.server = this.server.default ?? this.server;
+            if (this.server.onStart === undefined)
+                throw new Error(`The server '${this.args.server}' has no 'onStart' function.`);
+            this.server.onStart(serverArgs);
+        }
+        catch (err) {
+            throw new Error(`An error occurred while requiring the server '${this.args.server}':\n${err}`);
+        }
+    }
+    stopServer() {
+        if (this.server === undefined)
+            throw new Error(`There is no server to be stopped.`);
+        if (this.server.onStop === undefined)
+            throw new Error(`The server '${this.args.server}' has no 'onStop' function.`);
+        this.server.onStop();
+    }
     //#endregion
     async init() {
         await this.argumentProvider();
@@ -150,6 +176,7 @@ class Dev extends DunyaWrapper_js_1.default {
         if (this.args.watcher)
             await this.watch();
         await this.afterWatcher();
+        this.startServer();
     }
     async terminate() {
         await this.watcher.stop();

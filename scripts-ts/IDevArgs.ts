@@ -14,6 +14,7 @@ export default interface IDevArgs {
   watcher?: boolean;
 
   plugins?: Array<string>;
+  server?: string;
 
   watcherConfig?: Record<string, any>;
   props?: Record<string, any>;

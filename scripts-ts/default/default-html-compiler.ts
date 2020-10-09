@@ -60,17 +60,17 @@ async function compileTemplate(
   glob(path.join(dev.args.out, '**/index.html'), (err, files) => {
     files.forEach(async (file) => {
       file = file.substr(dev.args.out.length + 1);
-      const dirName = path.dirname(file);
+      let dirName = path.dirname(file);
       const basename = path.basename(dirName);
       const pathName = path.join(dirName, basename + '.html');
 
-      const htmlFile = path.basename(filePath);
+      let htmlFile = path.basename(pathName);
+      if (htmlFile === '..html') htmlFile = '_index.html';
       let relativePath = dirName
         .split(/[\\\/]/gm)
         .map((_) => '..')
         .join('/');
 
-      if (!fs.existsSync(path.join(dev.args.out, pathName))) return;
       await fs.writeFile(
         path.join(dev.args.out, file),
         await dev['getTemplate'](relativePath, htmlFile)
