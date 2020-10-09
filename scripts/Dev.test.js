@@ -193,6 +193,30 @@ describe('Dev', () => {
             }).not.toThrowError();
         }
     });
+    test('Compile template file', async () => {
+        const inPath = 'tests/compile template file.in';
+        const outPath = 'tests/compile template file.out';
+        try {
+            const dev = new Dev_js_1.default({
+                ...defaultConfig,
+                ...{ in: inPath, out: outPath },
+            });
+            await dev.init();
+            const input = `<script src="~/scripts/app.js"></script>
+*{{htmlFile}}`;
+            const output = `<script src="../scripts/app.js"></script>
+Test.html`;
+            await fs.writeFile(inPath + '/Test.html', 'Hello, world');
+            await fs.writeFile(inPath + '/template.html', input);
+            await sleep(10);
+            expect((await fs.readFile(path.join(outPath, 'Test', 'index.html'))).toString()).toEqual(output);
+        }
+        catch (e) {
+            expect(() => {
+                throw e;
+            }).not.toThrowError();
+        }
+    });
     test('Change template', async () => {
         const inPath = 'tests/change template.in';
         const outPath = 'tests/change template.out';

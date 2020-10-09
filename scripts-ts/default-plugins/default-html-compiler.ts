@@ -63,7 +63,7 @@ async function compileTemplate(
         .map((_) => '..')
         .join('/');
 
-      if (!fs.existsSync(pathName)) return;
+      if (!fs.existsSync(path.join(dev.args.out, pathName))) return;
       await fs.writeFile(
         path.join(dev.args.out, file),
         await dev['getTemplate'](relativePath, htmlFile)

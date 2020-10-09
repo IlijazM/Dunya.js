@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.62% </span>
+                <span class="strong">86.21% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/29</span>
+                <span class='fraction'>25/29</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>4/8</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.62% </span>
+                <span class="strong">86.21% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/29</span>
+                <span class='fraction'>25/29</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -105,41 +105,41 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -153,22 +153,22 @@ function compileTemplate(template, relativePath, htmlFile, args) {
     const regex = /\*\{\{(.*?)\}\}/gm;
     let m;
     while ((m = regex.exec(template)) !== null) {
-<span class="cstat-no" title="statement not covered" >        if (m.index === regex.lastIndex) {</span>
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (m.index === regex.lastIndex) {
 <span class="cstat-no" title="statement not covered" >            regex.lastIndex++;</span>
         }
-        const match = <span class="cstat-no" title="statement not covered" >m[0];</span>
-        const index = <span class="cstat-no" title="statement not covered" >m.index;</span>
-        let res = <span class="cstat-no" title="statement not covered" >eval(match.substr(1));</span>
-<span class="cstat-no" title="statement not covered" >        if (res === undefined) {</span>
+        const match = m[0];
+        const index = m.index;
+        let res = eval(match.substr(1));
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (res === undefined) {
 <span class="cstat-no" title="statement not covered" >            res = '';</span>
         }
-<span class="cstat-no" title="statement not covered" >        if (typeof res === 'object')</span>
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof res === 'object')
 <span class="cstat-no" title="statement not covered" >            res = JSON.stringify(res);</span>
-<span class="cstat-no" title="statement not covered" >        template =</span>
+        template =
             template.substring(0, index) +
                 res.toString() +
                 template.substr(index + match.length);
-<span class="cstat-no" title="statement not covered" >        regex.lastIndex += res.toString().length;</span>
+        regex.lastIndex += res.toString().length;
     }
     return template;
 }
@@ -193,7 +193,7 @@ exports.default = plugin;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri Oct 09 2020 11:12:53 GMT+0200 (Mitteleuropäische Sommerzeit)
+                at Fri Oct 09 2020 11:36:53 GMT+0200 (Mitteleuropäische Sommerzeit)
             </div>
         </div>
         <script src="../../prettify.js"></script>
