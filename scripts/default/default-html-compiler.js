@@ -3,64 +3,72 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const glob = require('glob');
 const fs = require('fs-extra');
 const path = require('path-extra');
-async function compileHtml(dev, event, filePath) {
-    let dirName = filePath.substr(0, filePath.length - path.extname(filePath).length);
-    if (event === 'unlink') {
-        await fs.remove(path.join(dev.args.out, dirName));
-        return true;
-    }
+async function compileTemplate(dev, event) {
+    await glob(path.join(dev.args.in, '**/*.html'), async (err, files) => {
+        if (err)
+            throw err;
+        for await (let filePath of files) {
+            filePath = filePath.substr(dev.args.in.length + 1);
+            if (filePath === 'template.html')
+                continue;
+            const { htmlFile, dirName, base, relativePath } = convertHtmlFilePaths(filePath);
+            if (event === 'unlink') {
+                await fs.remove(path.join(dev.args.out, dirName, base, 'index.html'));
+                continue;
+            }
+            try {
+                await fs.writeFile(path.join(dev.args.out, dirName, base, 'index.html'), await dev['getTemplate'](relativePath, htmlFile));
+            }
+            catch (err) {
+                console.error(err);
+            }
+        }
+    });
+    return false;
+}
+function convertHtmlFilePaths(filePath) {
     let htmlFile = path.basename(filePath);
+    let dirName = path.dirname(filePath);
+    let base = path.base(filePath);
     if (htmlFile === 'index.html') {
         htmlFile = '_index.html';
-        dirName = dirName.substr(0, dirName.length - '/index'.length);
-        console.log(htmlFile, dirName);
+        base = '';
     }
-    await fs.mkdirs(path.join(dev.args.out, dirName), (err) => { });
-    let relativePath = dirName
+    const relativePath = dirName
         .split(/[\\\/]/gm)
-        .map((_) => '..')
+        .map(() => '..')
         .join('/');
-    try {
-        await fs.writeFile(path.join(dev.args.out, dirName, 'index.html'), await dev['getTemplate'](relativePath, htmlFile));
-    }
-    catch (err) {
-        console.error(err);
+    return { htmlFile, dirName, base, relativePath };
+}
+async function compileHTML(dev, event, filePath) {
+    const { htmlFile, dirName, base, relativePath } = convertHtmlFilePaths(filePath);
+    await fs.mkdir(path.join(dev.args.out, dirName, base), (err) => { });
+    if (event === 'unlink') {
+        try {
+            await fs.remove(path.join(dev.args.out, dirName, base, 'index.html'));
+            await fs.remove(path.join(dev.args.out, dirName, base, htmlFile));
+            await compileTemplate(dev, 'change');
+        }
+        catch (err) { }
+        return true;
     }
     const from = path.join(dev.args.in, filePath);
-    const to = path.join(dev.args.out, dirName, htmlFile);
+    const to = path.join(dev.args.out, dirName, base, htmlFile);
     console.log(from + ' -> ' + to);
     await fs.copyFile(from, to);
     return true;
-}
-async function compileTemplate(dev, event, filePath) {
-    glob(path.join(dev.args.out, '**/index.html'), (err, files) => {
-        files.forEach(async (file) => {
-            file = file.substr(dev.args.out.length + 1);
-            let dirName = path.dirname(file);
-            const basename = path.basename(dirName);
-            const pathName = path.join(dirName, basename + '.html');
-            let htmlFile = path.basename(pathName);
-            if (htmlFile === '..html')
-                htmlFile = '_index.html';
-            let relativePath = dirName
-                .split(/[\\\/]/gm)
-                .map((_) => '..')
-                .join('/');
-            await fs.writeFile(path.join(dev.args.out, file), await dev['getTemplate'](relativePath, htmlFile));
-        });
-    });
-    return false;
 }
 let plugin = {
     name: '',
 };
 plugin.name = 'default-html-compiler';
 plugin.beforeWatchEventHalter = async function (dev, event, filePath) {
-    const ext = path.extname(filePath);
-    if (ext !== '.html')
-        return false;
-    if (path.basename(filePath) === 'template.html')
-        return compileTemplate(dev, event, filePath);
-    return compileHtml(dev, event, filePath);
+    const fileName = path.basename(filePath);
+    if (fileName === 'template.html')
+        return await compileTemplate(dev, event);
+    const extension = path.extname(fileName);
+    if (extension === '.html')
+        return await compileHTML(dev, event, filePath);
+    return false;
 };
 exports.default = plugin;

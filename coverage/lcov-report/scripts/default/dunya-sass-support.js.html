@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.33% </span>
+                <span class="strong">30% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>19/30</span>
+                <span class='fraction'>9/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.67% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.33% </span>
+                <span class="strong">30% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>19/30</span>
+                <span class='fraction'>9/30</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -118,10 +118,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">92x</span>
-<span class="cline-any cline-yes">92x</span>
-<span class="cline-any cline-yes">92x</span>
-<span class="cline-any cline-yes">92x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -136,13 +136,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">51x</span>
-<span class="cline-any cline-yes">51x</span>
-<span class="cline-any cline-yes">37x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
@@ -161,11 +161,11 @@ let plugin = {
     name: '',
 };
 plugin.name = 'dunya-sass-support';
-plugin.pipeFile = async function ({ filePath, fileContent }, args, onDelete) {
-    const originalFilePath = filePath;
-    const ext = path.extname(filePath);
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (ext !== '.scss')
-        return undefined;
+plugin.pipeFile = <span class="fstat-no" title="function not covered" >as</span>ync function ({ filePath, fileContent }, args, onDelete) {
+    const originalFilePath = <span class="cstat-no" title="statement not covered" >filePath;</span>
+    const ext = <span class="cstat-no" title="statement not covered" >path.extname(filePath);</span>
+<span class="cstat-no" title="statement not covered" >    if (ext !== '.scss')</span>
+<span class="cstat-no" title="statement not covered" >        return undefined;</span>
     const endIndex = <span class="cstat-no" title="statement not covered" >filePath.length - path.extname(filePath).length;</span>
 <span class="cstat-no" title="statement not covered" >    filePath = filePath.substr(0, endIndex) + '.css';</span>
 <span class="cstat-no" title="statement not covered" >    if (onDelete)</span>
@@ -179,14 +179,14 @@ plugin.pipeFile = async function ({ filePath, fileContent }, args, onDelete) {
     }
 <span class="cstat-no" title="statement not covered" >    return { filePath, fileContent };</span>
 };
-plugin.reversePipeFile = async function (args, filePath) {
-    const ext = path.extname(filePath);
-    if (ext !== '.css')
-        return undefined;
-    filePath = path.join(path.dirname(filePath), path.base(filePath) + '.scss');
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (fs.existsSync(filePath))
+plugin.reversePipeFile = <span class="fstat-no" title="function not covered" >as</span>ync function (args, filePath) {
+    const ext = <span class="cstat-no" title="statement not covered" >path.extname(filePath);</span>
+<span class="cstat-no" title="statement not covered" >    if (ext !== '.css')</span>
+<span class="cstat-no" title="statement not covered" >        return undefined;</span>
+<span class="cstat-no" title="statement not covered" >    filePath = path.join(path.dirname(filePath), path.base(filePath) + '.scss');</span>
+<span class="cstat-no" title="statement not covered" >    if (fs.existsSync(filePath))</span>
 <span class="cstat-no" title="statement not covered" >        return filePath;</span>
-    return undefined;
+<span class="cstat-no" title="statement not covered" >    return undefined;</span>
 };
 exports.default = plugin;
 &nbsp;</pre></td></tr></table></pre>
@@ -196,7 +196,7 @@ exports.default = plugin;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Fri Oct 09 2020 12:04:37 GMT+0200 (Mitteleuropäische Sommerzeit)
+                at Thu Oct 15 2020 09:34:12 GMT+0200 (Mitteleuropäische Sommerzeit)
             </div>
         </div>
         <script src="../../prettify.js"></script>

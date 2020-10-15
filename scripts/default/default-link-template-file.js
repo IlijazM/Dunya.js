@@ -13,7 +13,13 @@ function compileTemplate(template, relativePath, htmlFile, args) {
         }
         const match = m[0];
         const index = m.index;
-        let res = eval(match.substr(1));
+        let res;
+        try {
+            res = eval(match.substr(1));
+        }
+        catch (err) {
+            throw new Error(`An error occurred while compiling 'template.html':\n${err}`);
+        }
         if (res === undefined) {
             res = '';
         }
