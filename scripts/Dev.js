@@ -70,9 +70,10 @@ class Dev extends DunyaWrapper_js_1.default {
         this.watcher = chokidar.watch(this.args.in, {
             ...this.args.watcherConfig,
         });
-        await this.watcher.on('all', async (event, path) => {
-            await this.eventHandler(event, path);
-        });
+        await this.watcher
+            .on('add', (path) => this.eventHandler('add', path))
+            .on('change', (path) => this.eventHandler('change', path))
+            .on('unlink', (path) => this.eventHandler('unlink', path));
     }
     //#endregion
     //#region Event Handler

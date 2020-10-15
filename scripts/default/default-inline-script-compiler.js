@@ -40,8 +40,7 @@ async function addHtml(dev, dirName, html) {
 }
 async function findFile(dev, dirName, ext) {
     const inDirName = path.join(dev.args.in, dirName);
-    let filePath = (await dev.getFile(dev.args, path.join(inDirName, dirName + ext))) ??
-        path.join(inDirName, dirName + ext);
+    let filePath = (await dev.getFile(dev.args, path.join(inDirName, dirName + ext))) ?? path.join(inDirName, dirName + ext);
     if (!fs.existsSync(filePath))
         return {
             filePath: null,
@@ -64,8 +63,8 @@ function getHTML(dev, dirName) {
     return findFile(dev, dirName, '.inline-script');
 }
 async function inlineScriptCompiler(dev, event, filePath, dirName) {
-    const style = (await getStyle(dev, dirName)).fileContent;
-    const script = (await getScript(dev, dirName)).fileContent;
+    const style = (await getStyle(dev, dirName)).fileContent ?? '';
+    const script = (await getScript(dev, dirName)).fileContent ?? '';
     if (event === 'unlink') {
         await fs.writeFile(path.join(dev.args.out, dirName, dirName + '.css'), style);
         await fs.writeFile(path.join(dev.args.out, dirName, dirName + '.js'), script);

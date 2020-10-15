@@ -93,20 +93,15 @@ export default class Dev extends DunyaWrapper {
     this.watcher = chokidar.watch(this.args.in, {
       ...this.args.watcherConfig,
     });
-    await this.watcher.on(
-      'all',
-      async (event: string, path: string): Promise<void> => {
-        await this.eventHandler(event, path);
-      }
-    );
+    await this.watcher
+      .on('add', (path: string) => this.eventHandler('add', path))
+      .on('change', (path: string) => this.eventHandler('change', path))
+      .on('unlink', (path: string) => this.eventHandler('unlink', path));
   }
   //#endregion
 
   //#region Event Handler
-  async eventHandlerValidator(
-    event: string,
-    filePath: string
-  ): Promise<{ filePath: string; fileContent: string }> {
+  async eventHandlerValidator(event: string, filePath: string): Promise<{ filePath: string; fileContent: string }> {
     const absolutePath = filePath;
     filePath = filePath.substr(this.args.in.length + 1);
     let fileContent;
@@ -117,12 +112,7 @@ export default class Dev extends DunyaWrapper {
     }
 
     // Pipe file
-    const res = await this.pluginPipe(
-      'pipeFile',
-      { filePath, fileContent },
-      this.args,
-      event === 'unlink'
-    );
+    const res = await this.pluginPipe('pipeFile', { filePath, fileContent }, this.args, event === 'unlink');
 
     filePath = res.filePath ?? filePath;
     fileContent = res.fileContent ?? fileContent;
@@ -136,8 +126,7 @@ export default class Dev extends DunyaWrapper {
     filePath = validatorResponse.filePath;
     const fileContent = validatorResponse.fileContent;
 
-    if (await this.pluginHalter('beforeWatchEventHalter', event, filePath))
-      return;
+    if (await this.pluginHalter('beforeWatchEventHalter', event, filePath)) return;
     await this.pluginCaller('watcherEvent', event, filePath);
 
     switch (event) {
@@ -201,31 +190,22 @@ export default class Dev extends DunyaWrapper {
       dir: this.args.out,
     };
     try {
-      if (this.server === undefined)
-        this.server = require(this.resolvePathName(this.args.server));
+      if (this.server === undefined) this.server = require(this.resolvePathName(this.args.server));
       this.server = (this.server as any).default ?? this.server;
 
       if (this.server.onStart === undefined)
-        throw new Error(
-          `The server '${this.args.server}' has no 'onStart' function.`
-        );
+        throw new Error(`The server '${this.args.server}' has no 'onStart' function.`);
 
       this.server.onStart(serverArgs);
     } catch (err) {
-      throw new Error(
-        `An error occurred while requiring the server '${this.args.server}':\n${err}`
-      );
+      throw new Error(`An error occurred while requiring the server '${this.args.server}':\n${err}`);
     }
   }
 
   stopServer() {
-    if (this.server === undefined)
-      throw new Error(`There is no server to be stopped.`);
+    if (this.server === undefined) throw new Error(`There is no server to be stopped.`);
 
-    if (this.server.onStop === undefined)
-      throw new Error(
-        `The server '${this.args.server}' has no 'onStop' function.`
-      );
+    if (this.server.onStop === undefined) throw new Error(`The server '${this.args.server}' has no 'onStop' function.`);
 
     this.server.onStop();
   }
