@@ -20,9 +20,8 @@ ${style}
 ${script}
 </script>`;
 }
-async function addTemplate(dev, dirName) {
+async function addTemplate(dev, dirName, htmlFile) {
     try {
-        const htmlFile = dirName + '.html';
         let relativePath = dirName
             .split(/[\\\/]/gm)
             .map((_) => '..')
@@ -34,13 +33,12 @@ async function addTemplate(dev, dirName) {
         console.error(err);
     }
 }
-async function addHtml(dev, dirName, html) {
-    await fs.mkdirs(path.join(dev.args.out, dirName), (err) => { });
-    await fs.writeFile(path.join(dev.args.out, dirName, dirName + '.html'), html);
+async function addHtml(dev, dirName, htmlFile, html) {
+    await fs.writeFile(path.join(dev.args.out, dirName, htmlFile), html);
 }
-async function findFile(dev, dirName, ext) {
+async function findFile(dev, dirName, base, ext) {
     const inDirName = path.join(dev.args.in, dirName);
-    let filePath = (await dev.getFile(dev.args, path.join(inDirName, dirName + ext))) ?? path.join(inDirName, dirName + ext);
+    let filePath = (await dev.getFile(dev.args, path.join(inDirName, base + ext))) ?? path.join(inDirName, base + ext);
     if (!fs.existsSync(filePath))
         return {
             filePath: null,
@@ -53,31 +51,74 @@ async function findFile(dev, dirName, ext) {
     fileContent = res.fileContent ?? fileContent;
     return { filePath, fileContent };
 }
-function getStyle(dev, dirName) {
-    return findFile(dev, dirName, '.css');
+async function compileTemplate(dev, event) {
+    await glob(path.join(dev.args.in, '**/*.inline-script'), async (err, files) => {
+        if (err)
+            throw err;
+        for await (let filePath of files) {
+            filePath = filePath.substr(dev.args.in.length + 1);
+            const { htmlFile, dirName, base, relativePath } = convertInlineScriptFilePaths(filePath);
+            if (event === 'unlink') {
+                await fs.remove(path.join(dev.args.out, dirName, 'index.html'));
+                continue;
+            }
+            try {
+                await fs.writeFile(path.join(dev.args.out, dirName, 'index.html'), await dev['getTemplate'](relativePath, htmlFile));
+            }
+            catch (err) {
+                console.error(err);
+            }
+        }
+    });
+    return false;
 }
-function getScript(dev, dirName) {
-    return findFile(dev, dirName, '.js');
+function getStyle(dev, dirName, base) {
+    return findFile(dev, dirName, base, '.css');
 }
-function getHTML(dev, dirName) {
-    return findFile(dev, dirName, '.inline-script');
+function getScript(dev, dirName, base) {
+    return findFile(dev, dirName, base, '.js');
 }
-async function inlineScriptCompiler(dev, event, filePath, dirName) {
-    const style = (await getStyle(dev, dirName)).fileContent ?? '';
-    const script = (await getScript(dev, dirName)).fileContent ?? '';
+function getHTML(dev, dirName, base) {
+    return findFile(dev, dirName, base, '.inline-script');
+}
+function convertInlineScriptFilePaths(filePath) {
+    let htmlFile = path.basename(filePath);
+    let dirName = path.dirname(filePath);
+    let base = path.base(filePath);
+    if (base === 'index') {
+        htmlFile = '_index.html';
+        dirName = dirName.substr(0, dirName.length - path.basename(dirName).length);
+    }
+    let relativePath = dirName
+        .split(/[\\\/]/gm)
+        .map(() => '..')
+        .join('/');
+    if (dirName === '')
+        relativePath = '.';
+    return { htmlFile, dirName, base, relativePath };
+}
+async function inlineScriptCompiler(dev, event, filePath) {
+    const initialDirName = path.dirname(filePath);
+    const { htmlFile, dirName, base, relativePath } = convertInlineScriptFilePaths(filePath);
+    const style = (await getStyle(dev, initialDirName, base)).fileContent;
+    const script = (await getScript(dev, initialDirName, base)).fileContent;
     if (event === 'unlink') {
-        await fs.writeFile(path.join(dev.args.out, dirName, dirName + '.css'), style);
-        await fs.writeFile(path.join(dev.args.out, dirName, dirName + '.js'), script);
-        await fs.unlink(path.join(dev.args.out, dirName, dirName + '.html'));
+        if (style)
+            await fs.writeFile(path.join(dev.args.out, dirName, base + '.css'), style);
+        if (script)
+            await fs.writeFile(path.join(dev.args.out, dirName, base + '.js'), script);
+        await fs.unlink(path.join(dev.args.out, dirName, base + '.html'));
+        await fs.unlink(path.join(dev.args.out, dirName, 'index.html'));
         return true;
     }
-    const html = (await getHTML(dev, dirName)).fileContent;
+    const html = (await getHTML(dev, initialDirName, base)).fileContent;
     if (style !== null)
-        await fs.unlink(path.join(dev.args.out, dirName, dirName + '.css'), (err) => { });
+        await fs.unlink(path.join(dev.args.out, dirName, base + '.css'), (err) => { });
     if (script !== null)
-        await fs.unlink(path.join(dev.args.out, dirName, dirName + '.js'), (err) => { });
-    await addTemplate(dev, dirName);
-    await addHtml(dev, dirName, generateHTML(html, style, script));
+        await fs.unlink(path.join(dev.args.out, dirName, base + '.js'), (err) => { });
+    await fs.mkdirs(path.join(dev.args.out, dirName), (err) => { });
+    await addTemplate(dev, dirName, htmlFile);
+    await addHtml(dev, dirName, htmlFile, generateHTML(html, style, script));
     return true;
 }
 async function updateInlineScriptFile(dev, inlineScriptPath) {
@@ -89,14 +130,18 @@ let plugin = {
 };
 plugin.name = 'default-inline-script-compiler';
 plugin.beforeWatchEventHalter = async function (dev, event, filePath) {
+    if (path.basename(filePath) === 'template.html') {
+        compileTemplate(dev, event);
+        return false;
+    }
     const ext = path.extname(filePath);
     const dirName = path.dirname(filePath);
-    if (dirName !== path.base(filePath))
-        return false;
     if (ext === '.inline-script') {
-        return await inlineScriptCompiler(dev, event, filePath, dirName);
+        if (path.base(dirName) !== path.base(filePath))
+            return false;
+        return await inlineScriptCompiler(dev, event, filePath);
     }
-    const inlineScriptFile = await findFile(dev, dirName, '.inline-script');
+    const inlineScriptFile = await findFile(dev, dirName, path.base(filePath), '.inline-script');
     const inlineScriptPath = inlineScriptFile.filePath;
     if (inlineScriptPath !== null)
         return await updateInlineScriptFile(dev, inlineScriptPath);
