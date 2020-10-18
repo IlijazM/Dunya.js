@@ -1,226 +1,265 @@
-const path = require('path');
 const fs = require('fs-extra');
-const glob = require('glob');
-const chokidar = require('chokidar');
+const Path = require('path-extra');
+const sane = require('sane');
+const liveServer = require('live-server');
 
-import IArgs from './IDevArgs';
-
-import DunyaWrapper from './DunyaWrapper.js';
+import { fileURLToPath } from 'url';
+import Args from './Args';
+import DunyaPlugin from './DunyaPlugin';
 import DunyaServer from './DunyaServer';
 import DunyaServerArgs from './DunyaServerArgs';
 
-export default class Dev extends DunyaWrapper {
-  args: IArgs = {
-    config: 'dunya.config.json',
+export default class Dev {
+  args: Args = {
+    inputDir: 'input',
+    outputDir: 'output',
 
-    ip: '0.0.0.0',
+    ip: '127.0.0.1',
     port: 8080,
-
-    in: 'src',
-    out: 'dev',
-
-    noAutoInit: false,
-    watcher: true,
-
-    plugins: [
-      path.join(__dirname, 'default', 'default-validate-in-directory'),
-      path.join(__dirname, 'default', 'default-clear-out-directory'),
-      path.join(__dirname, 'default', 'dunya-sass-support'),
-      path.join(__dirname, 'default', 'default-link-template-file'),
-      path.join(__dirname, 'default', 'default-html-compiler'),
-      path.join(__dirname, 'default', 'default-inline-script-compiler'),
-    ],
-    server: path.join(__dirname, 'default', 'default-server'),
-
-    watcherConfig: {},
-    props: {},
   };
+  plugins: Array<DunyaPlugin> = [];
 
-  //#region Arguments & Config
-  private configArgs: Record<string, any>;
-
-  getConfigPath(): string {
-    return this.userArgs.config ?? this.args.config;
-  }
-
-  async configProvider(): Promise<void> {
-    const configPath = this.getConfigPath();
-    this.configArgs = await this.loadAndParseJSONSafe(configPath);
-  }
-
-  async argumentProvider(): Promise<void> {
-    await this.configProvider();
-    this.handleArgs(this.args, this.configArgs, this.userArgs);
-    this.args.mainPath = this.mainPath;
-    this.args.modulePath = this.modulePath;
+  //#region misc. functions
+  typeOf(object: any): string {
+    if (object === null) return 'null';
+    if (typeof object === 'object') {
+      if (object instanceof Array) return 'array';
+      if (object instanceof RegExp) return 'regex';
+    }
+    return typeof object;
   }
   //#endregion
 
-  constructor(private userArgs: IArgs = {}) {
-    super();
-    userArgs = userArgs ?? {};
-    if (userArgs.noAutoInit !== true) this.init();
+  //#region fs
+  readFile(path: string): string {
+    return fs.readFileSync(path, 'utf-8');
   }
 
-  //#region Setup
-  async allSetup(): Promise<void> {
-    await this.validate();
-    await this.preSetup();
-    await this.setup();
-    await this.afterSetup();
+  writeFile(path: string, fileContent: string) {
+    this.mkdirs(Path.dirname(path));
+    fs.writeFile(path, fileContent, 'utf-8');
   }
 
-  async validate(): Promise<void> {
-    await this.pluginCaller('validate');
+  mkdirs(dirs: string) {
+    fs.mkdirsSync(dirs, () => {});
   }
 
-  async preSetup(): Promise<void> {
-    await this.pluginCaller('preSetup');
-  }
-  async setup(): Promise<void> {
-    await this.pluginCaller('setup');
+  removeDir(dir: string) {
+    fs.remove(dir);
   }
 
-  async afterSetup(): Promise<void> {
-    await this.pluginCaller('afterSetup');
+  unlinkFile(path: string) {
+    fs.unlinkSync(path);
+  }
+
+  isDir(path: string): boolean {
+    return fs.lstatSync(path).isDirectory();
+  }
+
+  getFile(path: string): string {
+    try {
+      return this.readFile(path);
+    } catch {
+      return null;
+    }
+  }
+
+  loadFileSave(path: string): string {
+    return this.readFile(path);
+  }
+
+  loadFileJSON(path: string): Record<string, any> {
+    try {
+      return JSON.parse(this.readFile(path));
+    } catch (err) {
+      throw new Error(`An error occurred while parsing '${path}':\n${err}`);
+    }
+  }
+
+  resolvePluginPathName(pathName: string): string {
+    return Path.resolve(pathName);
   }
   //#endregion
 
-  //#region Watcher
-  watcher: any;
-
-  async watch(): Promise<void> {
-    this.watcher = chokidar.watch(this.args.in, {
-      ...this.args.watcherConfig,
-    });
-    await this.watcher
-      .on('add', (path: string) => this.eventHandler('add', path))
-      .on('change', (path: string) => this.eventHandler('change', path))
-      .on('unlink', (path: string) => this.eventHandler('unlink', path));
+  //#region handle arguments
+  handleInputArguments(args: Args) {
+    if (args) Object.entries(args).forEach((v) => this.overwriteArgs(v[0], v[1]));
+    if (!this.args.noAutoInit) this.init();
   }
-  //#endregion
 
-  //#region Event Handler
-  async eventHandlerValidator(event: string, filePath: string): Promise<{ filePath: string; fileContent: string }> {
-    const absolutePath = filePath;
-    filePath = filePath.substr(this.args.in.length + 1);
-    let fileContent;
-    if (event !== 'unlink') {
-      if ((await fs.lstat(absolutePath)).isDirectory()) return; // If it is a dir
-      fileContent = await fs.readFile(absolutePath);
-      fileContent = fileContent.toString();
+  loadConfig() {
+    if (!this.args.config) return;
+    const config = this.loadFileJSON(this.args.config);
+    Object.entries(config).forEach((v) => this.overwriteArgs(v[0], v[1]));
+  }
+
+  overwriteArgs(key: string, value: any) {
+    const argsType = this.typeOf(this.args[key]);
+    const overwriteType = this.typeOf(value);
+
+    if (argsType === 'undefined') {
+      this.args[key] = value;
+      return;
     }
 
-    // Pipe file
-    const res = await this.pluginPipe('pipeFile', { filePath, fileContent }, this.args, event === 'unlink');
+    if (argsType !== overwriteType)
+      throw new TypeError(`The argument '${key}' in '${this.args.config}' must be of type ${argsType}.`);
 
-    filePath = res.filePath ?? filePath;
-    fileContent = res.fileContent ?? fileContent;
+    if (argsType === 'object') {
+      this.args[key] = { ...this.args[key], ...value };
+      return;
+    }
 
-    return { filePath, fileContent };
+    if (argsType === 'array') {
+      this.args[key] = [...this.args[key], ...value];
+      return;
+    }
+  }
+  //#endregion
+
+  //#region load plugins
+  loadPlugins() {
+    if (this.args.plugins !== undefined) this.args.plugins.forEach(this.loadPlugin);
+    this.pluginCaller('setup');
   }
 
-  async eventHandler(event: string, filePath: string): Promise<void> {
-    const validatorResponse = await this.eventHandlerValidator(event, filePath);
-    if (validatorResponse === undefined) return;
-    filePath = validatorResponse.filePath;
-    const fileContent = validatorResponse.fileContent;
+  loadPlugin(pluginName: string) {
+    let plugin: any = require(this.resolvePluginPathName(pluginName));
+    plugin = plugin.default ?? plugin;
+    this.validatePlugin(plugin, pluginName);
+    this.plugins[pluginName] = { ...this.plugins[pluginName], ...plugin };
+  }
 
-    if (await this.pluginHalter('beforeWatchEventHalter', event, filePath)) return;
-    await this.pluginCaller('watcherEvent', event, filePath);
+  validatePlugin(plugin: DunyaPlugin, pluginName: string): void {
+    if (plugin === undefined)
+      throw new Error(`Failed to load the plugin '${pluginName}':
+The plugin is undefined.`);
+
+    if (this.typeOf(plugin) !== 'object')
+      throw new Error(`Failed to load the plugin '${pluginName}':
+The plugin must be a type of 'object'.`);
+
+    if (plugin.name === undefined)
+      throw new Error(`Failed to load the plugin '${pluginName}':
+The plugin must contain a property 'name'.`);
+
+    if (typeof plugin.name !== 'string')
+      throw new Error(`Failed to load the plugin '${pluginName}':
+The property 'name' must be of type 'string'`);
+
+    if (plugin.name.trim().length === 0)
+      throw new Error(`Failed to load the plugin '${pluginName}':
+The property 'name' must not by empty`);
+  }
+
+  pluginCaller(cFun: string, ...args: Array<any>) {
+    for (let [index, plugin] of Object.entries(this.plugins))
+      if (plugin[cFun] !== undefined) plugin[cFun](this, ...args);
+  }
+  //#endregion
+
+  //#region watcher
+  watcher: any;
+
+  setupWatcher() {
+    if (this.args.noWatcher) return;
+    this.mkdirs(this.args.inputDir);
+    fs.emptyDirSync(this.args.outputDir);
+    const watcher = sane(this.args.inputDir);
+    watcher.on('all', (event, path) => this.eventHandler(event, path));
+  }
+  //#endregion
+
+  //#region eventHandler
+  eventHandler(event: string, path: string) {
+    const inputPath = Path.join(this.args.inputDir, path);
+    const outputPath = Path.join(this.args.outputDir, path);
+
+    if (event === 'delete') return this.deleteEvent(outputPath);
+    if (this.isDir(inputPath)) return this.eventHandlerDir(event, inputPath, outputPath);
+    return this.eventHandlerFile(event, inputPath, outputPath);
+  }
+
+  deleteEvent(path: string) {
+    fs.remove(path);
+  }
+
+  //#region dir events
+  eventHandlerDir(event: string, inputPath: string, outputPath: string) {
+    switch (event) {
+      case 'add':
+        this.dirAddEvent(outputPath);
+        return;
+    }
+  }
+
+  dirAddEvent(path: string) {
+    this.mkdirs(path);
+  }
+  //#endregion
+
+  //#region file event
+  eventHandlerFile(event: string, inputPath: string, outputPath: string) {
+    const fileContent = this.readFile(inputPath);
 
     switch (event) {
       case 'add':
-        await this.eventAdd(filePath, fileContent);
-        break;
-      case 'unlink':
-        await this.eventUnlink(filePath);
-        break;
+        return this.fileAddEvent(outputPath, fileContent);
+
       case 'change':
-        await this.eventChange(filePath, fileContent);
-        break;
+        return this.fileChangeEvent(outputPath, fileContent);
     }
-
-    this.pluginHalter('afterWatchEventHalter', event, filePath);
   }
 
-  //#region File events
-  async eventAdd(filePath: string, fileContent: string): Promise<void> {
-    filePath = path.join(this.args.out, filePath);
-    console.log(`Adding file '${filePath}'`);
-    fs.mkdirsSync(path.dirname(filePath), (err) => {});
-    await fs.writeFile(filePath, fileContent);
+  fileAddEvent(path: string, fileContent: string) {
+    this.fileChangeEvent(path, fileContent);
   }
 
-  async eventUnlink(filePath: string): Promise<void> {
-    filePath = path.join(this.args.out, filePath);
-    console.log(`Unlinking file '${filePath}'`);
-    await fs.unlink(filePath);
-  }
-
-  async eventChange(filePath: string, fileContent: string): Promise<void> {
-    filePath = path.join(this.args.out, filePath);
-    console.log(`Changing file '${filePath}'`);
-    fs.mkdirsSync(path.dirname(filePath), (err) => {});
-    await fs.writeFile(filePath, fileContent);
+  fileChangeEvent(path: string, fileContent: string) {
+    this.writeFile(path, fileContent);
   }
   //#endregion
 
   //#endregion
 
-  //#region After watcher
-  async afterWatcher() {
-    const pathName = path.join(this.args.in, '**/*');
-    glob(pathName, (err, files) => {
-      files.forEach((file) => {
-        this.eventHandler('add', file);
-      });
-    });
-  }
-  //#endregion
-
-  //#region Server
-  server: DunyaServer;
+  //#region server
+  server: DunyaServer = {
+    onStart: function (args: DunyaServerArgs) {
+      const params = {
+        port: args.port,
+        host: args.ip,
+        root: args.dir,
+        open: false,
+        ...args,
+      };
+      liveServer.start(params);
+    },
+    onStop: function () {},
+  };
 
   startServer() {
-    const serverArgs: DunyaServerArgs = {
+    if (this.args.noServer) return;
+    this.server.onStart({
       ip: this.args.ip,
       port: this.args.port,
-
-      dir: this.args.out,
-    };
-    try {
-      if (this.server === undefined) this.server = require(this.resolvePathName(this.args.server));
-      this.server = (this.server as any).default ?? this.server;
-
-      if (this.server.onStart === undefined)
-        throw new Error(`The server '${this.args.server}' has no 'onStart' function.`);
-
-      this.server.onStart(serverArgs);
-    } catch (err) {
-      throw new Error(`An error occurred while requiring the server '${this.args.server}':\n${err}`);
-    }
+      root: this.args.outputDir,
+    });
   }
 
   stopServer() {
-    if (this.server === undefined) throw new Error(`There is no server to be stopped.`);
-
-    if (this.server.onStop === undefined) throw new Error(`The server '${this.args.server}' has no 'onStop' function.`);
-
+    if (this.args.noServer) return;
     this.server.onStop();
   }
   //#endregion
 
-  async init() {
-    await this.argumentProvider();
-    await this.pluginLoader(this.args.plugins);
-    await this.allSetup();
-    if (this.args.watcher) await this.watch();
-    await this.afterWatcher();
-    this.startServer();
+  constructor(args: Args) {
+    this.handleInputArguments(args);
   }
 
-  async terminate(): Promise<void> {
-    await this.watcher.stop();
+  init() {
+    this.loadConfig();
+    this.loadPlugins();
+    this.setupWatcher();
+    this.startServer();
   }
 }
