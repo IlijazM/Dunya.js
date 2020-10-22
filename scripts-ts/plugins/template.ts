@@ -32,8 +32,10 @@ function evalTemplate(template: string, path: string, html: string): string {
   let relativePath = Path.dirname(path)
     .split(/[\\\/]/gm)
     .map((_) => (_ == '.' ? undefined : '..'))
-    .filter((_) => _)
+    .filter((_, i) => _ && i !== 0)
     .join('/');
+
+  if (relativePath !== '') relativePath += '/';
 
   const self = this;
 
@@ -63,7 +65,6 @@ function evalTemplate(template: string, path: string, html: string): string {
         )}\`\n${err}`
       );
     }
-    console.log(match);
 
     if (res === undefined) res = '';
     if (typeof res === 'object') res = JSON.stringify(res);
@@ -73,7 +74,7 @@ function evalTemplate(template: string, path: string, html: string): string {
   }
 
   template = template.replace(/\\n/gm, `\n`);
-  template = template.replace(/\"\~\//gm, `"${relativePath}/`);
+  template = template.replace(/\"\~\//gm, `"${relativePath}`);
 
   return template;
 }
@@ -111,6 +112,13 @@ function updateAllHTMLFiles() {
 
 const plugin: DunyaPlugin = {
   name: 'template',
+  priority: 100,
+};
+
+plugin.setup = function () {
+  this.exceptions.push(function (pluginName: string, pipe: { path: string; fileContent: string }): boolean {
+    return pluginName === 'enhancedRouting' && pipe.path === Path.join(this.args.outputDir, 'template.html');
+  });
 };
 
 plugin.filePipe = function (pipe: { path: string; fileContent: string }): { path: string; fileContent: string } {

@@ -21,6 +21,7 @@ export default class Dev {
     port: 8080,
   };
   plugins: Array<DunyaPlugin> = [];
+  exceptions: Array<Function> = [];
   //#endregion
 
   //#region misc. functions

@@ -24,8 +24,10 @@ function evalTemplate(template, path, html) {
     let relativePath = Path.dirname(path)
         .split(/[\\\/]/gm)
         .map((_) => (_ == '.' ? undefined : '..'))
-        .filter((_) => _)
+        .filter((_, i) => _ && i !== 0)
         .join('/');
+    if (relativePath !== '')
+        relativePath += '/';
     const self = this;
     function load(path) {
         return self.fs.read(Path.join(self.args.inputDir, path));
@@ -45,7 +47,6 @@ function evalTemplate(template, path, html) {
         catch (err) {
             throw new Error(`An error occurred while compiling '${getTemplateInputPath.call(this)}':\n\`${match.substring(2, match.length - 2)}\`\n${err}`);
         }
-        console.log(match);
         if (res === undefined)
             res = '';
         if (typeof res === 'object')
@@ -54,7 +55,7 @@ function evalTemplate(template, path, html) {
         regex.lastIndex += match.length;
     }
     template = template.replace(/\\n/gm, `\n`);
-    template = template.replace(/\"\~\//gm, `"${relativePath}/`);
+    template = template.replace(/\"\~\//gm, `"${relativePath}`);
     return template;
 }
 /**
@@ -89,6 +90,12 @@ function updateAllHTMLFiles() {
 }
 const plugin = {
     name: 'template',
+    priority: 100,
+};
+plugin.setup = function () {
+    this.exceptions.push(function (pluginName, pipe) {
+        return pluginName === 'enhancedRouting' && pipe.path === Path.join(this.args.outputDir, 'template.html');
+    });
 };
 plugin.filePipe = function (pipe) {
     if (filterExtensionName.call(this, pipe))

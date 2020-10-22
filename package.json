@@ -1,11 +1,10 @@
 {
-  "name": "dunya.js",
+  "name": "dunya",
   "version": "0.9.0",
-  "description": "Dunya.js is a javascript framework for inline-script.js.",
+  "description": "Dunya is a lightweight javascript framework that relies upon plugins.",
   "scripts": {
     "dev": "dunya dev",
     "start": "dunya start",
-    "build": "dunya build",
     "tsc": "tsc -w",
     "tsc-no-watch": "tsc",
     "test": "jest --coverage --forceExit"
@@ -35,7 +34,6 @@
     "live-server": "^1.2.1",
     "node-sass": "^4.14.1",
     "path-extra": "^4.3.0",
-    "safe-eval": "^0.4.1",
     "sass": "^1.26.11"
   },
   "bin": {
