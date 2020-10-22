@@ -1,5 +1,3 @@
 {
-  "plugins": [],
-  "in": "za",
-  "out": "zb"
+  "plugins": ["~test"]
 }

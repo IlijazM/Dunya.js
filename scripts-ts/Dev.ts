@@ -1,16 +1,19 @@
-const fs = require('fs-extra');
-const Path = require('path-extra');
-const sane = require('sane');
-const liveServer = require('live-server');
-
-import { fileURLToPath } from 'url';
+//#region imports dependencies
 import Args from './Args';
 import DunyaPlugin from './DunyaPlugin';
-import DunyaServer from './DunyaServer';
-import DunyaServerArgs from './DunyaServerArgs';
+import Plugins from './Plugins';
+import { IOPaths } from './Types';
+
+const fs = require('fs-extra');
+const Path = require('path-extra');
+const liveServer = require('live-server');
+//#endregion
 
 export default class Dev {
+  //#region variables
   args: Args = {
+    plugins: ['./plugins/default'],
+
     inputDir: 'input',
     outputDir: 'output',
 
@@ -18,6 +21,7 @@ export default class Dev {
     port: 8080,
   };
   plugins: Array<DunyaPlugin> = [];
+  //#endregion
 
   //#region misc. functions
   typeOf(object: any): string {
@@ -31,53 +35,33 @@ export default class Dev {
   //#endregion
 
   //#region fs
-  readFile(path: string): string {
-    return fs.readFileSync(path, 'utf-8');
-  }
+  fs = {
+    read: (path: string): string => {
+      return Plugins.fsRead.call(this, path);
+    },
+    write: (path: string, fileContent: string) => {
+      return Plugins.fsWrite.call(this, path, fileContent);
+    },
+    mkdirs: (dirs: string) => {
+      return Plugins.fsMkdirs.call(this, dirs);
+    },
+    remove: (path: string) => {
+      return Plugins.fsRemove.call(this, path);
+    },
+    empty: (path: string) => {
+      return Plugins.fsEmpty.call(this, path);
+    },
+    isDir: (path: string): boolean => {
+      return Plugins.fsIsDir.call(this, path);
+    },
+    readJSON: (path: string): Record<string, any> => {
+      return Plugins.fsReadJSON.call(this, path);
+    },
+  };
 
-  writeFile(path: string, fileContent: string) {
-    this.mkdirs(Path.dirname(path));
-    fs.writeFile(path, fileContent, 'utf-8');
-  }
-
-  mkdirs(dirs: string) {
-    fs.mkdirsSync(dirs, () => {});
-  }
-
-  removeDir(dir: string) {
-    fs.remove(dir);
-  }
-
-  unlinkFile(path: string) {
-    fs.unlinkSync(path);
-  }
-
-  isDir(path: string): boolean {
-    return fs.lstatSync(path).isDirectory();
-  }
-
-  getFile(path: string): string {
-    try {
-      return this.readFile(path);
-    } catch {
-      return null;
-    }
-  }
-
-  loadFileSave(path: string): string {
-    return this.readFile(path);
-  }
-
-  loadFileJSON(path: string): Record<string, any> {
-    try {
-      return JSON.parse(this.readFile(path));
-    } catch (err) {
-      throw new Error(`An error occurred while parsing '${path}':\n${err}`);
-    }
-  }
-
-  resolvePluginPathName(pathName: string): string {
-    return Path.resolve(pathName);
+  resolvePathName(path: string): string {
+    if (path.startsWith('~')) return Path.resolve(path.substr(1));
+    return path;
   }
   //#endregion
 
@@ -88,8 +72,9 @@ export default class Dev {
   }
 
   loadConfig() {
-    if (!this.args.config) return;
-    const config = this.loadFileJSON(this.args.config);
+    this.args.config = this.args.config ?? 'dunya.config.json';
+    let config = fs.readFileSync(this.args.config, 'utf-8');
+    config = JSON.parse(config);
     Object.entries(config).forEach((v) => this.overwriteArgs(v[0], v[1]));
   }
 
@@ -117,17 +102,21 @@ export default class Dev {
   }
   //#endregion
 
-  //#region load plugins
+  //#region plugins
   loadPlugins() {
-    if (this.args.plugins !== undefined) this.args.plugins.forEach(this.loadPlugin);
+    if (this.args.plugins !== undefined) this.args.plugins.forEach((plugin) => this.loadPlugin(plugin));
+    this.sortPlugins();
     this.pluginCaller('setup');
   }
 
   loadPlugin(pluginName: string) {
-    let plugin: any = require(this.resolvePluginPathName(pluginName));
+    let plugin: any = require(this.resolvePathName(pluginName));
     plugin = plugin.default ?? plugin;
-    this.validatePlugin(plugin, pluginName);
-    this.plugins[pluginName] = { ...this.plugins[pluginName], ...plugin };
+    this.validatePlugin(plugin, plugin.name);
+
+    const index = this.plugins.findIndex((p) => p.name === plugin.name);
+    if (index === -1) return this.plugins.push(plugin);
+    this.plugins[index] = { ...this.plugins[plugin.name], ...plugin };
   }
 
   validatePlugin(plugin: DunyaPlugin, pluginName: string): void {
@@ -152,106 +141,185 @@ The property 'name' must be of type 'string'`);
 The property 'name' must not by empty`);
   }
 
+  /**
+   * Sorts 'this.plugin'. Plugins with a higher priority will come first.
+   */
+  sortPlugins() {
+    this.plugins = this.plugins.sort((a: DunyaPlugin, b: DunyaPlugin) =>
+      (a.priority || 0) > (b.priority || 0) ? -1 : 1
+    );
+  }
+
+  /**
+   * Will call the function 'cFun' on every plugin with the arguments 'args' until one plugin returns a truthy value
+   *
+   * @param cFun the name of function that will get called
+   * @param args additional arguments the function requires
+   */
   pluginCaller(cFun: string, ...args: Array<any>) {
-    for (let [index, plugin] of Object.entries(this.plugins))
-      if (plugin[cFun] !== undefined) plugin[cFun](this, ...args);
+    for (let plugin of this.plugins) if (plugin[cFun] !== undefined) if (plugin[cFun].call(this, ...args)) return;
+  }
+
+  /**
+   * Will call the function 'cFun' on every plugin with the arguments 'args' until a value that is not undefined got returned.
+   * If no value got return the function will return null.
+   *
+   * @param cFun the name of function that will get called
+   * @param args additional arguments the function requires
+   *
+   * @returns null or the return value of a function of a plugin
+   */
+  pluginGetter(cFun: string, ...args: Array<any>): any {
+    for (let plugin of this.plugins)
+      if (plugin[cFun] !== undefined) {
+        const res = plugin[cFun].call(this, ...args);
+        if (res !== undefined) return res;
+      }
+
+    return null;
+  }
+
+  /**
+   * Will call the function 'cFun' on every plugin with the arguments 'pipe' and 'args'.
+   * If the function returns undefined the pipe stays the same, else the function output will overwrite the pipe.
+   *
+   * @param cFun the name of function that will get called
+   * @param pipe an object that will get manipulated and returned again
+   * @param args additional arguments the function requires
+   *
+   * @returns the pipe
+   */
+  pluginPipe(cFun: string, pipe: Record<string, any>, ...args: Array<any>): any {
+    for (let plugin of this.plugins)
+      if (plugin[cFun] !== undefined) pipe = plugin[cFun].call(pipe, this, ...args) ?? pipe;
+
+    return pipe;
   }
   //#endregion
 
   //#region watcher
-  watcher: any;
-
   setupWatcher() {
     if (this.args.noWatcher) return;
-    this.mkdirs(this.args.inputDir);
-    fs.emptyDirSync(this.args.outputDir);
-    const watcher = sane(this.args.inputDir);
-    watcher.on('all', (event, path) => this.eventHandler(event, path));
+    Plugins.setupWatcher.call(this);
+  }
+
+  terminateWatcher() {
+    if (this.args.noWatcher) return;
+    Plugins.terminateWatcher.call(this);
   }
   //#endregion
 
   //#region eventHandler
-  eventHandler(event: string, path: string) {
+  /**
+   * Add the prefix 'inputDir' and 'outputDir' to the parameter 'path'.
+   *
+   * @param path the path that gets converted
+   */
+  convertPaths(path: string): IOPaths {
     const inputPath = Path.join(this.args.inputDir, path);
     const outputPath = Path.join(this.args.outputDir, path);
 
-    if (event === 'delete') return this.deleteEvent(outputPath);
-    if (this.isDir(inputPath)) return this.eventHandlerDir(event, inputPath, outputPath);
-    return this.eventHandlerFile(event, inputPath, outputPath);
+    return { path, inputPath, outputPath };
   }
 
-  deleteEvent(path: string) {
-    fs.remove(path);
+  /**
+   * Will get called whenever a file got added, changed or removed from the input directory.
+   * This function will take care of the file pipeline.
+   *
+   * @param event the watcher event. Possible events: 'add', 'change', 'unlink'.
+   * @param path the path to the file without the 'inputDir' as prefix.
+   */
+  eventHandler(event: string, path: string) {
+    const iopath = this.convertPaths(path);
+
+    if (event === 'unlink') return this.deleteEvent(iopath);
+    if (this.fs.isDir(iopath.inputPath)) return this.eventHandlerDir(event, iopath);
+    return this.eventHandlerFile(event, iopath);
+  }
+
+  /**
+   * Will handle the 'unlink' event and the unlink file pipeline
+   */
+  deleteEvent(iopath: IOPaths) {
+    iopath = Plugins.deleteEventPipe.call(this, iopath);
+    Plugins.deleteEvent.call(this, iopath.outputPath);
   }
 
   //#region dir events
-  eventHandlerDir(event: string, inputPath: string, outputPath: string) {
+  /**
+   * Will handle all events related to directories
+   */
+  eventHandlerDir(event: string, iopath: IOPaths) {
     switch (event) {
       case 'add':
-        this.dirAddEvent(outputPath);
+        this.addDirEvent(iopath);
         return;
     }
   }
 
-  dirAddEvent(path: string) {
-    this.mkdirs(path);
+  /**
+   * Will handle the add event on a directory
+   */
+  addDirEvent(iopath: IOPaths) {
+    iopath = Plugins.addDirEventPipe.call(this, iopath);
+    Plugins.addDirEvent.call(this, iopath.outputPath);
   }
   //#endregion
 
   //#region file event
-  eventHandlerFile(event: string, inputPath: string, outputPath: string) {
-    const fileContent = this.readFile(inputPath);
+  /**
+   * Will handle all events related to files
+   */
+  eventHandlerFile(event: string, iopath: IOPaths) {
+    let fileContent = this.fs.read(iopath.inputPath);
 
     switch (event) {
       case 'add':
-        return this.fileAddEvent(outputPath, fileContent);
+        return this.addFileEvent(iopath.outputPath, fileContent);
 
       case 'change':
-        return this.fileChangeEvent(outputPath, fileContent);
+        return this.changeFileEvent(iopath.outputPath, fileContent);
     }
   }
 
-  fileAddEvent(path: string, fileContent: string) {
-    this.fileChangeEvent(path, fileContent);
+  /**
+   * Will handle the add event on a file
+   */
+  addFileEvent(path: string, fileContent: string) {
+    const res = Plugins.addFileEventPipe.call(this, { path, fileContent });
+    path = res.path;
+    fileContent = res.fileContent;
+
+    Plugins.addFileEvent.call(this, path, fileContent);
   }
 
-  fileChangeEvent(path: string, fileContent: string) {
-    this.writeFile(path, fileContent);
+  /**
+   * Will handle the change event on a file
+   */
+  changeFileEvent(path: string, fileContent: string) {
+    const res = Plugins.changeFileEventPipe.call(this, { path, fileContent });
+    path = res.path;
+    fileContent = res.fileContent;
+
+    Plugins.changeFileEvent.call(this, path, fileContent);
   }
   //#endregion
 
   //#endregion
 
   //#region server
-  server: DunyaServer = {
-    onStart: function (args: DunyaServerArgs) {
-      const params = {
-        port: args.port,
-        host: args.ip,
-        root: args.dir,
-        open: false,
-        ...args,
-      };
-      liveServer.start(params);
-    },
-    onStop: function () {},
-  };
-
   startServer() {
     if (this.args.noServer) return;
-    this.server.onStart({
-      ip: this.args.ip,
-      port: this.args.port,
-      root: this.args.outputDir,
-    });
+    Plugins.startServer.call(this);
   }
 
   stopServer() {
     if (this.args.noServer) return;
-    this.server.onStop();
+    Plugins.stopServer.call(this);
   }
   //#endregion
 
+  //#region init
   constructor(args: Args) {
     this.handleInputArguments(args);
   }
@@ -262,4 +330,11 @@ The property 'name' must not by empty`);
     this.setupWatcher();
     this.startServer();
   }
+
+  terminate() {
+    Plugins.terminate();
+    this.terminateWatcher();
+    this.stopServer.call(this);
+  }
+  //#endregion
 }

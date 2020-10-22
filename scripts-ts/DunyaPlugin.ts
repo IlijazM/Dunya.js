@@ -1,67 +1,77 @@
-import Dev from './Dev';
-import IDevArgs from './Args';
+import { IOPaths } from './Types';
 
 export default interface DunyaPlugin {
   name: string;
+  /**
+   * The priority of the plugin.
+   * Plugins with a greater priority will get executed earlier.
+   * The default priority is 0 but the priority of the default plugin is 100.
+   */
+  priority?: number;
 
-  setup?(dev: Dev): void; // After all plugins have loaded
-  afterWatcher?(dev: Dev): void; // After the watcher got initiated
-  afterServer?(dev: Dev): void; // After the server got initiated
+  //#endregion setup and terminate
+  setup?(): boolean;
+  terminate?(): boolean;
+  //#endregion
 
-  terminate?(dev: Dev): void; // When the function 'terminate' gets called
-  afterTerminate?(dev: Dev): void; // After everything shut down
+  //#region fs
+  fsRead?(path: string): string;
+  fsWrite?(path: string, fileContent: string): boolean;
+  fsMkdirs?(dirs: string): boolean;
+  fsRemove?(path: string): boolean;
+  fsEmpty?(path: string): boolean;
+  fsIsDir?(path: string): boolean;
+  fsReadJSON?(path: string): Record<string, any>;
+  //#endregion
+
+  //#region watcher
+  setupWatcher?(): boolean;
+  terminateWatcher?(): boolean;
+  //#endregion
+
+  //#region event handlers
+  /**
+   * @param pipe.path the output directory
+   */
+  deleteEventPipe?(pipe: { path: string }): { path: string };
+  /**
+   * @param path the output directory
+   */
+  deleteEvent?(path: string): boolean;
 
   /**
-   * Whenever a watcher event happens.
-   *
-   * @param event is the event what happened to the file. It could be:
-   *              * add
-   *              * addDir
-   *              * change
-   *              * delete
-   * @param path is the path of the file in the input directory (The input directory name excluded).
+   * @param pipe.path the output directory
    */
-  watcherEvent?(dev: Dev, event: string, path: string): void;
-  watcherEventHalter?(dev: Dev, event: string, path: string): boolean;
+  addDirEventPipe?(pipe: { path: string }): { path: string };
   /**
-   * @param pipe the path and content of the file.
-   * @param onDelete if the event is delete.
+   * @param path the output directory
    */
-  watcherEventPipe?(
-    pipe: { path: string; content: string },
-    dev: Dev,
-    onDelete: boolean
-  ): { path: string; content: string };
+  addDirEvent?(path: string): boolean;
 
-  readFile?(dev: Dev, path: string): void;
-  readFileHalter?(dev: Dev, path: string): boolean;
-  readFilePipe?(pipe: { path: string; content: string }, dev: Dev): { path: string; content: string };
-  readFileSuccess?(dev: Dev, path: string): void;
-  readFileHalterSuccess?(dev: Dev, path: string): boolean;
-  readFileFailed?(dev: Dev, path: string): void;
-  readFileHalterFailed?(dev: Dev, path: string): boolean;
+  /**
+   * @param pipe.path the output directory
+   * @param pipe.fileContent the content of the file
+   */
+  addFileEventPipe?(pipe: { path: string; fileContent: string }): { path: string; fileContent: string };
+  /**
+   * @param path the output directory
+   */
+  addFileEvent?(path: string, fileContent: string): boolean;
 
-  writeFile?(dev: Dev, path: string): void;
-  writeFileHalter?(dev: Dev, path: string): boolean;
-  writeFilePipe?(pipe: { path: string; content: string }, dev: Dev): { path: string; content: string };
-  writeFileSuccess?(dev: Dev, path: string): void;
-  writeFileHalterSuccess?(dev: Dev, path: string): boolean;
-  writeFileFailed?(dev: Dev, path: string): void;
-  writeFileHalterFailed?(dev: Dev, path: string): boolean;
+  /**
+   * @param pipe.path the output directory
+   * @param pipe.fileContent the content of the file
+   */
+  changeFileEventPipe?(pipe: { path: string; fileContent: string }): { path: string; fileContent: string };
+  /**
+   * @param path the output directory
+   */
+  changeFileEvent?(path: string, fileContent: string): boolean;
 
-  mkdirs?(dev: Dev, path: string): void;
-  mkdirsHalter?(dev: Dev, path: string): boolean;
-  mkdirsPipe?(pipe: { path: string; content: string }, dev: Dev): { path: string; content: string };
-  mkdirsSuccess?(dev: Dev, path: string): void;
-  mkdirsHalterSuccess?(dev: Dev, path: string): boolean;
-  mkdirsFailed?(dev: Dev, path: string): void;
-  mkdirsHalterFailed?(dev: Dev, path: string): boolean;
+  //#endregion
 
-  isDir?(dev: Dev, path: string): void;
-  isDirHalter?(dev: Dev, path: string): boolean;
-  isDirPipe?(pipe: { path: string; content: string }, dev: Dev): { path: string; content: string };
-  isDirSuccess?(dev: Dev, path: string): void;
-  isDirHalterSuccess?(dev: Dev, path: string): boolean;
-  isDirFailed?(dev: Dev, path: string): void;
-  isDirHalterFailed?(dev: Dev, path: string): boolean;
+  //#region server
+  startServer?(): boolean;
+  stopServer?(): boolean;
+  //#endregion
 }
