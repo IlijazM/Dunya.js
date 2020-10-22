@@ -54,6 +54,9 @@ export default class Dev {
     isDir: (path: string): boolean => {
       return Plugins.fsIsDir.call(this, path);
     },
+    exists: (path: string): boolean => {
+      return Plugins.fsExists.call(this, path);
+    },
     readJSON: (path: string): Record<string, any> => {
       return Plugins.fsReadJSON.call(this, path);
     },
@@ -161,6 +164,16 @@ The property 'name' must not by empty`);
   }
 
   /**
+   * Will call the function 'cFun' on every plugin with the arguments 'args' regardless of the return value
+   *
+   * @param cFun the name of function that will get called
+   * @param args additional arguments the function requires
+   */
+  pluginCallAll(cFun: string, ...args: Array<any>) {
+    for (let plugin of this.plugins) if (plugin[cFun] !== undefined) plugin[cFun].call(this, ...args);
+  }
+
+  /**
    * Will call the function 'cFun' on every plugin with the arguments 'args' until a value that is not undefined got returned.
    * If no value got return the function will return null.
    *
@@ -191,7 +204,7 @@ The property 'name' must not by empty`);
    */
   pluginPipe(cFun: string, pipe: Record<string, any>, ...args: Array<any>): any {
     for (let plugin of this.plugins)
-      if (plugin[cFun] !== undefined) pipe = plugin[cFun].call(pipe, this, ...args) ?? pipe;
+      if (plugin[cFun] !== undefined) pipe = plugin[cFun].call(this, pipe, ...args) ?? pipe;
 
     return pipe;
   }
@@ -286,9 +299,17 @@ The property 'name' must not by empty`);
    * Will handle the add event on a file
    */
   addFileEvent(path: string, fileContent: string) {
-    const res = Plugins.addFileEventPipe.call(this, { path, fileContent });
+    let res;
+
+    res = Plugins.filePipe.call(this, { path, fileContent });
     path = res.path;
     fileContent = res.fileContent;
+
+    res = Plugins.addFileEventPipe.call(this, { path, fileContent });
+    path = res.path;
+    fileContent = res.fileContent;
+
+    if (path == undefined || fileContent == undefined) return;
 
     Plugins.addFileEvent.call(this, path, fileContent);
   }
@@ -297,9 +318,17 @@ The property 'name' must not by empty`);
    * Will handle the change event on a file
    */
   changeFileEvent(path: string, fileContent: string) {
-    const res = Plugins.changeFileEventPipe.call(this, { path, fileContent });
+    let res;
+
+    res = Plugins.filePipe.call(this, { path, fileContent });
     path = res.path;
     fileContent = res.fileContent;
+
+    res = Plugins.changeFileEventPipe.call(this, { path, fileContent });
+    path = res.path;
+    fileContent = res.fileContent;
+
+    if (path == undefined || fileContent == undefined) return;
 
     Plugins.changeFileEvent.call(this, path, fileContent);
   }

@@ -46,6 +46,10 @@ plugin.fsIsDir = function (path: string): boolean {
   return fs.lstatSync(path).isDirectory();
 };
 
+plugin.fsExists = function (path: string): boolean {
+  return fs.existsSync(path);
+};
+
 plugin.fsReadJSON = function (path: string): Record<string, any> {
   try {
     return JSON.parse(this.read(path));

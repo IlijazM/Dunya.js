@@ -1,5 +1,3 @@
-import { IOPaths } from './Types';
-
 export default interface DunyaPlugin {
   name: string;
   /**
@@ -10,8 +8,8 @@ export default interface DunyaPlugin {
   priority?: number;
 
   //#endregion setup and terminate
-  setup?(): boolean;
-  terminate?(): boolean;
+  setup?(): void;
+  terminate?(): void;
   //#endregion
 
   //#region fs
@@ -21,6 +19,7 @@ export default interface DunyaPlugin {
   fsRemove?(path: string): boolean;
   fsEmpty?(path: string): boolean;
   fsIsDir?(path: string): boolean;
+  fsExists?(path: string): boolean;
   fsReadJSON?(path: string): Record<string, any>;
   //#endregion
 
@@ -47,6 +46,14 @@ export default interface DunyaPlugin {
    * @param path the output directory
    */
   addDirEvent?(path: string): boolean;
+
+  /**
+   * Will get called on the 'add' event as well as on the 'change' event before 'addFileEventPipe' or 'changeFileEventPipe'
+   *
+   * @param pipe.path the output directory
+   * @param pipe.fileContent the content of the file
+   */
+  filePipe?(pipe: { path: string; fileContent: string }): { path: string; fileContent: string };
 
   /**
    * @param pipe.path the output directory

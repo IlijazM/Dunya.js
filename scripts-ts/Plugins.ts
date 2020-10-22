@@ -7,12 +7,12 @@ let plugin: DunyaPlugin = {
 };
 
 //#region setup and terminate
-plugin.setup = function (): boolean {
-  return this.pluginCaller('setup');
+plugin.setup = function (): void {
+  return this.pluginCallAll('setup');
 };
 
-plugin.terminate = function (): boolean {
-  return this.pluginCaller('terminate');
+plugin.terminate = function (): void {
+  return this.pluginCallAll('terminate');
 };
 //#endregion
 
@@ -39,6 +39,10 @@ plugin.fsEmpty = function (path: string): boolean {
 
 plugin.fsIsDir = function (path: string): boolean {
   return this.pluginGetter('fsIsDir', path);
+};
+
+plugin.fsExists = function (path: string): boolean {
+  return this.pluginGetter('fsExists', path);
 };
 
 plugin.fsReadJSON = function (path: string): Record<string, any> {
@@ -71,6 +75,10 @@ plugin.addDirEventPipe = function (pipe: { path: string }): IOPaths {
 
 plugin.addDirEvent = function (path: string): boolean {
   return this.pluginCaller('addDirEvent', path);
+};
+
+plugin.filePipe = function (pipe: { path: string; fileContent: string }): { path: string; fileContent: string } {
+  return this.pluginPipe('filePipe', pipe);
 };
 
 plugin.addFileEventPipe = function (pipe: {

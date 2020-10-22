@@ -6,10 +6,10 @@ let plugin = {
 };
 //#region setup and terminate
 plugin.setup = function () {
-    return this.pluginCaller('setup');
+    return this.pluginCallAll('setup');
 };
 plugin.terminate = function () {
-    return this.pluginCaller('terminate');
+    return this.pluginCallAll('terminate');
 };
 //#endregion
 //#region fs
@@ -30,6 +30,9 @@ plugin.fsEmpty = function (path) {
 };
 plugin.fsIsDir = function (path) {
     return this.pluginGetter('fsIsDir', path);
+};
+plugin.fsExists = function (path) {
+    return this.pluginGetter('fsExists', path);
 };
 plugin.fsReadJSON = function (path) {
     return this.pluginGetter('fsReadJSON', path);
@@ -55,6 +58,9 @@ plugin.addDirEventPipe = function (pipe) {
 };
 plugin.addDirEvent = function (path) {
     return this.pluginCaller('addDirEvent', path);
+};
+plugin.filePipe = function (pipe) {
+    return this.pluginPipe('filePipe', pipe);
 };
 plugin.addFileEventPipe = function (pipe) {
     return this.pluginPipe('addFileEventPipe', pipe);

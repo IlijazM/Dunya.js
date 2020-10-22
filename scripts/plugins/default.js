@@ -36,6 +36,9 @@ plugin.fsEmpty = function (path) {
 plugin.fsIsDir = function (path) {
     return fs.lstatSync(path).isDirectory();
 };
+plugin.fsExists = function (path) {
+    return fs.existsSync(path);
+};
 plugin.fsReadJSON = function (path) {
     try {
         return JSON.parse(this.read(path));
