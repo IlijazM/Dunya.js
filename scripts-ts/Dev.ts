@@ -83,6 +83,7 @@ export default class Dev {
   }
 
   overwriteArgs(key: string, value: any) {
+    if (value == null) return;
     const argsType = this.typeOf(this.args[key]);
     const overwriteType = this.typeOf(value);
 
