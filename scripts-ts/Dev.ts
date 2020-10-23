@@ -72,13 +72,19 @@ export default class Dev {
   //#region handle arguments
   handleInputArguments(args: Args) {
     if (args) Object.entries(args).forEach((v) => this.overwriteArgs(v[0], v[1]));
-    if (!this.args.noAutoInit) this.init();
   }
 
-  loadConfig() {
-    this.args.config = this.args.config ?? 'dunya.config.json';
-    let config = fs.readFileSync(this.args.config, 'utf-8');
-    config = JSON.parse(config);
+  loadConfig(args: Args) {
+    args.config = args.config ?? 'dunya.config.json';
+    let config;
+    if (fs.existsSync(args.config)) {
+      config = fs.readFileSync(args.config, 'utf-8');
+      config = JSON.parse(config);
+    } else {
+      config = '{}';
+      fs.writeFileSync(args.config, config);
+    }
+
     Object.entries(config).forEach((v) => this.overwriteArgs(v[0], v[1]));
   }
 
@@ -104,6 +110,8 @@ export default class Dev {
       this.args[key] = [...this.args[key], ...value];
       return;
     }
+
+    this.args[key] = value;
   }
   //#endregion
 
@@ -352,11 +360,12 @@ The property 'name' must not by empty`);
 
   //#region init
   constructor(args: Args) {
+    this.loadConfig(args);
     this.handleInputArguments(args);
+    if (!this.args.noAutoInit) this.init();
   }
 
   init() {
-    this.loadConfig();
     this.loadPlugins();
     this.setupWatcher();
     this.startServer();

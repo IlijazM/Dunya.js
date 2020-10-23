@@ -1,3 +1,5 @@
 {
-  "plugins": ["./plugins/template", "./plugins/enhancedRouting"]
+  "plugins": ["./plugins/template", "./plugins/enhancedRouting"],
+  "inputDir": "dev",
+  "outputDir": "out"
 }
