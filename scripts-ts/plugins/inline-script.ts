@@ -106,8 +106,9 @@ function addTemplate(path: string, fileContent: string) {
   this.fs.write(getIndexPath.call(this, path), template);
 }
 
-function removeTemplate(path: string) {
-  this.fs.remove(getIndexPath.call(this, path));
+function removeHtmlDirectory(path: string) {
+  path = Path.join(Path.dirname(path), Path.base(path));
+  this.fs.remove(path);
 }
 
 function compileTemplateFile(fileContent: string): any {
@@ -142,6 +143,11 @@ plugin.setup = function () {
   this.exceptions.push(function (pluginName: string, pipe: { path: string; fileContent: string }): boolean {
     return pluginName === PLUGIN_NAME && pipe.path === Path.join(this.args.outputDir, 'template.html');
   });
+
+  this.exceptions.push(function (pluginName: string, pipe: { path: string; fileContent: string }): boolean {
+    const split = pipe.path.split('/');
+    return pluginName === PLUGIN_NAME && (split.includes('lib') || split.includes('components'));
+  });
 };
 
 plugin.fileEvent = function (path: string, fileContent: string): boolean {
@@ -161,7 +167,7 @@ plugin.deleteEvent = function (path: string): boolean {
     this.fs.remove(path);
     updateAllHTMLFiles.call(this);
   } else {
-    removeTemplate.call(this, path);
+    removeHtmlDirectory.call(this, path);
   }
 
   return;

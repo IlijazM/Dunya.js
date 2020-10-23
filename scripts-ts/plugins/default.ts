@@ -120,6 +120,7 @@ plugin.startServer = function (): boolean {
     host: this.args.ip,
     root: this.args.outputDir,
     open: false,
+    noCssInject: true,
   };
   liveServer.start(params);
   return true;
