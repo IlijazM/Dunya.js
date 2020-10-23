@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Plugins_1 = require("./Plugins");
 const fs = require('fs-extra');
 const Path = require('path-extra');
-const liveServer = require('live-server');
+const glob = require('glob');
 //#endregion
 class Dev {
     //#endregion
@@ -68,6 +68,8 @@ class Dev {
     resolvePathName(path) {
         if (path.startsWith('~'))
             return Path.resolve(path.substr(1));
+        if (path.startsWith('#'))
+            return './' + Path.join('plugins', path.substr(1));
         return path;
     }
     //#endregion
@@ -240,11 +242,25 @@ The property 'name' must not by empty`);
      */
     eventHandler(event, path) {
         const iopath = this.convertPaths(path);
-        if (event === 'unlink')
-            return this.deleteEvent(iopath);
+        Plugins_1.default.updateDir.call(this, Path.dirname(iopath.outputPath));
+        if (event === 'unlink') {
+            this.deleteEvent(iopath);
+            return this.updateDir(Path.dirname(iopath.inputPath));
+        }
         if (this.fs.isDir(iopath.inputPath))
             return this.eventHandlerDir(event, iopath);
         return this.eventHandlerFile(event, iopath);
+    }
+    /**
+     * Will call a 'change' event on all files in a directory
+     *
+     * @param path path to the directory that gets updated
+     */
+    updateDir(path) {
+        glob(Path.join(path, '*'), (err, files) => files.forEach((file) => {
+            file = file.substr(this.args.inputDir.length + 1);
+            this.eventHandler('change', file);
+        }));
     }
     /**
      * Will handle the 'unlink' event and the unlink file pipeline
@@ -293,6 +309,7 @@ The property 'name' must not by empty`);
         res = Plugins_1.default.filePipe.call(this, { path, fileContent });
         path = res.path;
         fileContent = res.fileContent;
+        Plugins_1.default.fileEvent.call(this, path, fileContent);
         res = Plugins_1.default.addFileEventPipe.call(this, { path, fileContent });
         path = res.path;
         fileContent = res.fileContent;
@@ -308,6 +325,7 @@ The property 'name' must not by empty`);
         res = Plugins_1.default.filePipe.call(this, { path, fileContent });
         path = res.path;
         fileContent = res.fileContent;
+        Plugins_1.default.fileEvent.call(this, path, fileContent);
         res = Plugins_1.default.changeFileEventPipe.call(this, { path, fileContent });
         path = res.path;
         fileContent = res.fileContent;

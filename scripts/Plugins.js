@@ -62,6 +62,9 @@ plugin.addDirEvent = function (path) {
 plugin.filePipe = function (pipe) {
     return this.pluginPipe('filePipe', pipe);
 };
+plugin.fileEvent = function (path, fileContent) {
+    return this.pluginCaller('fileEvent', path, fileContent);
+};
 plugin.addFileEventPipe = function (pipe) {
     return this.pluginPipe('addFileEventPipe', pipe);
 };
@@ -74,6 +77,10 @@ plugin.changeFileEventPipe = function (pipe) {
 plugin.changeFileEvent = function (path, fileContent) {
     return this.pluginCaller('changeFileEvent', path, fileContent);
 };
+plugin.updateDir = function (path) {
+    return this.pluginCaller('updateDir', path);
+};
+//#endregion
 plugin.startServer = function () {
     return this.pluginCaller('startServer');
 };

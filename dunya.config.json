@@ -1,5 +1,5 @@
 {
-  "plugins": ["./plugins/template", "./plugins/enhancedRouting"],
+  "plugins": ["#inline-script"],
   "inputDir": "dev",
-  "outputDir": "out"
+  "outputDir": "docs"
 }

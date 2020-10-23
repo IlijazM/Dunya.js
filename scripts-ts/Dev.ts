@@ -6,7 +6,7 @@ import { IOPaths } from './Types';
 
 const fs = require('fs-extra');
 const Path = require('path-extra');
-const liveServer = require('live-server');
+const glob = require('glob');
 //#endregion
 
 export default class Dev {
@@ -65,6 +65,7 @@ export default class Dev {
 
   resolvePathName(path: string): string {
     if (path.startsWith('~')) return Path.resolve(path.substr(1));
+    if (path.startsWith('#')) return './' + Path.join('plugins', path.substr(1));
     return path;
   }
   //#endregion
@@ -255,9 +256,27 @@ The property 'name' must not by empty`);
   eventHandler(event: string, path: string) {
     const iopath = this.convertPaths(path);
 
-    if (event === 'unlink') return this.deleteEvent(iopath);
+    Plugins.updateDir.call(this, Path.dirname(iopath.outputPath));
+    if (event === 'unlink') {
+      this.deleteEvent(iopath);
+      return this.updateDir(Path.dirname(iopath.inputPath));
+    }
     if (this.fs.isDir(iopath.inputPath)) return this.eventHandlerDir(event, iopath);
     return this.eventHandlerFile(event, iopath);
+  }
+
+  /**
+   * Will call a 'change' event on all files in a directory
+   *
+   * @param path path to the directory that gets updated
+   */
+  updateDir(path: string) {
+    glob(Path.join(path, '*'), (err: any, files: Array<string>) =>
+      files.forEach((file: string) => {
+        file = file.substr(this.args.inputDir.length + 1);
+        this.eventHandler('change', file);
+      })
+    );
   }
 
   /**
@@ -315,6 +334,8 @@ The property 'name' must not by empty`);
     path = res.path;
     fileContent = res.fileContent;
 
+    Plugins.fileEvent.call(this, path, fileContent);
+
     res = Plugins.addFileEventPipe.call(this, { path, fileContent });
     path = res.path;
     fileContent = res.fileContent;
@@ -333,6 +354,8 @@ The property 'name' must not by empty`);
     res = Plugins.filePipe.call(this, { path, fileContent });
     path = res.path;
     fileContent = res.fileContent;
+
+    Plugins.fileEvent.call(this, path, fileContent);
 
     res = Plugins.changeFileEventPipe.call(this, { path, fileContent });
     path = res.path;

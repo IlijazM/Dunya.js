@@ -54,6 +54,12 @@ export default interface DunyaPlugin {
    * @param pipe.fileContent the content of the file
    */
   filePipe?(pipe: { path: string; fileContent: string }): { path: string; fileContent: string };
+  /**
+   * Will get called on the 'add' event as well as on the 'change' event before 'addFileEvent' or 'changeFileEvent'
+   *
+   * @param path the output directory
+   */
+  fileEvent?(path: string, fileContent: string): boolean;
 
   /**
    * @param pipe.path the output directory
@@ -74,6 +80,8 @@ export default interface DunyaPlugin {
    * @param path the output directory
    */
   changeFileEvent?(path: string, fileContent: string): boolean;
+
+  updateDir?(path: string): boolean;
 
   //#endregion
 
