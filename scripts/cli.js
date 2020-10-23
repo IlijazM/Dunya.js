@@ -73,7 +73,8 @@ validArguments.push({
             return;
         }
         console.log(`Executing 'dev'`);
-        require(`./Dev`)({
+        const Dev = require(`./Dev`).default;
+        new Dev({
             ip: getArgValue(args, `ip`),
             port: getArgValue(args, `port`),
             inputDir: getArgValue(args, `inputDir`),
