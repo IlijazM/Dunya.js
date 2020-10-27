@@ -20,7 +20,7 @@ function convertPath(path) {
 }
 const plugin = {
     name: PLUGIN_NAME,
-    priority: 140,
+    priority: 240,
 };
 plugin.filePipe = function (pipe) {
     if (filterExceptions.call(this, pipe))

@@ -1,5 +1,5 @@
 {
-  "plugins": ["#inline-script"],
+  "plugins": ["#inline-script", "#sass-support"],
   "inputDir": "dev",
   "outputDir": "docs"
 }

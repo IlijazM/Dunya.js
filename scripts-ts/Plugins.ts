@@ -61,7 +61,7 @@ plugin.terminateWatcher = function (): boolean {
 //#endregion
 
 //#region events handlers
-plugin.deleteEventPipe = function (pipe: { path: string }): IOPaths {
+plugin.deleteEventPipe = function (pipe: IOPaths): IOPaths {
   return this.pluginPipe('deleteEventPipe', pipe);
 };
 

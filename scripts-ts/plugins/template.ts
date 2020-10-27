@@ -112,7 +112,7 @@ function updateAllHTMLFiles() {
 
 const plugin: DunyaPlugin = {
   name: 'template',
-  priority: 100,
+  priority: 200,
 };
 
 plugin.setup = function () {

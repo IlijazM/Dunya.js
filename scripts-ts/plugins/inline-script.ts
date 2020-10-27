@@ -2,7 +2,6 @@ const Path = require('path-extra');
 const glob = require('glob');
 const fs = require('fs');
 
-import { fstat } from 'fs';
 import DunyaPlugin from '../DunyaPlugin';
 
 const PLUGIN_NAME = 'inline-script';
@@ -43,7 +42,7 @@ function evalTemplate(template: string, path: string, html: string): string {
 
   const self = this;
 
-  function load(path) {
+  function load(path: string): string {
     return self.fs.read(Path.join(self.args.inputDir, path));
   }
 
@@ -87,15 +86,8 @@ function getIndexPath(path: string): string {
   return Path.join(Path.dirname(path), 'index.html');
 }
 
-function handleIndex(path: string, fileContent: string): string {
-  this.fs.remove(path);
-  this.fs.write(Path.join(Path.dirname(path), '_index.html'), fileContent);
-  return '_index.html';
-}
-
 function addTemplate(path: string, fileContent: string) {
   const html = Path.basename(path);
-  // if (isIndex(path)) html = handleIndex.call(this, path, fileContent);
 
   let template = loadTemplate.call(this);
   try {
@@ -119,7 +111,7 @@ function compileTemplateFile(fileContent: string): any {
 function updateAllHTMLFiles() {
   const templateExists = templateFileExists.call(this);
 
-  glob(Path.join(this.args.inputDir, '**', '*.html'), (err: any, files: Array<string>) => {
+  function update(files: Array<string>) {
     files.forEach((file: string) => {
       if (templateExists) {
         if (file === getTemplateInputPath.call(this)) return;
@@ -131,12 +123,19 @@ function updateAllHTMLFiles() {
         this.fs.remove(file);
       }
     });
+  }
+
+  glob(Path.join(this.args.inputDir, '**', '*.html'), (err: any, files: Array<string>) => {
+    update.call(this, files);
+  });
+  glob(Path.join(this.args.inputDir, '**', '*.inline-script'), (err: any, files: Array<string>) => {
+    update.call(this, files);
   });
 }
 
 const plugin: DunyaPlugin = {
   name: PLUGIN_NAME,
-  priority: 120,
+  priority: 250,
 };
 
 plugin.setup = function () {
@@ -212,10 +211,10 @@ function read(path: string, ext: string): string {
   const pathRaw = path.substr(this.args.outputDir.length + 1);
   const base = Path.base(pathRaw);
   try {
-    return this.fs.read(Path.join(this.args.inputDir, pathRaw, base + ext));
+    return this.fs.read(Path.join(this.args.outputDir, pathRaw, base + ext));
   } catch (err) {
     try {
-      return this.fs.read(Path.join(this.args.inputDir, pathRaw, 'index' + ext));
+      return this.fs.read(Path.join(this.args.outputDir, pathRaw, 'index' + ext));
     } catch (err) {
       return null;
     }

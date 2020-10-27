@@ -4,10 +4,8 @@
   "description": "Dunya is a lightweight javascript framework that relies upon plugins.",
   "scripts": {
     "dev": "dunya dev",
-    "start": "dunya start",
     "tsc": "tsc -w",
-    "tsc-no-watch": "tsc",
-    "test": "jest --coverage --forceExit"
+    "tsc-no-watch": "tsc"
   },
   "repository": {
     "type": "git",

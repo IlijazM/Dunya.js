@@ -64,8 +64,8 @@ export default class Dev {
   };
 
   resolvePathName(path: string): string {
-    if (path.startsWith('~')) return Path.resolve(path.substr(1));
-    if (path.startsWith('#')) return './' + Path.join('plugins', path.substr(1));
+    if (path.startsWith('~')) return Path.resolve(path.substr(1).replace(/^\//, ''));
+    if (path.startsWith('#')) return './' + Path.join('plugins', path.substr(1).replace(/^\//, ''));
     return path;
   }
   //#endregion
@@ -256,13 +256,19 @@ The property 'name' must not by empty`);
   eventHandler(event: string, path: string) {
     const iopath = this.convertPaths(path);
 
-    Plugins.updateDir.call(this, Path.dirname(iopath.outputPath));
     if (event === 'unlink') {
       this.deleteEvent(iopath);
-      return this.updateDir(Path.dirname(iopath.inputPath));
+      this.updateDir(Path.dirname(iopath.inputPath));
+      return Plugins.updateDir.call(this, Path.dirname(iopath.outputPath));
     }
-    if (this.fs.isDir(iopath.inputPath)) return this.eventHandlerDir(event, iopath);
-    return this.eventHandlerFile(event, iopath);
+    if (this.fs.isDir(iopath.inputPath)) {
+      this.eventHandlerDir(event, iopath);
+      return Plugins.updateDir.call(this, Path.dirname(iopath.outputPath));
+    }
+
+    this.eventHandlerFile(event, iopath);
+
+    Plugins.updateDir.call(this, Path.dirname(iopath.outputPath));
   }
 
   /**

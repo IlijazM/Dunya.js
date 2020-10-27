@@ -90,7 +90,7 @@ function updateAllHTMLFiles() {
 }
 const plugin = {
     name: 'template',
-    priority: 100,
+    priority: 200,
 };
 plugin.setup = function () {
     this.exceptions.push(function (pluginName, pipe) {

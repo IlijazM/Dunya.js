@@ -64,14 +64,8 @@ function evalTemplate(template, path, html) {
 function getIndexPath(path) {
     return Path.join(Path.dirname(path), 'index.html');
 }
-function handleIndex(path, fileContent) {
-    this.fs.remove(path);
-    this.fs.write(Path.join(Path.dirname(path), '_index.html'), fileContent);
-    return '_index.html';
-}
 function addTemplate(path, fileContent) {
     const html = Path.basename(path);
-    // if (isIndex(path)) html = handleIndex.call(this, path, fileContent);
     let template = loadTemplate.call(this);
     try {
         template = evalTemplate.call(this, template, path, html);
@@ -91,7 +85,7 @@ function compileTemplateFile(fileContent) {
 }
 function updateAllHTMLFiles() {
     const templateExists = templateFileExists.call(this);
-    glob(Path.join(this.args.inputDir, '**', '*.html'), (err, files) => {
+    function update(files) {
         files.forEach((file) => {
             if (templateExists) {
                 if (file === getTemplateInputPath.call(this))
@@ -105,11 +99,17 @@ function updateAllHTMLFiles() {
                 this.fs.remove(file);
             }
         });
+    }
+    glob(Path.join(this.args.inputDir, '**', '*.html'), (err, files) => {
+        update.call(this, files);
+    });
+    glob(Path.join(this.args.inputDir, '**', '*.inline-script'), (err, files) => {
+        update.call(this, files);
     });
 }
 const plugin = {
     name: PLUGIN_NAME,
-    priority: 120,
+    priority: 250,
 };
 plugin.setup = function () {
     this.exceptions.push(function (pluginName, pipe) {
@@ -180,11 +180,11 @@ function read(path, ext) {
     const pathRaw = path.substr(this.args.outputDir.length + 1);
     const base = Path.base(pathRaw);
     try {
-        return this.fs.read(Path.join(this.args.inputDir, pathRaw, base + ext));
+        return this.fs.read(Path.join(this.args.outputDir, pathRaw, base + ext));
     }
     catch (err) {
         try {
-            return this.fs.read(Path.join(this.args.inputDir, pathRaw, 'index' + ext));
+            return this.fs.read(Path.join(this.args.outputDir, pathRaw, 'index' + ext));
         }
         catch (err) {
             return null;

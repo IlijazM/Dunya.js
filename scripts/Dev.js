@@ -67,9 +67,9 @@ class Dev {
     }
     resolvePathName(path) {
         if (path.startsWith('~'))
-            return Path.resolve(path.substr(1));
+            return Path.resolve(path.substr(1).replace(/^\//, ''));
         if (path.startsWith('#'))
-            return './' + Path.join('plugins', path.substr(1));
+            return './' + Path.join('plugins', path.substr(1).replace(/^\//, ''));
         return path;
     }
     //#endregion
@@ -242,14 +242,17 @@ The property 'name' must not by empty`);
      */
     eventHandler(event, path) {
         const iopath = this.convertPaths(path);
-        Plugins_1.default.updateDir.call(this, Path.dirname(iopath.outputPath));
         if (event === 'unlink') {
             this.deleteEvent(iopath);
-            return this.updateDir(Path.dirname(iopath.inputPath));
+            this.updateDir(Path.dirname(iopath.inputPath));
+            return Plugins_1.default.updateDir.call(this, Path.dirname(iopath.outputPath));
         }
-        if (this.fs.isDir(iopath.inputPath))
-            return this.eventHandlerDir(event, iopath);
-        return this.eventHandlerFile(event, iopath);
+        if (this.fs.isDir(iopath.inputPath)) {
+            this.eventHandlerDir(event, iopath);
+            return Plugins_1.default.updateDir.call(this, Path.dirname(iopath.outputPath));
+        }
+        this.eventHandlerFile(event, iopath);
+        Plugins_1.default.updateDir.call(this, Path.dirname(iopath.outputPath));
     }
     /**
      * Will call a 'change' event on all files in a directory

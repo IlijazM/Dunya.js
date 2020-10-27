@@ -26,7 +26,7 @@ function convertPath(path: string): string {
 
 const plugin: DunyaPlugin = {
   name: PLUGIN_NAME,
-  priority: 140,
+  priority: 240,
 };
 
 plugin.filePipe = function (pipe: { path: string; fileContent: string }): { path: string; fileContent: string } {
