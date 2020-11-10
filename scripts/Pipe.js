@@ -5,10 +5,10 @@ const fs = require('fs-extra');
 const Path = require('path-extra');
 const glob = require('glob');
 //#endregion
-class Dev {
+class Pipe {
     //#endregion
     //#region init
-    constructor(args) {
+    constructor(pipeName, args) {
         //#region variables
         this.args = {
             plugins: ['./plugins/default'],
@@ -17,6 +17,7 @@ class Dev {
             ip: '127.0.0.1',
             port: 8080,
         };
+        this.pipeName = '';
         this.plugins = [];
         this.exceptions = [];
         //#endregion
@@ -47,10 +48,14 @@ class Dev {
                 return Plugins_1.default.fsReadJSON.call(this, path);
             },
         };
+        this.pipeName = pipeName;
         this.loadConfig(args);
+        this.handlePipeSpecificArgument();
         this.handleInputArguments(args);
         if (!this.args.noAutoInit)
             this.init();
+        if (this.args.autoTerminate)
+            this.terminate();
     }
     //#endregion
     //#region misc. functions
@@ -75,8 +80,24 @@ class Dev {
     //#endregion
     //#region handle arguments
     handleInputArguments(args) {
-        if (args)
-            Object.entries(args).forEach((v) => this.overwriteArgs(v[0], v[1]));
+        this.overwriteAllArgs(args);
+    }
+    /**
+     * @returns true if the 'pipeName' exists in the 'pipes' object of
+     * the dunya.config file.
+     */
+    isPipeSpecificArgumentValid(pipeName) {
+        return this.args.pipes[pipeName] !== undefined;
+    }
+    /**
+     * Overwrites the default arguments with 'pipeName'
+     */
+    handlePipeSpecificArgument() {
+        if (!this.pipeName)
+            return;
+        if (!this.isPipeSpecificArgumentValid(this.pipeName))
+            return console.warn(`The pipe name '${this.pipeName}' doesn't exist in the dunya.config file.`);
+        this.overwriteAllArgs(this.args.pipes[this.pipeName]);
     }
     loadConfig(args) {
         args.config = args.config ?? 'dunya.config.json';
@@ -86,11 +107,23 @@ class Dev {
             config = JSON.parse(config);
         }
         else {
-            config = '{}';
-            fs.writeFileSync(args.config, config);
+            fs.writeFileSync(args.config, '{}');
+            config = {};
         }
-        Object.entries(config).forEach((v) => this.overwriteArgs(v[0], v[1]));
+        this.overwriteAllArgs(config);
     }
+    /**
+     * Calls the 'overwriteArgs' function on all entires of an object.
+     */
+    overwriteAllArgs(args) {
+        Object.entries(args).forEach((v) => this.overwriteArgs(v[0], v[1]));
+    }
+    /**
+     * Will overwrite the property 'key' in 'this.args' with the value
+     * 'value'. If they're from different types it throws an error and
+     * when they're an object or an array it will merge them together
+     * (with 'this.args' having a higher priority).
+     */
     overwriteArgs(key, value) {
         if (value == null)
             return;
@@ -355,9 +388,9 @@ The property 'name' must not by empty`);
         this.startServer();
     }
     terminate() {
-        Plugins_1.default.terminate();
+        Plugins_1.default.terminate.call(this);
         this.terminateWatcher();
         this.stopServer.call(this);
     }
 }
-exports.default = Dev;
+exports.default = Pipe;

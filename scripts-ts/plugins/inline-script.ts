@@ -204,7 +204,11 @@ plugin.filePipe = function (pipe: { path: string; fileContent: string }): { path
 
 //#region inline script
 function containsInlineScript(path: string): boolean {
-  return fs.readdirSync(path).find((_) => _.endsWith('.inline-script'));
+  try {
+    return fs.readdirSync(path).find((_: string) => _.endsWith('.inline-script'));
+  } catch {
+    return false;
+  }
 }
 
 function read(path: string, ext: string): string {

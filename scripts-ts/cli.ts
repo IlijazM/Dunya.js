@@ -46,19 +46,19 @@ validArguments.push({
   call(args: Array<string>) {
     console.log(`Usage: ${commandName} <command> <arguments>
     ${commandName} help         print help message
-    ${commandName} dev          starts the dev script
+    ${commandName} pipe         starts the pipe script
 
     use ${commandName} <command> ${helpArgument.join(', ')} to get further information.`);
   },
 });
 //#endregion help
 
-//#region dev
+//#region pipe
 validArguments.push({
-  name: `dev`,
+  name: `pipe`,
   call(args: Array<string>) {
     if (helpArgument.includes(args[0])) {
-      console.log(`Usage: ${commandName} <command> <arguments>
+      console.log(`Usage: ${commandName} pipe <pipeNames> <arguments>
     Will start the pipeline of your project.
 
     -ip <ip address>                sets the ip address of the server.
@@ -69,23 +69,37 @@ validArguments.push({
                                     default: 'input'
     -outputDir <path>               sets the output directory for the watcher and the server.
                                     default: 'output'
-    -noWatcher                      starts the dev script without the watcher
-    -noServer                       starts the dev script without the server`);
+    -noWatcher                      starts the pipe script without the watcher
+    -noServer                       starts the pipe script without the server
+    -autoTerminate                  automatically terminates the script after initiating.`);
       return;
     }
 
-    console.log(`Executing 'dev'`);
-    const Dev = require(`./Dev`).default;
-    new Dev({
+    console.log(`Executing 'pipe'`);
+    const pipeNames = getPipeNames(args);
+    const Chain = require(`./Chain`).default;
+    new Chain(pipeNames, {
       ip: getArgValue(args, `ip`),
       port: getArgValue(args, `port`),
       inputDir: getArgValue(args, `inputDir`),
       outputDir: getArgValue(args, `outputDir`),
-      noWatcher: args.includes(`-noWatcher`),
-      noServer: args.includes(`-noServer`),
+      noWatcher: args.includes(`-noWatcher`) || null,
+      noServer: args.includes(`-noServer`) || null,
+      autoTerminate: args.includes(`-autoTerminate`) || null,
     });
   },
 });
+
+function getPipeNames(args: Array<string>) {
+  let pipeNames = [];
+
+  for (const arg of args) {
+    if (arg.trim().startsWith('-')) break;
+    pipeNames.push(arg);
+  }
+
+  return pipeNames;
+}
 //#endregion
 
 //#region *

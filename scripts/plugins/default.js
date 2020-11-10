@@ -17,6 +17,8 @@ plugin.fsRead = function (path) {
     return fs.readFileSync(path, 'utf-8');
 };
 plugin.fsWrite = function (path, fileContent) {
+    if (!path)
+        return;
     this.fs.mkdirs(Path.dirname(path));
     fs.writeFileSync(path, fileContent, 'utf-8');
     return true;

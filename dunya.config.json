@@ -1,5 +1,23 @@
 {
-  "plugins": ["#inline-script", "#sass-support"],
-  "inputDir": "dev",
-  "outputDir": "docs"
+  "ip": "0.0.0.0",
+  "port": 8080,
+
+  "pipes": {
+    "dev": {
+      "plugins": ["#inline-script", "#sass-support"],
+      "inputDir": "dev",
+      "outputDir": "dev-",
+      "noServer": true
+    },
+    "afterDev": {
+      "plugins": ["#inline-script-optimizations"],
+      "inputDir": "dev-",
+      "outputDir": "docs"
+    },
+    "build": {
+      "plugins": ["#inline-script-optimizations"],
+      "inputDir": "docs",
+      "outputDir": "output"
+    }
+  }
 }

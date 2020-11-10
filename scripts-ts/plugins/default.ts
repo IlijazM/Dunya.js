@@ -1,5 +1,5 @@
 //#region imports dependencies
-import Dev from '../Dev';
+import Pipe from '../Pipe';
 import DunyaPlugin from '../DunyaPlugin';
 
 const sane = require('sane');
@@ -22,6 +22,7 @@ plugin.fsRead = function (path: string): string {
 };
 
 plugin.fsWrite = function (path: string, fileContent: string): boolean {
+  if (!path) return;
   this.fs.mkdirs(Path.dirname(path));
   fs.writeFileSync(path, fileContent, 'utf-8');
   return true;

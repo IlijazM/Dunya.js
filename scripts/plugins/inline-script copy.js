@@ -174,12 +174,7 @@ plugin.filePipe = function (pipe) {
 //#endregion
 //#region inline script
 function containsInlineScript(path) {
-    try {
-        return fs.readdirSync(path).find((_) => _.endsWith('.inline-script'));
-    }
-    catch {
-        return false;
-    }
+    return fs.readdirSync(path).find((_) => _.endsWith('.inline-script'));
 }
 function read(path, ext) {
     const pathRaw = path.substr(this.args.outputDir.length + 1);
