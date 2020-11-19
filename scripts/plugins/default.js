@@ -55,8 +55,9 @@ function prepareDirectories() {
     this.fs.mkdirs(this.args.inputDir);
     this.fs.empty(this.args.outputDir);
 }
+let watcher;
 function initializingWatcher() {
-    const watcher = sane(this.args.inputDir);
+    watcher = sane(this.args.inputDir);
     watcher.on('all', (event, path) => {
         watcherEvent.call(this, event, path);
     });
@@ -73,6 +74,10 @@ plugin.setupWatcher = function () {
     prepareDirectories.call(this);
     initializingWatcher.call(this);
     callWatcherEventOnEveryFile.call(this);
+    return true;
+};
+plugin.terminateWatcher = function () {
+    watcher.close();
     return true;
 };
 //#endregion

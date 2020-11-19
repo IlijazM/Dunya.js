@@ -244,9 +244,12 @@ The property 'name' must not by empty`);
     }
     //#endregion
     //#region watcher
+    scanAll() {
+        glob(Path.join(this.args.inputDir, '**', '*'), (err, files) => files.forEach((file) => this.eventHandler('add', file.substr(this.args.inputDir.length + 1))));
+    }
     setupWatcher() {
         if (this.args.noWatcher)
-            return;
+            return this.scanAll();
         Plugins_1.default.setupWatcher.call(this);
     }
     terminateWatcher() {

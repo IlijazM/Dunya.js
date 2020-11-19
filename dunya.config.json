@@ -15,9 +15,11 @@
       "outputDir": "docs"
     },
     "build": {
-      "plugins": ["#inline-script-optimizations"],
+      "plugins": ["#inline-script-compiler"],
       "inputDir": "docs",
-      "outputDir": "output"
+      "outputDir": "output",
+      "noWatcher": true,
+      "noServer": true
     }
   }
 }

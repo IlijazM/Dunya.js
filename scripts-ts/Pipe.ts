@@ -256,8 +256,14 @@ The property 'name' must not by empty`);
   //#endregion
 
   //#region watcher
+  scanAll() {
+    glob(Path.join(this.args.inputDir, '**', '*'), (err: any, files: Array<string>) =>
+      files.forEach((file: string) => this.eventHandler('add', file.substr(this.args.inputDir.length + 1)))
+    );
+  }
+
   setupWatcher() {
-    if (this.args.noWatcher) return;
+    if (this.args.noWatcher) return this.scanAll();
     Plugins.setupWatcher.call(this);
   }
 
