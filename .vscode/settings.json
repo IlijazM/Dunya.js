@@ -4,5 +4,6 @@
         "iopath",
         "iscript",
         "prefixer"
-    ]
+    ],
+    "liveServer.settings.port": 5501
 }

@@ -1,14 +1,12 @@
 import * as jsdom from 'jsdom';
 import * as express from 'express';
 
+import DunyaPlugin from '../DunyaPlugin';
+import Pipe from '../Pipe';
+
 const Path = require('path-extra');
 const glob = require('glob');
 const fs = require('fs');
-
-if (typeof fetch !== 'function') {
-  global.fetch = require('node-fetch-polyfill');
-  var fetch = require('node-fetch-polyfill');
-}
 
 /**
  * Sleeps for 'ms' milliseconds.
@@ -21,21 +19,40 @@ export async function sleep(ms: number) {
   });
 }
 
-import DunyaPlugin from '../DunyaPlugin';
+async function getPreRenderedHTMLPage(self: Pipe, pipe: { path: string; fileContent: string }) {
+  const path = pipe.path.substr(self.args.outputDir.length);
 
-async function getPreRenderedHTMLPage(pipe: { path: string; fileContent: string }) {
-  const path = pipe.path.substr(this.args.outputDir.length);
-
-  const url = `http://localhost:${this.args.port}${path}`;
+  const url = `http://localhost:${self.args.port}${path}`;
   const dom = await jsdom.JSDOM.fromURL(url, {
     resources: 'usable',
     runScripts: 'dangerously',
     pretendToBeVisual: true,
   });
 
-  await sleep(200);
+  await untilFinished(dom);
 
-  console.log(dom.window.document.documentElement.outerHTML);
+  let preRenderedHTML: HTMLElement = dom.window.document.documentElement;
+
+  preRenderedHTML = optimize(preRenderedHTML);
+
+  self.fs.write(pipe.path, preRenderedHTML.outerHTML);
+}
+
+function optimize(html: HTMLElement): HTMLElement {
+  const initialContentElements = html.querySelectorAll('*[initial-content]');
+
+  initialContentElements.forEach((el) => {
+    el.innerHTML = el.getAttribute('initial-content');
+  });
+
+  return html;
+}
+
+async function untilFinished(dom: jsdom.JSDOM) {
+  while (true) {
+    await sleep(50);
+    if (dom.window.document.body.hasAttribute('inline-script-compiler-finished')) break;
+  }
 }
 
 const PLUGIN_NAME = 'inline-script-compiler';
@@ -63,7 +80,13 @@ plugin.filePipe = function (pipe: { path: string; fileContent: string }): { path
   const baseName = Path.basename(pipe.path);
 
   if (baseName === 'index.html') {
-    getPreRenderedHTMLPage.call(this, pipe).catch(console.error);
+    getPreRenderedHTMLPage(this, pipe)
+      .catch((err) => {
+        console.error(err);
+      })
+      .then(() => {
+        console.log(`compiled '${pipe.path}'.`);
+      });
     return { path: '', fileContent: '' };
   }
 

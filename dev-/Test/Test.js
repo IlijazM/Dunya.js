@@ -1,1 +1,6 @@
-const foo = (100).random;
+let foo = (100).random;
+
+function increase() {
+  foo++;
+  state.render();
+}

@@ -1,7 +1,13 @@
 <div>
-  <h1>{ foo }</h1>
+  <h1 initial-content="js is deactivated.">{ foo }</h1>
+  <button onclick="increase()">CLICK ME</button>
 </div>
 <style scoped>div h1 {
   color: red;
-}</style><script>const foo = (100).random;
+}</style><script>let foo = (100).random;
+
+function increase() {
+  foo++;
+  state.render();
+}
 </script>

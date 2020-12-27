@@ -6,10 +6,6 @@ const express = require("express");
 const Path = require('path-extra');
 const glob = require('glob');
 const fs = require('fs');
-if (typeof fetch !== 'function') {
-    global.fetch = require('node-fetch-polyfill');
-    var fetch = require('node-fetch-polyfill');
-}
 /**
  * Sleeps for 'ms' milliseconds.
  *
@@ -21,16 +17,32 @@ async function sleep(ms) {
     });
 }
 exports.sleep = sleep;
-async function getPreRenderedHTMLPage(pipe) {
-    const path = pipe.path.substr(this.args.outputDir.length);
-    const url = `http://localhost:${this.args.port}${path}`;
+async function getPreRenderedHTMLPage(self, pipe) {
+    const path = pipe.path.substr(self.args.outputDir.length);
+    const url = `http://localhost:${self.args.port}${path}`;
     const dom = await jsdom.JSDOM.fromURL(url, {
         resources: 'usable',
         runScripts: 'dangerously',
         pretendToBeVisual: true,
     });
-    await sleep(200);
-    console.log(dom.window.document.documentElement.outerHTML);
+    await untilFinished(dom);
+    let preRenderedHTML = dom.window.document.documentElement;
+    preRenderedHTML = optimize(preRenderedHTML);
+    self.fs.write(pipe.path, preRenderedHTML.outerHTML);
+}
+function optimize(html) {
+    const initialContentElements = html.querySelectorAll('*[initial-content]');
+    initialContentElements.forEach((el) => {
+        el.innerHTML = el.getAttribute('initial-content');
+    });
+    return html;
+}
+async function untilFinished(dom) {
+    while (true) {
+        await sleep(50);
+        if (dom.window.document.body.hasAttribute('inline-script-compiler-finished'))
+            break;
+    }
 }
 const PLUGIN_NAME = 'inline-script-compiler';
 const plugin = {
@@ -52,7 +64,13 @@ plugin.filePipe = function (pipe) {
     const ext = Path.extname(pipe.path);
     const baseName = Path.basename(pipe.path);
     if (baseName === 'index.html') {
-        getPreRenderedHTMLPage.call(this, pipe).catch(console.error);
+        getPreRenderedHTMLPage(this, pipe)
+            .catch((err) => {
+            console.error(err);
+        })
+            .then(() => {
+            console.log(`compiled '${pipe.path}'.`);
+        });
         return { path: '', fileContent: '' };
     }
     if (ext === '.html')

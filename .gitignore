@@ -2,3 +2,7 @@ node_modules/
 dev/
 build/
 src/
+dev
+dev-
+docs
+output

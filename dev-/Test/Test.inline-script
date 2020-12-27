@@ -1,3 +1,4 @@
 <div>
-  <h1>{ foo }</h1>
+  <h1 initial-content="js is deactivated.">{ foo }</h1>
+  <button onclick="increase()">CLICK ME</button>
 </div>
