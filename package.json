@@ -4,6 +4,8 @@
   "description": "Dunya is a lightweight javascript framework that relies upon plugins.",
   "scripts": {
     "dev": "dunya pipe dev",
+    "dev-optimized": "dunya pipe dev-ns optimize",
+    "build": "dunya pipe build",
     "tsc": "tsc -w",
     "tsc-no-watch": "tsc"
   },

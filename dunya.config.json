@@ -6,13 +6,24 @@
     "dev": {
       "plugins": ["#inline-script", "#sass-support"],
       "inputDir": "dev",
+      "outputDir": "docs"
+    },
+    "dev-ns": {
+      "plugins": ["#inline-script", "#sass-support"],
+      "inputDir": "dev",
       "outputDir": "dev-",
       "noServer": true
     },
-    "afterDev": {
+    "optimize": {
       "plugins": ["#inline-script-optimizations"],
       "inputDir": "dev-",
       "outputDir": "docs"
+    },
+    "optimize-ns": {
+      "plugins": ["#inline-script-optimizations"],
+      "inputDir": "dev-",
+      "outputDir": "docs",
+      "noServer": true
     },
     "build": {
       "plugins": ["#inline-script-compiler"],
