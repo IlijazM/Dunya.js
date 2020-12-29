@@ -44,7 +44,11 @@ plugin.fsEmpty = function (path: string): boolean {
 };
 
 plugin.fsIsDir = function (path: string): boolean {
-  return fs.lstatSync(path).isDirectory();
+  try {
+    return fs.lstatSync(path).isDirectory();
+  } catch {
+    return false;
+  }
 };
 
 plugin.fsExists = function (path: string): boolean {

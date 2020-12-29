@@ -36,7 +36,12 @@ plugin.fsEmpty = function (path) {
     return true;
 };
 plugin.fsIsDir = function (path) {
-    return fs.lstatSync(path).isDirectory();
+    try {
+        return fs.lstatSync(path).isDirectory();
+    }
+    catch {
+        return false;
+    }
 };
 plugin.fsExists = function (path) {
     return fs.existsSync(path);
