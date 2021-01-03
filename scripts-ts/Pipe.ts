@@ -136,7 +136,9 @@ export default class Pipe {
     }
 
     if (argsType !== overwriteType)
-      throw new TypeError(`The argument '${key}' in '${this.args.config}' must be of type ${argsType}.`);
+      throw new TypeError(
+        `The argument '${key}' in '${this.args.config}' must be of type ${argsType}.`
+      );
 
     if (argsType === 'object') {
       this.args[key] = { ...this.args[key], ...value };
@@ -154,7 +156,8 @@ export default class Pipe {
 
   //#region plugins
   loadPlugins() {
-    if (this.args.plugins !== undefined) this.args.plugins.forEach((plugin) => this.loadPlugin(plugin));
+    if (this.args.plugins !== undefined)
+      this.args.plugins.forEach((plugin) => this.loadPlugin(plugin));
     this.sortPlugins();
     this.pluginCaller('setup');
   }
@@ -207,7 +210,8 @@ The property 'name' must not by empty`);
    * @param args additional arguments the function requires
    */
   pluginCaller(cFun: string, ...args: Array<any>) {
-    for (let plugin of this.plugins) if (plugin[cFun] !== undefined) if (plugin[cFun].call(this, ...args)) return;
+    for (let plugin of this.plugins)
+      if (plugin[cFun] !== undefined) if (plugin[cFun].call(this, ...args)) return;
   }
 
   /**
@@ -217,7 +221,8 @@ The property 'name' must not by empty`);
    * @param args additional arguments the function requires
    */
   pluginCallAll(cFun: string, ...args: Array<any>) {
-    for (let plugin of this.plugins) if (plugin[cFun] !== undefined) plugin[cFun].call(this, ...args);
+    for (let plugin of this.plugins)
+      if (plugin[cFun] !== undefined) plugin[cFun].call(this, ...args);
   }
 
   /**
@@ -260,7 +265,9 @@ The property 'name' must not by empty`);
   //#region watcher
   scanAll() {
     glob(Path.join(this.args.inputDir, '**', '*'), (err: any, files: Array<string>) =>
-      files.forEach((file: string) => this.eventHandler('add', file.substr(this.args.inputDir.length + 1)))
+      files.forEach((file: string) =>
+        this.eventHandler('add', file.substr(this.args.inputDir.length + 1))
+      )
     );
   }
 

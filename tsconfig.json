@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "outDir": "scripts",
+    "outDir": "build",
     "moduleResolution": "node",
     "module": "CommonJS"
   },
@@ -9,5 +9,5 @@
     "entryPoints": ["scripts"],
     "out": "documentation"
   },
-  "exclude": ["node_modules"]
+  "include": ["./src", "scripts-ts/plugins/inline-script-compiler.ts"]
 }

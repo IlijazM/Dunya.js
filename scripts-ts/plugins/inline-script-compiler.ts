@@ -1,7 +1,7 @@
 import * as jsdom from 'jsdom';
 import * as express from 'express';
 
-import DunyaPlugin from '../DunyaPlugin';
+import DunyaPlugin from '../../src/model/PluginModel';
 import Pipe from '../Pipe';
 
 const Path = require('path-extra');
@@ -75,7 +75,10 @@ plugin.terminate = function () {
   expressServer.close();
 };
 
-plugin.filePipe = function (pipe: { path: string; fileContent: string }): { path: string; fileContent: string } {
+plugin.filePipe = function (pipe: {
+  path: string;
+  fileContent: string;
+}): { path: string; fileContent: string } {
   const ext = Path.extname(pipe.path);
   const baseName = Path.basename(pipe.path);
 

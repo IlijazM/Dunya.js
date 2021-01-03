@@ -135,7 +135,7 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L9">DunyaPlugin.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L9">DunyaPlugin.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -145,7 +145,7 @@
 					<div class="tsd-signature tsd-kind-icon">priority<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L41">DunyaPlugin.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L41">DunyaPlugin.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -187,7 +187,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L342">DunyaPlugin.ts:342</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L350">DunyaPlugin.ts:350</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -220,7 +220,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L332">DunyaPlugin.ts:332</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L340">DunyaPlugin.ts:340</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -274,7 +274,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L386">DunyaPlugin.ts:386</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L394">DunyaPlugin.ts:394</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -307,7 +307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L375">DunyaPlugin.ts:375</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L383">DunyaPlugin.ts:383</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -359,7 +359,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L408">DunyaPlugin.ts:408</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L416">DunyaPlugin.ts:416</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -392,7 +392,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L397">DunyaPlugin.ts:397</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L405">DunyaPlugin.ts:405</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -444,14 +444,22 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L309">DunyaPlugin.ts:309</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L317">DunyaPlugin.ts:317</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Will get called when a file or a directory gets unlinked</p>
+									<p>Will get called when a file or a directory gets unlinked.</p>
 								</div>
-								<p>method to call: pluginPipe</p>
+								<p>
+									If this function returns a falsy value, a function from a plugin with a lower priority will
+									get called as well. Return a truthy value in order to stop the execution of another function
+									form a plugin with a lower priority.
+								</p>
+								<p>
+									The default plugin will set this function. In order to overwrite this function the plugin must
+									have a priority higher than 100 and must return a truthy value.
+								</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -476,7 +484,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L300">DunyaPlugin.ts:300</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L299">DunyaPlugin.ts:299</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -533,7 +541,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L364">DunyaPlugin.ts:364</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L372">DunyaPlugin.ts:372</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -566,7 +574,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L353">DunyaPlugin.ts:353</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L361">DunyaPlugin.ts:361</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -618,7 +626,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L190">DunyaPlugin.ts:190</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L190">DunyaPlugin.ts:190</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -659,7 +667,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L228">DunyaPlugin.ts:228</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L228">DunyaPlugin.ts:228</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -700,7 +708,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L209">DunyaPlugin.ts:209</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L209">DunyaPlugin.ts:209</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -741,7 +749,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L147">DunyaPlugin.ts:147</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L147">DunyaPlugin.ts:147</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -786,7 +794,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L102">DunyaPlugin.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L102">DunyaPlugin.ts:102</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -827,7 +835,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L251">DunyaPlugin.ts:251</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L251">DunyaPlugin.ts:251</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -871,7 +879,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L171">DunyaPlugin.ts:171</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L171">DunyaPlugin.ts:171</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -916,7 +924,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L123">DunyaPlugin.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L123">DunyaPlugin.ts:123</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -964,7 +972,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L47">DunyaPlugin.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L47">DunyaPlugin.ts:47</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -986,7 +994,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L262">DunyaPlugin.ts:262</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L262">DunyaPlugin.ts:262</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1010,7 +1018,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L430">DunyaPlugin.ts:430</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L438">DunyaPlugin.ts:438</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1034,7 +1042,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L441">DunyaPlugin.ts:441</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L449">DunyaPlugin.ts:449</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1059,7 +1067,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L81">DunyaPlugin.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L81">DunyaPlugin.ts:81</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1102,7 +1110,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L273">DunyaPlugin.ts:273</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L273">DunyaPlugin.ts:273</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1127,7 +1135,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/add1372/scripts-ts/DunyaPlugin.ts#L418">DunyaPlugin.ts:418</a></li>
+									<li>Defined in <a href="https://github.com/IlijazM/Dunya.js/blob/82592a7/scripts-ts/DunyaPlugin.ts#L426">DunyaPlugin.ts:426</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1199,6 +1207,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/plugins_template.html">plugins/template</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/plugins_typescript_support.html">plugins/typescript-<wbr>support</a>
 					</li>
 				</ul>
 			</nav>
