@@ -7,7 +7,8 @@
     "dev-optimized": "dunya pipe dev-ns optimize",
     "build": "dunya pipe build",
     "tsc": "tsc -w",
-    "tsc-no-watch": "tsc"
+    "tsc-no-watch": "tsc",
+    "doc": "typedoc scripts-ts"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "live-server": "^1.2.1",
     "node-sass": "^4.14.1",
     "path-extra": "^4.3.0",
+    "prettier-plugin-jsdoc": "^0.2.13",
     "sane": "^4.1.0",
     "sass": "^1.26.11"
   },
@@ -43,6 +45,8 @@
     "access": "public"
   },
   "devDependencies": {
+    "eslint": "^7.16.0",
+    "typedoc": "^0.20.5",
     "typescript": "^4.0.5"
   },
   "jest": {

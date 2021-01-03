@@ -5,5 +5,9 @@
     "moduleResolution": "node",
     "module": "CommonJS"
   },
+  "typedocOptions": {
+    "entryPoints": ["scripts"],
+    "out": "documentation"
+  },
   "exclude": ["node_modules"]
 }

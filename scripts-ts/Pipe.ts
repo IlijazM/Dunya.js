@@ -90,8 +90,10 @@ export default class Pipe {
   handlePipeSpecificArgument() {
     if (!this.pipeName) return;
 
-    if (!this.isPipeSpecificArgumentValid(this.pipeName))
-      return console.warn(`The pipe name '${this.pipeName}' doesn't exist in the dunya.config file.`);
+    if (!this.isPipeSpecificArgumentValid(this.pipeName)) {
+      console.warn(`The pipe name '${this.pipeName}' doesn't exist in the dunya.config file.`);
+      return;
+    }
 
     this.overwriteAllArgs(this.args.pipes[this.pipeName]);
   }

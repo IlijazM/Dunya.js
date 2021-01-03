@@ -1,0 +1,667 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>dunya</title>
+	<meta name="description" content="Documentation for dunya">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">dunya</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>dunya</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#dunyajs" id="dunyajs" style="color: inherit; text-decoration: none;">
+					<h1>Dunya.js</h1>
+				</a>
+				<p>Dunya.js is a simple tool for setting up a better workflow.</p>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h2>Installation</h2>
+				</a>
+				<pre><code class="language-bash"><span style="color: #000000">npm install --save dunya</span>
+</code></pre>
+				<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
+					<h3>Setup</h3>
+				</a>
+				<p>Add this script to your <code>package.json</code>:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;scripts&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;dev&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;dunya dev&quot;</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#further-installation-option" id="further-installation-option" style="color: inherit; text-decoration: none;">
+					<h3>Further installation option</h3>
+				</a>
+				<p>Additionally you can install <code>dunya</code> globally:</p>
+				<pre><code class="language-bash"><span style="color: #000000">npm install -g dunya</span>
+</code></pre>
+				<p>and run the cli directly:</p>
+				<pre><code class="language-bash"><span style="color: #000000">dunya dev</span>
+</code></pre>
+				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+					<h2>Getting started</h2>
+				</a>
+				<p>Dunya is a tool you can use to build a custom workflow.
+				It works as following:</p>
+				<p>First you&#39;ll have a input directory.
+					Your source code will go in there.
+					If you run the dev script it will apply all changed of your code in a output directory.
+					Then it will run a live server by default in the output directory.
+					In the process of applying your changes however,
+					it will pipe your file changes through a so called <code>pipeline</code>.
+				This pipeline can be manipulated using <code>plugins</code>.</p>
+				<p>To get started, run this command:</p>
+				<pre><code class="language-bash"><span style="color: #000000">npm run dev</span>
+<span style="color: #008000"># or</span>
+<span style="color: #000000">dunya dev</span>
+</code></pre>
+				<p>Whenever you make a change in you input directory the default pipeline will apply the change in the output directory.
+				So by default there is not much going on but it will quickly get more interesting when using <a href="##Plugins">plugins</a>.</p>
+				<p>A file called <code>dunya.config.json</code> should get created.
+					This is the file where you can configure dunya.js.
+					Additionally you can set some parameters by using command line arguments.
+				See more at <a href="##Configuration">Configuration</a>.</p>
+				<a href="#plugins" id="plugins" style="color: inherit; text-decoration: none;">
+					<h2>Plugins</h2>
+				</a>
+				<p>Let&#39;s start adding plugins in our project.
+					Go to your <code>dunya.config.json</code> and start add our first plugin.
+				You need to create an array called <code>plugins</code>:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;plugins&quot;</span><span style="color: #000000">: [</span><span style="color: #CD3131">...</span><span style="color: #000000">],</span>
+<span style="color: #000000">  </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>Dunya comes with a hand full of default plugins
+					(See more <a href="###Default-plugins">default plugins</a>).
+				For example we can add <code>sass support</code> to our pipeline like following:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;plugins&quot;</span><span style="color: #000000">: [</span><span style="color: #A31515">&quot;#sass-support&quot;</span><span style="color: #000000">],</span>
+<span style="color: #000000">  </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>Using the <code>#</code> we can import plugins that comes with dunya by default.</p>
+				<p>Note that plugins can overwrite each other when they have the same name
+					<em>(Not the name you entered in the <code>dunya.config.json</code>)</em>
+					This can be used to e.g. overwrite the default plugin
+				<a href="###default">more about the default plugin here</a></p>
+				<a href="#non-default-plugins" id="non-default-plugins" style="color: inherit; text-decoration: none;">
+					<h3>Non-default plugins</h3>
+				</a>
+				<p>You can also import plugins from external sources.
+					Let&#39;s say there is a plugin in the npm packages called <code>foo-bar-support</code> that you want to install.
+				Simple call</p>
+				<pre><code class="language-bash"><span style="color: #000000">npm i --save foo-bar-support</span>
+</code></pre>
+				<p>and add this plugin like you would use the <code>require</code> function or the <code>import</code> statement in javascript / typescript:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;plugins&quot;</span><span style="color: #000000">: [</span><span style="color: #A31515">&quot;foo-bar-support&quot;</span><span style="color: #000000">],</span>
+<span style="color: #000000">  </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#own-plugins" id="own-plugins" style="color: inherit; text-decoration: none;">
+					<h3>Own plugins</h3>
+				</a>
+				<p>If you want to create a own plugin simple create a javascript file in your directory.
+				Then you need to import the plugin using a <code>tilde</code>:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;plugins&quot;</span><span style="color: #000000">: [</span><span style="color: #A31515">&quot;~/path/to/plugins.js&quot;</span><span style="color: #000000">],</span>
+<span style="color: #000000">  </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p><a href="##Creating-a-plugin">More about creating a plugin here.</a></p>
+				<a href="#default-plugins" id="default-plugins" style="color: inherit; text-decoration: none;">
+					<h3>Default plugins</h3>
+				</a>
+				<p>Here is a list of all default plugins that come with dunya:</p>
+				<a href="#sass-support" id="sass-support" style="color: inherit; text-decoration: none;">
+					<h4>sass-support:</h4>
+				</a>
+				<table>
+					<thead>
+						<tr>
+							<th>property</th>
+							<th>value</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>name</td>
+							<td>sass-support</td>
+						</tr>
+						<tr>
+							<td>priority</td>
+							<td>300</td>
+						</tr>
+				</tbody></table>
+				<p>This will pipe all <code>.scss</code> files and compile them to regular <code>.css</code> files.
+					Note that you need to add the proper file name everywhere you want to link a stylesheet even though the file extension differs in the input directory.
+				For example:</p>
+				<pre><code class="language-html"><span style="color: #008000">&lt;!-- wrong --&gt;</span>
+<span style="color: #800000">&lt;link</span><span style="color: #000000"> </span><span style="color: #FF0000">rel</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;stylesheet&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">href</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;styles/main.scss&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+
+<span style="color: #008000">&lt;!-- right --&gt;</span>
+<span style="color: #800000">&lt;link</span><span style="color: #000000"> </span><span style="color: #FF0000">rel</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;stylesheet&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">href</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;styles/main.css&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+</code></pre>
+				<a href="#template" id="template" style="color: inherit; text-decoration: none;">
+					<h4>template</h4>
+				</a>
+				<table>
+					<thead>
+						<tr>
+							<th>property</th>
+							<th>value</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>name</td>
+							<td>template</td>
+						</tr>
+						<tr>
+							<td>priority</td>
+							<td>200</td>
+						</tr>
+				</tbody></table>
+				<p>The template plugin will effect every <code>.html</code> file.
+					Your first have to create a <code>template.html</code> file directly in the input directory.
+					Now the <code>template.html</code> will replace all <code>.html</code> files.
+				Now let&#39;s see what the <code>template</code> plugin provides:</p>
+				<p>This template will wrap every <code>.html</code> file in this boilerplate html:</p>
+				<pre><code class="language-html"><span style="color: #800000">&lt;!DOCTYPE</span><span style="color: #000000"> </span><span style="color: #FF0000">html</span><span style="color: #800000">&gt;</span>
+<span style="color: #800000">&lt;html</span><span style="color: #000000"> </span><span style="color: #FF0000">lang</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;en&quot;</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;head&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;meta</span><span style="color: #000000"> </span><span style="color: #FF0000">charset</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;UTF-8&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;meta</span><span style="color: #000000"> </span><span style="color: #FF0000">name</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;viewport&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">content</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;width=device-width, initial-scale=1.0&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;title&gt;</span><span style="color: #000000">Test</span><span style="color: #800000">&lt;/title&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;/head&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;body&gt;</span>
+<span style="color: #000000">    {{ html }}</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;/body&gt;</span>
+<span style="color: #800000">&lt;/html&gt;</span>
+</code></pre>
+				<p>For example:</p>
+				<pre><code class="language-html"><span style="color: #800000">&lt;h1&gt;</span><span style="color: #000000">Hello, world!</span><span style="color: #800000">&lt;/h1&gt;</span>
+</code></pre>
+				<p>will get converted to:</p>
+				<pre><code class="language-html"><span style="color: #800000">&lt;!DOCTYPE</span><span style="color: #000000"> </span><span style="color: #FF0000">html</span><span style="color: #800000">&gt;</span>
+<span style="color: #800000">&lt;html</span><span style="color: #000000"> </span><span style="color: #FF0000">lang</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;en&quot;</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;head&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;meta</span><span style="color: #000000"> </span><span style="color: #FF0000">charset</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;UTF-8&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;meta</span><span style="color: #000000"> </span><span style="color: #FF0000">name</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;viewport&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">content</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;width=device-width, initial-scale=1.0&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;title&gt;</span><span style="color: #000000">Test</span><span style="color: #800000">&lt;/title&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;/head&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;body&gt;</span>
+<span style="color: #000000">    </span><span style="color: #800000">&lt;h1&gt;</span><span style="color: #000000">Hello, world!</span><span style="color: #800000">&lt;/h1&gt;</span>
+<span style="color: #000000">  </span><span style="color: #800000">&lt;/body&gt;</span>
+<span style="color: #800000">&lt;/html&gt;</span>
+</code></pre>
+				<p>Additionally you have the variable <code>relativePath</code> which points to the root directory of your html.
+					You can also use a <code>tilde</code> to go to the root directory automatically.
+				Note: Behind the <code>tilde</code> syntax is a regex that searches for the specific combination <code>&quot;~/</code>.</p>
+				<p>For example:</p>
+				<pre><code class="language-html"><span style="color: #000000">...</span>
+<span style="color: #800000">&lt;link</span><span style="color: #000000"> </span><span style="color: #FF0000">rel</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;stylesheet&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">href</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;~/styles/main.css&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+
+<span style="color: #800000">&lt;script&gt;</span>
+<span style="color: #000000FF">  </span><span style="color: #0000FF">var</span><span style="color: #000000FF"> </span><span style="color: #001080">relativePath</span><span style="color: #000000FF"> </span><span style="color: #000000">=</span><span style="color: #000000FF"> </span><span style="color: #A31515">&#039;{{relativePath}}&#039;</span><span style="color: #000000FF">;</span>
+<span style="color: #800000">&lt;/script&gt;</span>
+<span style="color: #000000">...</span>
+</code></pre>
+				<p>will get converted to:</p>
+				<pre><code class="language-html"><span style="color: #000000">...</span>
+<span style="color: #800000">&lt;link</span><span style="color: #000000"> </span><span style="color: #FF0000">rel</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;stylesheet&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">href</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;../../styles/main.css&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+
+<span style="color: #800000">&lt;script&gt;</span>
+<span style="color: #000000FF">  </span><span style="color: #0000FF">var</span><span style="color: #000000FF"> </span><span style="color: #001080">relativePath</span><span style="color: #000000FF"> </span><span style="color: #000000">=</span><span style="color: #000000FF"> </span><span style="color: #A31515">&#039;../..&#039;</span><span style="color: #000000FF">;</span>
+<span style="color: #800000">&lt;/script&gt;</span>
+<span style="color: #000000">...</span>
+</code></pre>
+				<p>There is also a function called <code>load</code>.
+				This will load another file in your input directory.</p>
+				<p>Let&#39;s say you want to add a header to all your html files:</p>
+				<pre><code class="language-html"><span style="color: #000000">...</span>
+<span style="color: #800000">&lt;body&gt;</span>
+<span style="color: #000000">  {{ load(&#039;components/header.html&#039;) }} {{ html }}</span>
+<span style="color: #800000">&lt;/body&gt;</span>
+<span style="color: #000000">...</span>
+</code></pre>
+				<p>Additionally you&#39;ll have the variable <code>path</code> which is the path to the original html file.</p>
+				<a href="#enhancedrouting" id="enhancedrouting" style="color: inherit; text-decoration: none;">
+					<h4>enhancedRouting</h4>
+				</a>
+				<table>
+					<thead>
+						<tr>
+							<th>property</th>
+							<th>value</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>name</td>
+							<td>enhancedRouting</td>
+						</tr>
+						<tr>
+							<td>priority</td>
+							<td>240</td>
+						</tr>
+				</tbody></table>
+				<p>This plugin will take all of your <code>.html</code> files and move them into their own directory.</p>
+				<p>So this input routing:</p>
+				<pre><code><span style="color: #001080">input</span>
+<span style="color: #000000">|- </span><span style="color: #001080">About</span><span style="color: #000000">.</span><span style="color: #001080">html</span>
+<span style="color: #000000">|- </span><span style="color: #001080">Contact</span><span style="color: #000000">.</span><span style="color: #001080">html</span>
+<span style="color: #000000">|- </span><span style="color: #001080">index</span><span style="color: #000000">.</span><span style="color: #001080">html</span>
+</code></pre>
+				<p>will get converted to:</p>
+				<pre><code><span style="color: #001080">output</span>
+<span style="color: #000000">|- </span><span style="color: #001080">About</span>
+<span style="color: #000000">|   |- </span><span style="color: #001080">index</span><span style="color: #000000">.</span><span style="color: #001080">html</span>
+<span style="color: #000000">|- </span><span style="color: #001080">Contact</span>
+<span style="color: #000000">|   |- </span><span style="color: #001080">index</span><span style="color: #000000">.</span><span style="color: #001080">html</span>
+<span style="color: #000000">|- </span><span style="color: #001080">index</span><span style="color: #000000">.</span><span style="color: #001080">html</span>
+</code></pre>
+				<p>This improves the routing of your website because now you can use <code>localhost:8080/About</code> instead of <code>localhost:8080/About.html</code>.</p>
+				<a href="#default" id="default" style="color: inherit; text-decoration: none;">
+					<h4>default</h4>
+				</a>
+				<table>
+					<thead>
+						<tr>
+							<th>property</th>
+							<th>value</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>name</td>
+							<td>default</td>
+						</tr>
+						<tr>
+							<td>priority</td>
+							<td>100</td>
+						</tr>
+				</tbody></table>
+				<p>The default plugin contains all necessary code for the scripts to work.
+					The idea behind having a default plugin is that you can overwrite it to your needs.
+					Let&#39;s say your unhappy how to default plugin handles the watcher.
+					Then you could create a new plugin with a higher priority than 100
+				or you could create a plugin called <code>default</code> and overwrite the <code>setupWatcher</code> function.</p>
+				<p>The default plugins sets the following functions <a href="###plugin-functions">read more about all functions here</a>:</p>
+				<p><em>fsRead</em>: reads a file at <code>path</code> synced.</p>
+				<p><em>fsWrite</em>: writes the file to <code>path</code> with the content <code>fileContent</code> synced.</p>
+				<p>It also called the <code>fsMkdirs</code> function so it wont fail when the path doesn&#39;t exist.</p>
+				<p><em>fsMkdirs</em>: creates all directories at <code>dirs</code> synced.</p>
+				<p><em>fsRemove</em>: removes a file or directory at <code>path</code>.</p>
+				<p><em>fsEmpty</em>: creates and empties the directory <code>path</code>.</p>
+				<p><em>fsIsDir</em>: returns true when <code>path</code> leads to a directory.</p>
+				<p><em>fsExists</em>: return true when <code>path</code> exists.</p>
+				<p><em>fsReadJSON</em>: calls <code>fsRead</code> and returns the content as JSON.
+				If the parsing fails it will throw an error.</p>
+				<p><em>setupWatcher</em>: ensures that all directories exist,
+					initiates a watcher using the npm package <a href="https://www.npmjs.com/package/sane">sane</a>,
+				and makes sure that the event is called properly as well as all files are getting added when the watcher got setup.</p>
+				<p><em>deleteEvent</em>: calls <code>fsRemove</code> at <code>path</code>.</p>
+				<p><em>addDirEvent</em>: calls <code>fsMkdirs</code> at <code>path</code>.</p>
+				<p><em>addFileEvent</em>: calls <code>fsWrite</code> at <code>path</code>.</p>
+				<p><em>changeFileEvent</em>: calls <code>fsWrite</code> at <code>path</code>.</p>
+				<p><em>startServer</em>: starts a live server using the npm package <a href="https://www.npmjs.com/package/live-server">live-server</a>.</p>
+				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+					<h2>Configuration</h2>
+				</a>
+				<p>Here is a list of all configuration options dunya provides per default:</p>
+				<table>
+					<thead>
+						<tr>
+							<th>json</th>
+							<th>cli</th>
+							<th>default</th>
+							<th>description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>plugins</td>
+							<td>-</td>
+							<td>[&#39;#default&#39;]</td>
+							<td>an array of the plugins</td>
+						</tr>
+						<tr>
+							<td>inputDir</td>
+							<td>-inputDir</td>
+							<td>&#39;input&#39;</td>
+							<td>the path to the input directory</td>
+						</tr>
+						<tr>
+							<td>outputDir</td>
+							<td>-outputDir</td>
+							<td>&#39;output&#39;</td>
+							<td>the path to the output directory</td>
+						</tr>
+						<tr>
+							<td>ip</td>
+							<td>-ip</td>
+							<td>&#39;127.0.0.1&#39;</td>
+							<td>the ip address of the server</td>
+						</tr>
+						<tr>
+							<td>port</td>
+							<td>-port</td>
+							<td>8080</td>
+							<td>the port of the server</td>
+						</tr>
+						<tr>
+							<td>noWatcher</td>
+							<td>-noWatcher</td>
+							<td>undefined</td>
+							<td>starts the script without a watcher</td>
+						</tr>
+						<tr>
+							<td>noServer</td>
+							<td>-noServer</td>
+							<td>undefined</td>
+							<td>starts the script without a server</td>
+						</tr>
+				</tbody></table>
+				<a href="#creating-a-plugin" id="creating-a-plugin" style="color: inherit; text-decoration: none;">
+					<h2>Creating a plugin</h2>
+				</a>
+				<p>Dunya starts to get very powerful when adding personalized plugins.
+					Let&#39;s start by creating our own plugin.
+					Make sure dunya is installed in your project.
+					Then create a file e.g. <code>custom-plugin.js</code>.
+				We need to export an object that has at least the property <code>name</code> but it should also have a <a href="###Priority">priority</a> and functionality:</p>
+				<pre><code class="language-js"><span style="color: #267F99">exports</span><span style="color: #000000">.</span><span style="color: #001080">default</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;custom plugin&#039;</span><span style="color: #000000">, </span><span style="color: #008000">// the name must not be the same as the file name</span>
+
+<span style="color: #000000">  </span><span style="color: #001080">priority:</span><span style="color: #000000"> </span><span style="color: #098658">300</span><span style="color: #000000">,</span>
+
+<span style="color: #000000">  </span><span style="color: #795E26">fileEvent</span><span style="color: #000000">(</span><span style="color: #001080">path</span><span style="color: #000000">, </span><span style="color: #001080">fileContent</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`&#039;</span><span style="color: #0000FF">${</span><span style="color: #001080">path</span><span style="color: #0000FF">}</span><span style="color: #A31515">&#039; got changed`</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">};</span>
+</code></pre>
+				<p>Now we just need to import our plugin in our <code>dunya.config.json</code>:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;plugins&quot;</span><span style="color: #000000">: [</span><span style="color: #A31515">&quot;~/custom-plugin.js&quot;</span><span style="color: #000000">],</span>
+<span style="color: #000000">  </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#using-typescript" id="using-typescript" style="color: inherit; text-decoration: none;">
+					<h3>Using typescript</h3>
+				</a>
+				<p>If you want to have autocomplete consider using <a href="https://www.typescriptlang.org/">typescript</a>.
+				Keep in mind that you have to compile your typescript file as <code>commonjs</code>. Simply make sure that this property is in your <code>tsconfig.json</code>:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;compilerOptions&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;module&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;commonjs&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  </span><span style="color: #CD3131">...</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>This typescript example implements the same features like the javascript variant but it&#39;s using the <code>DunyaPlugin</code> interface for autocomplete:</p>
+				<pre><code class="language-typescript"><span style="color: #008000">// import the interface for autocomplete</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">DunyaPlugin</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;dunya/scripts-ts/DunyaPlugin&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">plugin</span><span style="color: #000000">: </span><span style="color: #267F99">DunyaPlugin</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;custom plugin&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">priority:</span><span style="color: #000000"> </span><span style="color: #098658">300</span><span style="color: #000000">,</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #001080">plugin</span><span style="color: #000000">.</span><span style="color: #795E26">fileEvent</span><span style="color: #000000"> = </span><span style="color: #0000FF">function</span><span style="color: #000000"> (</span><span style="color: #001080">path</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">, </span><span style="color: #001080">fileContent</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">): </span><span style="color: #267F99">boolean</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">`&#039;</span><span style="color: #0000FF">${</span><span style="color: #001080">path</span><span style="color: #0000FF">}</span><span style="color: #A31515">&#039; got changed`</span><span style="color: #000000">);</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #001080">plugin</span><span style="color: #000000">;</span>
+</code></pre>
+				<a href="#priority" id="priority" style="color: inherit; text-decoration: none;">
+					<h3>Priority</h3>
+				</a>
+				<p>To set the right priority to your plugins is important for plugins to work together.
+				Here are some norms you can follow so your plugin does not interfere with other plugins:</p>
+				<table>
+					<thead>
+						<tr>
+							<th>priority</th>
+							<th>when to use</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>&gt;400</td>
+							<td>Only events that does not influence anything and does not stop any function</td>
+						</tr>
+						<tr>
+							<td>&gt;300</td>
+							<td>When a file format gets converted e.g. scss -&gt; css</td>
+						</tr>
+						<tr>
+							<td>&gt;200</td>
+							<td>When a file gets moved or edited but not the file format it self e.g. a minimizer</td>
+						</tr>
+						<tr>
+							<td>&lt;100</td>
+							<td>When another event gets appended that does not influence the content or path of the file</td>
+						</tr>
+				</tbody></table>
+				<a href="#converting-files" id="converting-files" style="color: inherit; text-decoration: none;">
+					<h3>Converting files</h3>
+				</a>
+				<p>Let&#39;s say we want to add a support for a language like <a href="https://sass-lang.com/">sass</a>.
+				This will give you a vague idea how to implement something like that.</p>
+				<p>First we want to est the <code>filePipe</code> function:</p>
+				<pre><code class="language-typescript"><span style="color: #001080">plugin</span><span style="color: #000000">.</span><span style="color: #795E26">filePipe</span><span style="color: #000000"> = </span><span style="color: #0000FF">function</span><span style="color: #000000"> (</span><span style="color: #001080">pipe</span><span style="color: #000000">: { </span><span style="color: #001080">path</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">; </span><span style="color: #001080">fileContent</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000"> }): { </span><span style="color: #001080">path</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">; </span><span style="color: #001080">fileContent</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000"> } {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// First we check if the file ends with .scss</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #795E26">filterExtensionName</span><span style="color: #000000">(</span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">path</span><span style="color: #000000">)) </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// Then we compile the content of the file</span>
+<span style="color: #000000">  </span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">fileContent</span><span style="color: #000000"> = </span><span style="color: #795E26">compile</span><span style="color: #000000">(</span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">path</span><span style="color: #000000">, </span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">fileContent</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// We change the extension from .scss to .css</span>
+<span style="color: #000000">  </span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">path</span><span style="color: #000000"> = </span><span style="color: #795E26">convertPath</span><span style="color: #000000">(</span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">path</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// And finally, we return the pipe</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">pipe</span><span style="color: #000000">;</span>
+<span style="color: #000000">};</span>
+</code></pre>
+				<p>But we should not forget to set the <code>deleteEventPipe</code> incase someone deletes a <code>.scss</code> file.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">plugin</span><span style="color: #000000">.</span><span style="color: #795E26">deleteEventPipe</span><span style="color: #000000"> = </span><span style="color: #0000FF">function</span><span style="color: #000000"> (</span><span style="color: #001080">pipe</span><span style="color: #000000">: </span><span style="color: #267F99">IOPaths</span><span style="color: #000000">): </span><span style="color: #267F99">IOPaths</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #008000">// First we check again if the file ends with .scss</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #795E26">filterExtensionName</span><span style="color: #000000">(</span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">outputPath</span><span style="color: #000000">)) </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">//Then we only have to change the extension from .scss to .css since there is no content because the file got deleted.</span>
+<span style="color: #000000">  </span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">outputPath</span><span style="color: #000000"> = </span><span style="color: #795E26">convertPath</span><span style="color: #000000">(</span><span style="color: #001080">pipe</span><span style="color: #000000">.</span><span style="color: #001080">outputPath</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">  </span><span style="color: #008000">// And then we return the pipe</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">pipe</span><span style="color: #000000">;</span>
+<span style="color: #000000">};</span>
+</code></pre>
+				<a href="#calling-methods" id="calling-methods" style="color: inherit; text-decoration: none;">
+					<h3>Calling methods</h3>
+				</a>
+				<p>There are different types of method how a function of a plugin can be called:</p>
+				<table>
+					<thead>
+						<tr>
+							<th>name</th>
+							<th>description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>PluginCaller</td>
+							<td>Will call every plugin until one returns a truthy value</td>
+						</tr>
+						<tr>
+							<td>PluginCallAll</td>
+							<td>Will call every plugin regardless of the return value</td>
+						</tr>
+						<tr>
+							<td>PluginGetter</td>
+							<td>Will call every plugin until one returns a value that is not undefined</td>
+						</tr>
+						<tr>
+							<td>PluginPipe</td>
+							<td>Will call all plugins. Every plugin has to option to modify the argument &#39;pipe&#39;. If one returns undefined the pipe will not change</td>
+						</tr>
+				</tbody></table>
+				<a href="#plugin-functions" id="plugin-functions" style="color: inherit; text-decoration: none;">
+					<h3>Plugin functions</h3>
+				</a>
+				<p>The best way to get an overview of all the possible ways to interact with dunya is to look at the <a href="&#39;file://scripts-ts/DunyaPlugin.ts&#39;">typescript template</a> itself.</p>
+				<p>Here is some definition of some terms:</p>
+				<a href="#iopath" id="iopath" style="color: inherit; text-decoration: none;">
+					<h4>iopath</h4>
+				</a>
+				<p><code>iopath</code> is an object with three entries:</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">IOPaths</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">path</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">inputPath</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">outputPath</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>E.g. we change a file called <code>foo/bar.js</code>:</p>
+				<table>
+					<thead>
+						<tr>
+							<th>path</th>
+							<th>inputPath</th>
+							<th>outputPath</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>foo/bar.js</td>
+							<td>input/foo/bar.js</td>
+							<td>output/foo/bar.js</td>
+						</tr>
+				</tbody></table>
+				<p>Note that the input and output directories will differ when we configure it differently <a href="##Configuration">read more about configuration.</a></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/args.html">Args</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/chain.html">Chain</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/dunyaplugin.html">Dunya<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pipe.html">Pipe</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/plugins.html">Plugins</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/types.html">Types</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/cli.html">cli</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/plugins_default.html">plugins/default</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/plugins_enhancedrouting.html">plugins/enhanced<wbr>Routing</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/plugins_inline_script.html">plugins/inline-<wbr>script</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/plugins_inline_script_compiler.html">plugins/inline-<wbr>script-<wbr>compiler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/plugins_inline_script_optimizations.html">plugins/inline-<wbr>script-<wbr>optimizations</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/plugins_sass_support.html">plugins/sass-<wbr>support</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/plugins_template.html">plugins/template</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

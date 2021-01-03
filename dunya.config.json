@@ -6,7 +6,9 @@
     "dev": {
       "plugins": ["#inline-script", "#sass-support"],
       "inputDir": "dev",
-      "outputDir": "docs"
+      "outputDir": "docs",
+      "noServer": true,
+      "noWatcher": true
     },
     "dev-ns": {
       "plugins": ["#inline-script", "#sass-support"],
