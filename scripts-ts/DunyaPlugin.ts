@@ -380,7 +380,10 @@ interface DunyaPlugin {
    * @param pipe.fileContent the content of the file
    * @return 'pipe'
    */
-  addFileEventPipe?(pipe: { path: string; fileContent: string }): { path: string; fileContent: string };
+  addFileEventPipe?(pipe: {
+    path: string;
+    fileContent: string;
+  }): { path: string; fileContent: string };
 
   /**
    * Will get called on the 'add' event
@@ -402,7 +405,10 @@ interface DunyaPlugin {
    * @param pipe.fileContent the content of the file
    * @return 'pipe'
    */
-  changeFileEventPipe?(pipe: { path: string; fileContent: string }): { path: string; fileContent: string };
+  changeFileEventPipe?(pipe: {
+    path: string;
+    fileContent: string;
+  }): { path: string; fileContent: string };
 
   /**
    * Will get called on the 'change' event

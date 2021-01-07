@@ -33,6 +33,7 @@
     "jsdom": "^16.4.0",
     "live-server": "^1.2.1",
     "node-sass": "^4.14.1",
+    "path-equal": "^1.1.1",
     "path-extra": "^4.3.0",
     "prettier-plugin-jsdoc": "^0.2.13",
     "sane": "^4.1.0",
@@ -45,7 +46,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "eslint": "^7.16.0",
+    "eslint": "^7.17.0",
     "typedoc": "^0.20.5",
     "typescript": "^4.0.5"
   },

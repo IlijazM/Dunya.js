@@ -1,7 +1,7 @@
 import * as jsdom from 'jsdom';
 import * as express from 'express';
 
-import DunyaPlugin from '../../src/plugin/PluginModel';
+import DunyaPlugin from '../../src/pipe/plugin/PipePluginModel';
 import Pipe from '../Pipe';
 
 const Path = require('path-extra');
