@@ -85,7 +85,9 @@ function watcherEvent(event: string, path: string) {
 
 function callWatcherEventOnEveryFile() {
   glob(Path.join(this.args.inputDir, '**', '*'), (err: any, files: Array<string>) =>
-    files.forEach((file: string) => this.eventHandler('add', file.substr(this.args.inputDir.length + 1)))
+    files.forEach((file: string) =>
+      this.eventHandler('add', file.substr(this.args.inputDir.length + 1))
+    )
   );
 }
 

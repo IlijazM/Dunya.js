@@ -311,7 +311,7 @@ interface PluginModel {
    * @param pOther another path.
    * @return true, if two paths are equal.
    */
-  pathEqual?: (pPath: string, pOther: string) => string;
+  pathEqual?: (pPath: string, pOther: string) => boolean;
 }
 
 // Export default

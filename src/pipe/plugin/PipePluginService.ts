@@ -298,7 +298,7 @@ The property 'name' must not by empty`);
    *
    * <p>
    * A pipe means that when there are two different plugins that overwrites the same function, both
-   *  functions get called with the pipe as the argument. Both functions may manipulate the pipe
+   * functions get called with the pipe as the argument. Both functions may manipulate the pipe
    * parameter in the same order as their priorities. At the end, the manipulated pipe value will
    * get returned.
    * </p>
