@@ -6,6 +6,7 @@
  */
 
 import PipeArgumentsModel from '../model/PipeArgumentsModel';
+import PluginService from '../plugin/PipePluginService';
 import PipePluginService from '../plugin/PipePluginService';
 
 /**
@@ -27,6 +28,20 @@ class PipeService {
   protected pluginService: PipePluginService;
 
   /**
+   * Additional flags that can be set.
+   *
+   * <p>
+   * In order to read or set flags just reference to the flags and read or write them directly in
+   * the object like that:
+   * </p>
+   *
+   * ```javascript
+   * pipe.flags['foo'] = 'bar';
+   * ```
+   */
+  protected flags: Record<any, any> = {};
+
+  /**
    * Default constructor.
    *
    * @param pPipeArguments the arguments of the pipeline.
@@ -36,15 +51,10 @@ class PipeService {
   }
 
   /**
-   * A default init function.
-   *
-   * <p>
-   * This function only serves as a placeholder until someone overwrites to init function.
-   * </p>
+   * Loads the plugin service.
    */
   public init() {
-    // Nothing to do.
-    // Is used to get overwritten.
+    this.pluginService = new PluginService(this.flags);
   }
 
   /**

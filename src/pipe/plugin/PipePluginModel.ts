@@ -56,8 +56,10 @@ interface PluginModel {
 
   /**
    * Gets called when the plugin got successfully loaded.
+   *
+   * @param pFlags flags of the pipe service.
    */
-  init?: () => void;
+  init?: (pFlags: Record<any, any>) => void;
 
   /**
    * Gets called when the script gets terminated.

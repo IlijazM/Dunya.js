@@ -8,6 +8,42 @@ import * as fs from 'fs-extra';
 import PluginModel from './PipePluginModel';
 
 /**
+ * The name of the flag that will store the file encoding value.
+ */
+const lfFileEncodingFlagName = 'file-encoding';
+
+/**
+ * Will store a reference to the flags object of the PipeService.
+ */
+let lFlags = null;
+
+/**
+ * Tries to return the file encoding value from the flags from the PipeService.
+ *
+ * <p>
+ * If this value isn't present, this function will log a warning and will return the encoding
+ * 'utf-8'.
+ * </p>
+ *
+ * @return the file encoding value from the flags from the PipeService.
+ */
+function getFileEncoding() {
+  let lResult = 'utf-8';
+
+  if (lFlags === null) {
+    // TODO: add warn message
+  } else if (lFlags === undefined) {
+    // TODO: add warn message
+  } else if (lFlags[lfFileEncodingFlagName] == null) {
+    // TODO: add warn message
+  } else {
+    lResult = lFlags[lfFileEncodingFlagName];
+  }
+
+  return lResult;
+}
+
+/**
  * The default plugin.
  */
 const lfDefaultPlugin: PluginModel = {
@@ -22,12 +58,14 @@ const lfDefaultPlugin: PluginModel = {
   priority: 100,
 
   /**
-   * Nothing to implement.
+   * Initiates flags.
+   *
+   * @param pFlags a reference to the flags of the PipeService.
    */
-  init(): void {
-    // Nothing to implement.
+  init(pFlags: Record<any, any>): void {
+    lFlags = pFlags;
 
-    return undefined;
+    lFlags[lfFileEncodingFlagName] = 'utf-8';
   },
 
   /**
@@ -55,7 +93,16 @@ const lfDefaultPlugin: PluginModel = {
    * @return the content of the file.
    */
   fsRead(pPath: string): string {
-    return fs.readFileSync(pPath, 'utf-8');
+    // Set the result to null in order to interrupt other functions.
+    let lResult = null;
+
+    try {
+      lResult = fs.readFileSync(pPath, getFileEncoding());
+    } catch (pEx) {
+      // TODO: create log functions
+    }
+
+    return lResult;
   },
 
   /**
@@ -67,31 +114,52 @@ const lfDefaultPlugin: PluginModel = {
    *
    * @param pPath the path of the file.
    * @param pFileContent the content of the file.
-   * @return true, to interrupt other functions.
+   * @return true, in order interrupt other functions.
    */
   fsWrite(pPath: string, pFileContent: string): boolean {
     if (pPath != undefined) {
       // TODO: plugins needs dir name function.
       // this.fs.mkdirs(Path.dirname(path));
-      fs.writeFileSync(pPath, pFileContent, 'utf-8');
+      fs.writeFileSync(pPath, pFileContent, getFileEncoding());
+    } else {
+      // TODO: create log function
     }
 
+    // Interrupt other functions from getting called.
     return true;
   },
 
   /**
-   * Logs the function name.
+   * Creates directories.
+   *
+   * <p>
+   * Will also create multiple directories if needed.
+   * </p>
+   *
+   * @param pPath the path of the directories.
+   * @return true, in order interrupt other functions.
    */
-  fsMkdirs(): boolean {
-    console.log(`[default plugin]: fsMkdirs()`);
+  fsMkdirs(pPath: string): boolean {
+    if (pPath != undefined) {
+      fs.mkdirsSync(pPath);
+    } else {
+      // TODO: create log function
+    }
 
-    return undefined;
+    // Interrupt other functions from getting called.
+    return true;
   },
 
   /**
-   * Logs the function name.
+   * Removes a file or a directory.
+   *
+   * <p>
+   * Automatically detects if the path leads to a file or a directory.
+   * </p>
+   *
+   * @return true, in order interrupt other functions.
    */
-  fsRemove(): boolean {
+  fsRemove(pPath: string): boolean {
     console.log(`[default plugin]: fsRemove()`);
 
     return undefined;
@@ -127,7 +195,7 @@ const lfDefaultPlugin: PluginModel = {
   /**
    * Logs the function name.
    */
-  fsReadJSON(): string {
+  fsReadJSON(): Record<string, any> {
     console.log(`[default plugin]: fsReadJSON()`);
 
     return undefined;

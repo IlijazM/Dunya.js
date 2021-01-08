@@ -38,10 +38,17 @@ class PluginService {
   private plugins: Array<PluginModel> = [];
 
   /**
-   * Default constructor.
+   * A reference to the flags of the PipeService.
    */
-  constructor() {
-    // Nothing to do.
+  private flags: Record<any, any>;
+
+  /**
+   * Default constructor.
+   *
+   * @param pFlags a reference to the flags of the PipeService.
+   */
+  constructor(pFlags: Record<any, any>) {
+    this.flags = pFlags;
   }
 
   //#region load plugin
@@ -101,7 +108,7 @@ class PluginService {
 
     // Call the 'init' function on the plugin.
     if (pPlugin['init'] !== undefined) {
-      pPluginPath['init'].call();
+      pPluginPath['init'].call(this.flags);
     }
   }
 
